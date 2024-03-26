@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<script type="module" crossorigin src="/assets/index-BNvQgVA9.js"></script>
+		<link rel="stylesheet" crossorigin href="/assets/index-DJN6ve2P.css">
+	</head>
+	<body>
+        <canvas id="canvas"></canvas>
+
+        <script id="vertex-shader-2d" type="notjs">
+     
+            // an attribute will receive data from a buffer
+            attribute vec4 a_position;
+            varying vec4 v_Position;
+            // all shaders have a main function
+            void main() {
+           
+              // gl_Position is a special variable a vertex shader
+              // is responsible for setting
+              v_Position = a_position * 0.5 + 0.5;
+              gl_Position = a_position;
+            }
+           
+        </script>
+        
+        <script id="fragment-shader-2d" type="notjs">
+        
+            // fragment shaders don't have a default precision so we need
+            // to pick one. mediump is a good default
+            precision mediump float;
+            varying vec4 v_Position;
+            void main() {
+                // gl_FragColor is a special variable a fragment shader
+                // is responsible for setting
+                gl_FragColor = vec4(v_Position.xyz, 1);
+            }
+        
+        </script>
+
+	</body>
+</html>
