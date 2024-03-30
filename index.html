@@ -11,29 +11,71 @@
         <script id="vertex-shader-2d" type="notjs">
      
             // an attribute will receive data from a buffer
-            attribute vec4 a_position;
+            attribute vec4 a_Position;
+            attribute vec2 a_GridID;
             varying vec4 v_Position;
+            varying vec2 v_GridID;
+            
+            uniform vec2 u_Resolution;
+
             // all shaders have a main function
             void main() {
-           
-              // gl_Position is a special variable a vertex shader
-              // is responsible for setting
-              v_Position = a_position * 0.5 + 0.5;
-              gl_Position = a_position;
+                vec4 scaledPos = a_Position;
+                if(u_Resolution.x > u_Resolution.y / 2.) {
+                    // Grid takes up vertical space; scale x based on y
+                    scaledPos.x = scaledPos.x * u_Resolution.y / u_Resolution.x;
+                } else {
+                    // Grid takes up horizontal space; scale y based on x
+                    scaledPos.y = scaledPos.y * u_Resolution.x / u_Resolution.y;
+                }
+                gl_Position = scaledPos;
+                v_GridID = a_GridID;
             }
            
         </script>
         
         <script id="fragment-shader-2d" type="notjs">
-        
+            #version 100
             // fragment shaders don't have a default precision so we need
             // to pick one. mediump is a good default
-            precision mediump float;
+            precision highp float;
+            uniform float u_Time;
+
+            uniform sampler2D u_GridData;
+
             varying vec4 v_Position;
+            varying vec2 v_GridID;
+
+            /*int accessGrid(int x, int y) {
+                // Get serialized id space
+                int listId = 10 * y + x;
+                // Get array index
+                int arrayIndex = listId / 4;
+                int byteIndex = int(fract(float(listId) / 4.) * 4.);
+
+                int mask = 15 << ((3 - byteIndex) * 8);
+
+                return u_Grid[arrayIndex] & mask    ;
+            }*/
+
             void main() {
-                // gl_FragColor is a special variable a fragment shader
-                // is responsible for setting
-                gl_FragColor = vec4(v_Position.xyz, 1);
+                float p = 0.05;
+                // Background color
+
+
+
+                gl_FragColor = vec4(0.5, 0.5, 0.5, 1);
+
+                vec2 gridLoc = v_GridID / vec2(10., 20.);
+                vec4 thisSquareData = texture2D(u_GridData, gridLoc);
+                if (thisSquareData !=  vec4(0, 0, 0, 1)) {
+                    gl_FragColor = thisSquareData;
+                }
+
+                // Grid lines
+                if (fract(v_GridID.x) - p <= 0. || fract(v_GridID.y) - p <= 0.) {
+                    gl_FragColor = vec4(0, 0, 0, 1);
+                }
             }
         
         </script>
