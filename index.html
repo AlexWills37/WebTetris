@@ -2,8 +2,9 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>My first three.js app</title>
+		<title>TetrisGL</title>
         <link rel="stylesheet" href="styles.css" />
+        <link rel="icon" type="image/x-icon" href="facivon.ico">
 	</head>
 	<body>
         <canvas id="canvas"></canvas>
@@ -12,9 +13,11 @@
      
             // an attribute will receive data from a buffer
             attribute vec4 a_Position;
-            attribute vec2 a_GridID;
+            attribute vec2 a_GridPos;
+
+
             varying vec4 v_Position;
-            varying vec2 v_GridID;
+            varying vec2 v_GridPos;
             
             uniform vec2 u_Resolution;
 
@@ -29,7 +32,7 @@
                     scaledPos.y = scaledPos.y * u_Resolution.x / u_Resolution.y;
                 }
                 gl_Position = scaledPos;
-                v_GridID = a_GridID;
+                v_GridPos = a_GridPos;
             }
            
         </script>
@@ -42,38 +45,30 @@
             uniform float u_Time;
 
             uniform sampler2D u_GridData;
+            uniform sampler2D u_BlockTexture;
 
             varying vec4 v_Position;
-            varying vec2 v_GridID;
+            varying vec2 v_GridPos;
 
-            /*int accessGrid(int x, int y) {
-                // Get serialized id space
-                int listId = 10 * y + x;
-                // Get array index
-                int arrayIndex = listId / 4;
-                int byteIndex = int(fract(float(listId) / 4.) * 4.);
-
-                int mask = 15 << ((3 - byteIndex) * 8);
-
-                return u_Grid[arrayIndex] & mask    ;
-            }*/
 
             void main() {
-                float p = 0.05;
+                float p = 0.025;
                 // Background color
 
 
 
                 gl_FragColor = vec4(0.5, 0.5, 0.5, 1);
 
-                vec2 gridLoc = v_GridID / vec2(10., 20.);
+                vec2 gridLoc = v_GridPos / vec2(10., 20.);
                 vec4 thisSquareData = texture2D(u_GridData, gridLoc);
                 if (thisSquareData !=  vec4(0, 0, 0, 1)) {
-                    gl_FragColor = thisSquareData;
+                    vec4 color = thisSquareData;
+                    vec2 texCoord = vec2(fract(v_GridPos.x), 1. - fract(v_GridPos.y));
+                    gl_FragColor = texture2D(u_BlockTexture, texCoord) * color;
                 }
 
                 // Grid lines
-                if (fract(v_GridID.x) - p <= 0. || fract(v_GridID.y) - p <= 0.) {
+                if (fract(v_GridPos.x) <= p || fract(v_GridPos.y) <= p || fract(v_GridPos.x) >= 1. - p || fract(v_GridPos.y) >= 1. - p) {
                     gl_FragColor = vec4(0, 0, 0, 1);
                 }
             }
