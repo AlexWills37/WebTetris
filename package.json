@@ -4,6 +4,15 @@
     "twgl.js": "^5.5.4"
   },
   "devDependencies": {
+    "gh-pages": "^6.1.1",
     "vite": "^5.2.6"
-  }
+  },
+  "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "dev": "vite",
+    "build": "vite build"
+
+  },
+  "homepage": "https://alexwills37.github.io/WebTetris/"
 }
