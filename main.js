@@ -21,10 +21,10 @@ function resizeCanvasToDisplaySize(canvas) {
 }
 
 function createShader(gl, type, source) {
-    var shader = gl.createShader(type);
+    let shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
-    var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+    let success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
     if (success) {
         return shader;
     }
@@ -34,11 +34,11 @@ function createShader(gl, type, source) {
 }
 
 function createProgram(gl, vertexShader, fragmentShader) {
-    var program = gl.createProgram();
+    let program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
-    var success = gl.getProgramParameter(program, gl.LINK_STATUS);
+    let success = gl.getProgramParameter(program, gl.LINK_STATUS);
     if (success) {
         return program;
     }
@@ -115,6 +115,11 @@ class TetrisGame {
         this.colorMap = new Map();
         this.pieceMap = new Map();
         this.pieceQueue = [];
+        this.ghostBlocks = [[0, 0],[0, 0],[0, 0],[0, 0]];
+
+        this.lockTimerStart = 0;
+        this.lockTimerDuration = 0.5;
+        this.timerRunning = false;
 
         this.refillPieceQueue();
         this.grabNextPiece();
@@ -166,11 +171,11 @@ class TetrisGame {
     generateRGBGrid() {
         for (let iy = 0; iy < 20; iy++){
             for (let ix = 0; ix < 10; ix++) {
-                var blockData = this.getBlockData(ix, iy);
+                let blockData = this.getBlockData(ix, iy);
 
-                var startIndex = 30 * iy + 3 * ix;
+                let startIndex = 30 * iy + 3 * ix;
                 if (blockData != 0){
-                    var color = this.colorMap.get(blockData);
+                    let color = this.colorMap.get(blockData);
                     this.rgbGrid[startIndex] = color[0];
                     this.rgbGrid[startIndex + 1] = color[1];
                     this.rgbGrid[startIndex + 2] = color[2];
@@ -182,14 +187,27 @@ class TetrisGame {
             }
         }
 
-        var playerBlocks = this.playerPiece.blocks;
+        // Draw ghost blocks to texture
+        for (let i = 0; i < 4; i++ ) {
+            let grey = 200;
+            let ghostStartIndex = 30 * this.ghostBlocks[i][1] + 3 * this.ghostBlocks[i][0];
+            this.rgbGrid[ghostStartIndex] = grey;
+            this.rgbGrid[ghostStartIndex + 1] = grey;
+            this.rgbGrid[ghostStartIndex + 2] = grey;
+        }
+
+        // Draw player blocks to texture
+        let playerBlocks = this.playerPiece.blocks;
         for (let i = 0; i < 4; i++){
-            var color = this.colorMap.get(this.pieceMap.get(this.playerPiece.shape));
-            var startIndex = 30 * playerBlocks[i][1] + 3 * playerBlocks[i][0];
+            let color = this.colorMap.get(this.pieceMap.get(this.playerPiece.shape));
+            let startIndex = 30 * playerBlocks[i][1] + 3 * playerBlocks[i][0];
             this.rgbGrid[startIndex] = color[0];
             this.rgbGrid[startIndex + 1] = color[1];
             this.rgbGrid[startIndex + 2] = color[2];
+
         }
+
+        
 
         return this.rgbGrid;
     }
@@ -197,7 +215,7 @@ class TetrisGame {
     generateRainbowGrid(offset) {
         for(let y = 0; y < 20; y++) {
             for (let x = 0; x < 10; x++) {
-                var startIndex = 30 * y + 3 * x;
+                let startIndex = 30 * y + 3 * x;
                 this.rgbGrid[startIndex] = (Math.sin((x + (y * 10) + offset) * 3.14 / 200) * 0.5 + 0.5) * 255;
                 this.rgbGrid[startIndex + 1] = (Math.sin((x + (y * 10) + offset) * 3.14 / 200 + 3.14/2) * 0.5 + 0.5) * 255;
                 this.rgbGrid[startIndex + 2] = (Math.sin((x + (y * 10) + offset) * 3.14 / 200 + 3.14/3) * 0.5 + 0.5) * 255;
@@ -212,13 +230,14 @@ class TetrisGame {
             this.playerPiece.blocks[i][0] += dx;
             this.playerPiece.blocks[i][1] += dy;
         }
+        this.updateGhostProjections();
     }
 
     tryMovePiece(dx, dy) {
         let canMove = true;
         for (let i = 0; i < 4 && canMove; i++) {
-            var x = this.playerPiece.blocks[i][0] + dx;
-            var y = this.playerPiece.blocks[i][1] + dy;
+            let x = this.playerPiece.blocks[i][0] + dx;
+            let y = this.playerPiece.blocks[i][1] + dy;
             if (this.isBlockHere(x, y))
                 canMove = false;
         }
@@ -307,6 +326,7 @@ class TetrisGame {
                 this.playerPiece.blocks[i] = [...testBlocks[i]];
             }
             this.playerPiece.rotationIndex = rotationTargetIndex;
+            this.updateGhostProjections();
         }
     }
 
@@ -340,7 +360,85 @@ class TetrisGame {
         if (this.pieceQueue.length < 7) {
             this.refillPieceQueue();
         }
+        delete this.playerPiece;
         this.playerPiece = new ActivePiece(nextPiece);
+        this.updateGhostProjections();
+    }
+
+    startLockTimer() {
+        this.lockTimerStart = Date.now();
+        this.timerRunning = true;
+    }
+
+    isLockTimerElapsed() {
+        return this.timerRunning && (Date.now() - this.lockTimerStart) * 0.001 >= this.lockTimerDuration;
+    }
+
+    stopLockTimer() {
+        this.timerRunning = false;
+    }
+
+    hardDropPlayerPiece() {
+        while (this.tryMovePiece(0, -1)) {}
+        this.finishWithPiece();
+    }
+
+    finishWithPiece() {
+        this.depositPlayerPiece();
+        this.grabNextPiece();
+        this.timerRunning = false;
+        this.resolveLineClears();
+    }
+    resolveLineClears() {
+        // Search from the bottom for full lines
+        for (let y = 0; y < 20; y++) {
+            let fullRow = true;
+            for (let x = 0; x < 10 && fullRow; x++) {
+                if (!this.isBlockHere(x, y)) {
+                    fullRow = false;
+                }
+            }
+            // If row is full, clear it
+            if (fullRow) {
+                this.clearRow(y);
+                y--; // Decrease the row to stay at the same coordinate for the next iteration
+            }
+        }
+        this.updateGhostProjections();
+    }
+
+    clearRow(row) {
+        // Copy every row down one
+        for (let y = row; y < 19; y++) {
+            this.grid[y] = this.grid[y + 1]
+        }
+        // Remove last row
+        this.grid[20] = 0;
+    }
+
+    updateGhostProjections() {
+        // Start with the player's block pieces
+        for (let i = 0; i < 4; i++) {
+            this.ghostBlocks[i] = [...this.playerPiece.blocks[i]];
+        }
+
+        // Move ghost blocks down until they can't anymore
+        let willCollide = false;
+        while (!willCollide) {
+            // Check blocks below
+            for (let i = 0; i < 4; i++) {
+                if (this.isBlockHere(this.ghostBlocks[i][0], this.ghostBlocks[i][1] - 1)) {
+                    willCollide = true;
+                }
+            }
+
+            // If ready for next loop, move ghosts down
+            if (!willCollide) {
+                for (let i = 0; i < 4; i++) {
+                    this.ghostBlocks[i][1] -= 1;
+                }
+            }
+        }
     }
 }
 
@@ -365,6 +463,13 @@ class Input {
         this.inputKeys.set("J", "RotateAntiClockwise");
         this.inputKeys.set("ArrowRight", "RotateClockwise");
         this.inputKeys.set("L", "RotateClockwise");
+        
+        this.counters = new Map();
+        this.counters.set("MoveLeft", 0);
+        this.counters.set("MoveRight", 0);
+        this.counters.set("RotateClockwise", 0);
+        this.counters.set("RotateAntiClockwise", 0);
+        this.counters.set("HardDrop", 0);
     }
 
     keyToState(key) {
@@ -376,7 +481,7 @@ class Input {
     }
 
     setInputState(key, value) {
-        var action = this.keyToState(key);
+        let action = this.keyToState(key);
         if (action != null) {
             this.inputStates.set(action, value);
         }
@@ -389,16 +494,39 @@ class Input {
             console.log("ERROR: trying to access an input action that doesn't exist (" + inputAction + "). The allowed options are:");
             this.inputStates.forEach(function(value, key, map) {
                 console.log("    - " + key);
-            })
+            });
         }
         return null;
     }
 
+    updateCounters() {      
+        for (const [key, value] of this.counters) {
+            if (this.getInputState(key)) {
+                this.counters.set(key, value + 1);
+            } else {
+                this.counters.set(key, 0);
+            }
+        }
+    }
+
+    getCounter(inputAction) {
+        if (this.counters.has(inputAction)) {
+            return this.counters.get(inputAction);
+        } else {
+            console.log("ERROR: trying to access input action that doesn't have a counter (" + inputAction + "). The counters are:" );
+            this.counters.forEach(function(value, key, map) {
+                console.log("    - " + key + ": " + value);
+            });
+        }
+        return null;
+    }
+
+    
 }
 
 
 function main() {
-    var inputMod = new Input();
+    let inputMod = new Input();
     document.addEventListener('keydown', function(event) {
         inputMod.setInputState(event.key, true);
     });
@@ -407,7 +535,7 @@ function main() {
     });
 
     
-    var canvas = document.querySelector("#canvas");
+    let canvas = document.querySelector("#canvas");
 
     /**@type {WebGLRenderingContext} */
     const gl = canvas.getContext("webgl");
@@ -421,8 +549,8 @@ function main() {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     // Create shader
-    var vsSource = document.querySelector("#vertex-shader-2d").text;
-    var fsSource = document.querySelector("#fragment-shader-2d").text;
+    let vsSource = document.querySelector("#vertex-shader-2d").text;
+    let fsSource = document.querySelector("#fragment-shader-2d").text;
     const programInfo = twgl.createProgramInfo(gl,[vsSource, fsSource]);
 
 
@@ -440,8 +568,8 @@ function main() {
 
     const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
-    var gridDataTex = gl.createTexture();
-    var gridData = new Uint8Array(200 * 3);
+    let gridDataTex = gl.createTexture();
+    let gridData = new Uint8Array(200 * 3);
     gl.bindTexture(gl.TEXTURE_2D, gridDataTex);
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 10, 20, 0, gl.RGB, gl.UNSIGNED_BYTE, gridData);
@@ -450,116 +578,95 @@ function main() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    var blockImg = {src: "textures/block.png", mag: gl.LINEAR};
-    var blockTexture = twgl.createTexture(gl, blockImg);
+    let blockImg = {src: "textures/block.png", mag: gl.LINEAR};
+    let blockTexture = twgl.createTexture(gl, blockImg);
 
-    var Tetris = new TetrisGame();
-    Tetris.placeBlockHere(0, 5, 1);
-    Tetris.placeBlockHere(1, 5, 2);
-    Tetris.placeBlockHere(2, 5, 3);
-    Tetris.placeBlockHere(3, 5, 4);
-    Tetris.placeBlockHere(4, 5, 5);
-    Tetris.placeBlockHere(5, 5, 6);
-    Tetris.placeBlockHere(6, 5, 7);
-    Tetris.placeBlockHere(6, 6, 7);
-    Tetris.placeBlockHere(6, 7, 7);
-    Tetris.placeBlockHere(5, 7, 7);
+    let Tetris = new TetrisGame();
+    // Tetris.placeBlockHere(0, 5, 1);
+    // Tetris.placeBlockHere(1, 5, 2);
+    // Tetris.placeBlockHere(2, 5, 3);
+    // Tetris.placeBlockHere(3, 5, 4);
+    // Tetris.placeBlockHere(4, 5, 5);
+    // Tetris.placeBlockHere(5, 5, 6);
+    // Tetris.placeBlockHere(6, 5, 7);
+    // Tetris.placeBlockHere(6, 6, 7);
+    // Tetris.placeBlockHere(6, 7, 7);
+    // Tetris.placeBlockHere(5, 7, 7);
 
-    const fps = 30;
-    const timeBtwnFrames = 1.0 / fps;
-    var lastFrameTime = 0;
-    var timeSinceInputTick = 0;
-    const inputTickTime = 1.0 / 30.0;
-
-    var rotatePressed = false;
-    var counterRotatePressed = false;
-    var holdPressed = false;
-
-    let gameTickTime = 1.0 / 30.0;
-    let timeSinceGameTick = 0;
+    
+    
+    let gravityCounter = 0;
+    let ticksPerGravity = 15;
 
     function updateGame() {
-        // Check inputs
+        // Handle player input
+        inputMod.updateCounters();
+        if (inputMod.getCounter("HardDrop") == 1)
+            Tetris.hardDropPlayerPiece();// Do hard drop
+        else {
+            // 1 - check for soft drop
+            if (inputMod.getInputState("SoftDrop")) {
+                Tetris.tryMovePiece(0, -1);
+            }
+    
+            // 2 - rotate piece
+            let rotation = 0;
+            if (inputMod.getCounter("RotateClockwise") == 1)
+                rotation += 1;
+            if (inputMod.getCounter("RotateAntiClockwise") == 1)
+                rotation -= 1;
+
+            if (rotation != 0)
+                Tetris.tryRotatePiece(rotation == 1);
+
+            // 3 - move piece
+            let movement = 0;
+            if (inputMod.getCounter("MoveLeft") == 1 || inputMod.getCounter("MoveLeft") > 4)
+                movement -= 1;
+            if (inputMod.getCounter("MoveRight") == 1 || inputMod.getCounter("MoveRight") > 4)
+                movement += 1;
+
+            if (movement != 0)
+                Tetris.tryMovePiece(movement, 0);
+
+
+            // Count ticks for gravity
+            gravityCounter++;
+            if (gravityCounter >= ticksPerGravity) {
+                let atBottom = !Tetris.tryMovePiece(0, -1);
+                gravityCounter = 0;
+    
+                // if (atBottom && !Tetris.timerRunning) {
+                //     Tetris.startLockTimer();
+                // }
+                if(atBottom)
+                    Tetris.finishWithPiece();
+            }
+    
+            // Deposit piece if timer is elapsed
+            // if (Tetris.isLockTimerElapsed()) {
+            //     Tetris.depositPlayerPiece();
+            //     Tetris.grabNextPiece();
+            //     Tetris.stopLockTimer();
+            // }
+
+        }
 
 
     }
 
     function renderFrame(time) {
-        let deltaTime = (time - lastFrameTime) * 0.001;
-        lastFrameTime = 0;
-        timeSinceGameTick += deltaTime;
-
-        // Run game tick when time elapses
-        if (timeSinceGameTick > gameTickTime) {
-            updateGame();
-            timeSinceGameTick = 0;
-        }
-
-        // Render graphics every frame
-
-    }
-
-    // DEVON'S COMMENT ABOUT SEPARATING RENDER AND GAME LOOP
-    function render(time) {
-        var deltaTime = (time - lastFrameTime) * 0.001;
-        lastFrameTime = time;
-
-        timeSinceInputTick += deltaTime;
-        if (timeSinceInputTick > inputTickTime) {
-            // Do input tick
-            timeSinceInputTick = 0;
-            let movement = [0, 0];
-            let clockwiseRotation = false;
-            let counterClockwiseRotation = false;
-            if (inputMod.getInputState("MoveLeft")) 
-                movement[0] -= 1;
-            if (inputMod.getInputState("MoveRight"))
-                movement[0] += 1;
-            if (inputMod.getInputState("HardDrop"))
-                movement[1] += 1;
-            if (inputMod.getInputState("SoftDrop"))
-                movement[1] -= 1;
-
-            if (inputMod.getInputState("RotateClockwise") && !rotatePressed) {
-                rotatePressed = true;
-                clockwiseRotation = true;
-                // Else = Input off || rotatePressed true
-            } else if (!inputMod.getInputState("RotateClockwise") && rotatePressed) {
-                rotatePressed = false;
-            }
-
-            if (inputMod.getInputState("RotateAntiClockwise") && !counterRotatePressed) {
-                counterRotatePressed = true;
-                counterClockwiseRotation = true;
-            } else if (!inputMod.getInputState("RotateAntiClockwise") && counterRotatePressed) {
-                counterRotatePressed = false;
-            }
-
-            if (inputMod.getInputState("Hold") && !holdPressed) {
-                holdPressed = true;
-                Tetris.depositPlayerPiece();
-                Tetris.grabNextPiece();
-            } else if (!inputMod.getInputState("Hold") && holdPressed) {
-                holdPressed = false;
-            }
-        
-            if ((clockwiseRotation || counterClockwiseRotation) && !(clockwiseRotation && counterClockwiseRotation))
-                Tetris.tryRotatePiece(clockwiseRotation);
-            Tetris.tryMovePiece(movement[0], movement[1]);
-        }
-
-        // Every visual frame
-
-
-        //gridData = Tetris.generateRainbowGrid(Math.floor(time * 0.1));
+        // Get the game state
         gridData = Tetris.generateRGBGrid();
 
         // Resize canvas if it changes
         twgl.resizeCanvasToDisplaySize(gl.canvas);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
+        // Send the game state to the GPU as a texture
         gl.bindTexture(gl.TEXTURE_2D, gridDataTex);
         gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 10, 20, gl.RGB, gl.UNSIGNED_BYTE, gridData);
+
         // Create uniform list
         const uniforms = {
             u_Time: time * 0.001,
@@ -568,20 +675,61 @@ function main() {
             u_BlockTexture: blockTexture,
         };
     
+        // Draw the frame
         gl.useProgram(programInfo.program); // Bind the shader program
         twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);  // Enable/create the attribute pointers
         twgl.setUniforms(programInfo, uniforms);    // Set the shader uniforms
         twgl.drawBufferInfo(gl, bufferInfo);    // Call the appropriate draw function
-    
-        requestAnimationFrame(render);  // Request the next frame
+
     }
 
-    requestAnimationFrame(render);  // Request the first frame
-    
 
-    // Clear the canvas
-    //gl.clearColor(0, 0, 0, 0);
-    //gl.clear(gl.COLOR_BUFFER_BIT);
+    let timeSinceGameTick = 0;
+    let gameTickTime = 1.0 / 30.0;
+    let lastFrameTime = 0;
+    function processFrame(time) {
+        let deltaTime = (time - lastFrameTime) * 0.001;
+        lastFrameTime = time;
+        timeSinceGameTick += deltaTime;
+
+        // Run game tick when time elapses
+        if (timeSinceGameTick >= gameTickTime) {
+            updateGame();
+            
+            timeSinceGameTick = Math.min(timeSinceGameTick - gameTickTime, gameTickTime);
+
+        }
+
+        // Render graphics every frame
+        renderFrame(time);
+        
+        // Queue up the next frame
+        requestAnimationFrame(processFrame);
+    }
+    requestAnimationFrame(processFrame);
+
+    // let trueLastTime = 0;
+    // let trueTime2 = 0;
+    // let deltaTimeTrue = 0;
+    // while (true) {
+    //     deltaTimeTrue = Date.now() * 0.001 - trueLastTime;
+    //     if( deltaTimeTrue > gameTickTime) {
+    //         updateGame();
+    //         avg += deltaTimeTrue;
+
+    //         count++;
+    //         trueLastTime = deltaTimeTrue + trueLastTime;
+            
+    //         if (count >= 100) {
+    //             console.log("avg tick rate: " + (count / avg));
+    //             avg = 0;
+    //             count = 0;
+    //         }
+    //     }
+    // }
+
+    // DEVON'S COMMENT ABOUT SEPARATING RENDER AND GAME LOOP
+    
 
 }
 
