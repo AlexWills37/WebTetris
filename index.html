@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<title>TetrisGL</title>
         <link rel="shortcut icon" type="image/x-icon" href="facivon.ico">
-		<script type="module" crossorigin src="/WebTetris/assets/index-J_5xSUbn.js"></script>
+		<script type="module" crossorigin src="/WebTetris/assets/index-DWyU4ioW.js"></script>
 		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-DJN6ve2P.css">
 	</head>
 	<body>
@@ -15,8 +15,9 @@
             // an attribute will receive data from a buffer
             attribute vec4 a_Position;
             attribute vec2 a_GridPos;
+            attribute float a_ShaderID;
 
-
+            varying float v_ShaderID;
             varying vec4 v_Position;
             varying vec2 v_GridPos;
             
@@ -34,6 +35,7 @@
                 }
                 gl_Position = scaledPos;
                 v_GridPos = a_GridPos;
+                v_ShaderID = a_ShaderID;
             }
            
         </script>
@@ -47,30 +49,46 @@
 
             uniform sampler2D u_GridData;
             uniform sampler2D u_BlockTexture;
+            uniform sampler2D u_QueueData;
 
             varying vec4 v_Position;
             varying vec2 v_GridPos;
+            varying float v_ShaderID;
 
 
             void main() {
-                float p = 0.025;
-                // Background color
 
 
-
-                gl_FragColor = vec4(0.4, 0.4, 0.4, 1);
-
-                vec2 gridLoc = v_GridPos / vec2(10., 20.);
-                vec4 thisSquareData = texture2D(u_GridData, gridLoc);
-                if (thisSquareData !=  vec4(0, 0, 0, 1)) {
-                    vec4 color = thisSquareData;
-                    vec2 texCoord = vec2(fract(v_GridPos.x), 1. - fract(v_GridPos.y));
-                    gl_FragColor = texture2D(u_BlockTexture, texCoord) * color;
-                }
-
-                // Grid lines
-                if (fract(v_GridPos.x) <= p || fract(v_GridPos.y) <= p || fract(v_GridPos.x) >= 1. - p || fract(v_GridPos.y) >= 1. - p) {
+                if (v_ShaderID == 0.) {
+                    float p = 0.025;
+                    // Background color
+    
+    
+    
+                    gl_FragColor = vec4(0.4, 0.4, 0.4, 1);
+    
+                    vec2 gridLoc = v_GridPos / vec2(10., 20.);
+                    vec4 thisSquareData = texture2D(u_GridData, gridLoc);
+                    if (thisSquareData !=  vec4(0, 0, 0, 1)) {
+                        vec4 color = thisSquareData;
+                        vec2 texCoord = vec2(fract(v_GridPos.x), 1. - fract(v_GridPos.y));
+                        gl_FragColor = texture2D(u_BlockTexture, texCoord) * color;
+                    }
+    
+                    // Grid lines
+                    if (fract(v_GridPos.x) <= p || fract(v_GridPos.y) <= p || fract(v_GridPos.x) >= 1. - p || fract(v_GridPos.y) >= 1. - p) {
+                        gl_FragColor = vec4(0, 0, 0, 1);
+                    }
+    
+                } else {
                     gl_FragColor = vec4(0, 0, 0, 1);
+                    vec2 dataLocation = v_GridPos / vec2(4., 10.);
+                    vec4 blockData = texture2D(u_QueueData, dataLocation);
+                    vec2 texCoord = fract(v_GridPos);
+                    texCoord.y = 1. - texCoord.y;
+                    vec4 texColor = texture2D(u_BlockTexture, texCoord);
+
+                    gl_FragColor = blockData * texColor;
                 }
 
             }
