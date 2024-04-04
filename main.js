@@ -67,11 +67,23 @@ class ActivePiece {
 
 
     static offsets = {
-        O: [[0, 0],
+        O: [[[0, 0],
             [0, -1],
             [-1, -1],
-            [-1, 0]],
-        I: [[[0, 0], [-1, 0], [-1, 1], [0, 1]], ]
+            [-1, 0]]],
+        I: [[[0, 0], [-1, 0], [-1, 1], [0, 1]], 
+            [[-1, 0], [0, 0], [1, 1], [0, 1]],
+            [[2, 0], [0, 0], [-2, 1], [0, 1]],
+            [[-1, 0], [0, 1], [1, 0], [0, -1]],
+            [[2, 0], [0, -2], [-2, 0], [0, 2]]],
+        OTHER: [[[0, 0], [0, 0], [0, 0], [0, 0]],
+            [[0, 0], [1, 0], [0, 0], [-1, 0]],
+            [[0, 0], [1, -1], [0, 0], [-1, 1]],
+            [[0, 0], [0, 2], [0, 0], [0, 2]],
+            [[0, 0], [1, 2], [0, 0], [-1, 2]]
+    ]
+
+
     }
 
     static pieces = {
@@ -291,7 +303,7 @@ class TetrisGame {
         }
         let temp;
 
-        // Test a pure rotation around the center block
+        // Pure rotation around the center block
         for (let i = 0; i < 4; i++) {
             // Move block to sample space
             testBlocks[i][0] -= centerOffset[0];
@@ -306,42 +318,86 @@ class TetrisGame {
             testBlocks[i][0] += centerOffset[0];
             testBlocks[i][1] += centerOffset[1];
 
-            // Apply initial offset
-            if(this.playerPiece.shape == 'O') {
-                let kickOffset = [];
-                for (let i = 0; i < 2; i++){
-                    kickOffset.push( ActivePiece.offsets.O[this.playerPiece.rotationIndex][i] - ActivePiece.offsets.O[rotationTargetIndex][i]);
-                }
-                testBlocks[i][0] += kickOffset[0];
-                testBlocks[i][1] += kickOffset[1];
-            }
+            // // Apply initial offset
+            // if(this.playerPiece.shape == 'O') {
+            //     let kickOffset = [];
+            //     for (let i = 0; i < 2; i++){
+            //         kickOffset.push( ActivePiece.offsets.O[this.playerPiece.rotationIndex][i] - ActivePiece.offsets.O[rotationTargetIndex][i]);
+            //     }
+            //     testBlocks[i][0] += kickOffset[0];
+            //     testBlocks[i][1] += kickOffset[1];
+            // }
 
-            if (this.isBlockHere(testBlocks[i][0], testBlocks[i][1])) {
-                canRotate = false;
-            }
+            // if (this.isBlockHere(testBlocks[i][0], testBlocks[i][1])) {
+            //     canRotate = false;
+            // }
+        }
+        // Test 5 offsets and stop at earliest one
+        let offsetTable;
+        switch(this.playerPiece.shape) {
+            case 'O':
+                offsetTable = ActivePiece.offsets.O;
+                break;
+            case 'I':
+                offsetTable = ActivePiece.offsets.I;
+                break;
+            default:
+                offsetTable = ActivePiece.offsets.OTHER;
+                break;
         }
 
-        // If needed, test moving to the left
-        if (!canRotate){
+        let offsetRow;
+        let offset;
+        canRotate = false;
+        // Test up to 5 offsets, stopping early if the test succeeds
+        for (let i = 0; i < 5 && !canRotate; i++) {
+            // Get offset from SRS table
+            offsetRow = offsetTable[i];
+            offset = [offsetRow[this.playerPiece.rotationIndex][0] - offsetRow[rotationTargetIndex][0],
+                        offsetRow[this.playerPiece.rotationIndex][1] - offsetRow[rotationTargetIndex][1]];
+
+            // Apply offset and test blocks
             canRotate = true;
-            for (let i = 0; i < 4; i++){
-                testBlocks[i][0] += 1;
-                if (this.isBlockHere(testBlocks[i][0], testBlocks[i][1])) {
+            for (let j = 0; j < 4; j++) {
+                testBlocks[j][0] += offset[0];
+                testBlocks[j][1] += offset[1];
+                if (this.isBlockHere(testBlocks[j][0], testBlocks[j][1])) {
                     canRotate = false;
                 }
             }
-        }
 
-        // If needed, test moving to the right
-        if (!canRotate) {
-            canRotate = true;
-            for (let i = 0; i < 4; i++){
-                testBlocks[i][0] -= 2;
-                if (this.isBlockHere(testBlocks[i][0], testBlocks[i][1])) {
-                    canRotate = false;
+            // If any of the blocks failed, undo the offset for the next test
+            if (!canRotate) {
+                for (let j = 0; j < 4; j++) {
+                    testBlocks[j][0] -= offset[0];
+                    testBlocks[j][1] -= offset[1];
                 }
             }
+            // If none of the blocks failed, canRotate will be true, testBlocks will be in the right location,
+            // and this test loop will stop
         }
+
+        // // If needed, test moving to the left
+        // if (!canRotate){
+        //     canRotate = true;
+        //     for (let i = 0; i < 4; i++){
+        //         testBlocks[i][0] += 1;
+        //         if (this.isBlockHere(testBlocks[i][0], testBlocks[i][1])) {
+        //             canRotate = false;
+        //         }
+        //     }
+        // }
+
+        // // If needed, test moving to the right
+        // if (!canRotate) {
+        //     canRotate = true;
+        //     for (let i = 0; i < 4; i++){
+        //         testBlocks[i][0] -= 2;
+        //         if (this.isBlockHere(testBlocks[i][0], testBlocks[i][1])) {
+        //             canRotate = false;
+        //         }
+        //     }
+        // }
 
         // Rotate if one of the positions worked
         if (canRotate) {
