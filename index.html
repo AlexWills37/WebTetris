@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<title>TetrisGL</title>
         <link rel="shortcut icon" type="image/x-icon" href="facivon.ico">
-		<script type="module" crossorigin src="/WebTetris/assets/index-DWyU4ioW.js"></script>
+		<script type="module" crossorigin src="/WebTetris/assets/index-Sdg9HWFG.js"></script>
 		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-DJN6ve2P.css">
 	</head>
 	<body>
@@ -16,10 +16,12 @@
             attribute vec4 a_Position;
             attribute vec2 a_GridPos;
             attribute float a_ShaderID;
+            attribute float a_QueueID;
 
             varying float v_ShaderID;
             varying vec4 v_Position;
             varying vec2 v_GridPos;
+            varying float v_QueueID;
             
             uniform vec2 u_Resolution;
 
@@ -36,6 +38,9 @@
                 gl_Position = scaledPos;
                 v_GridPos = a_GridPos;
                 v_ShaderID = a_ShaderID;
+                if (a_ShaderID == 1.) {
+                    v_QueueID = a_QueueID;
+                }
             }
            
         </script>
@@ -54,6 +59,7 @@
             varying vec4 v_Position;
             varying vec2 v_GridPos;
             varying float v_ShaderID;
+            varying float v_QueueID;
 
 
             void main() {
@@ -81,14 +87,25 @@
                     }
     
                 } else {
-                    gl_FragColor = vec4(0, 0, 0, 1);
-                    vec2 dataLocation = v_GridPos / vec2(4., 10.);
-                    vec4 blockData = texture2D(u_QueueData, dataLocation);
-                    vec2 texCoord = fract(v_GridPos);
-                    texCoord.y = 1. - texCoord.y;
-                    vec4 texColor = texture2D(u_BlockTexture, texCoord);
+                    gl_FragColor = vec4(vec3(0.35), 1);
 
-                    gl_FragColor = blockData * texColor;
+
+                    if (v_GridPos.y >= 1. && v_GridPos.y < 3.) {
+                        vec2 dataLocation = v_GridPos / vec2(4., 10.);
+                        dataLocation.y += ((2. * v_QueueID - 1.)/10.);
+                        vec4 blockData = texture2D(u_QueueData, dataLocation);
+                        if (blockData != vec4(0, 0, 0, 1)) {
+
+                            vec2 texCoord = fract(v_GridPos);
+                            texCoord.y = 1. - texCoord.y;
+                            vec4 texColor = texture2D(u_BlockTexture, texCoord);
+                            gl_FragColor = blockData * texColor;
+                        }
+                    }
+
+                    
+
+
                 }
 
             }
