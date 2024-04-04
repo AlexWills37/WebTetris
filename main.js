@@ -117,7 +117,7 @@ class TetrisGame {
         this.pieceQueue = [];
         this.ghostBlocks = [[0, 0],[0, 0],[0, 0],[0, 0]];
 
-        this.lockTimerStart = 0;
+        this.lockTimer = -1;
         this.lockTimerDuration = 0.5;
         this.timerRunning = false;
 
@@ -244,6 +244,11 @@ class TetrisGame {
 
         if (canMove) {
             this.#movePlayerPiece(dx, dy);
+            if (dx != 0)
+                this.boostTimer();
+            if (dy != 0){
+                this.timerRunning = false;
+            }
         }
         return canMove;
     }
@@ -327,6 +332,7 @@ class TetrisGame {
             }
             this.playerPiece.rotationIndex = rotationTargetIndex;
             this.updateGhostProjections();
+            this.boostTimer();
         }
     }
 
@@ -366,16 +372,18 @@ class TetrisGame {
     }
 
     startLockTimer() {
-        this.lockTimerStart = Date.now();
+        this.lockTimer = this.lockTimerDuration;
         this.timerRunning = true;
     }
 
-    isLockTimerElapsed() {
-        return this.timerRunning && (Date.now() - this.lockTimerStart) * 0.001 >= this.lockTimerDuration;
+    updateLockTimer(deltaTime) {
+        this.lockTimer -= deltaTime;
     }
 
-    stopLockTimer() {
-        this.timerRunning = false;
+    boostTimer() {
+        if (this.timerRunning) {
+            this.lockTimer = Math.min(this.lockTimer + 0.5, this.lockTimerDuration);
+        }
     }
 
     hardDropPlayerPiece() {
@@ -598,7 +606,7 @@ function main() {
     let gravityCounter = 0;
     let ticksPerGravity = 15;
 
-    function updateGame() {
+    function updateGame(deltaTime) {
         // Handle player input
         inputMod.updateCounters();
         if (inputMod.getCounter("HardDrop") == 1)
@@ -621,9 +629,9 @@ function main() {
 
             // 3 - move piece
             let movement = 0;
-            if (inputMod.getCounter("MoveLeft") == 1 || inputMod.getCounter("MoveLeft") > 4)
+            if (inputMod.getCounter("MoveLeft") == 1 || inputMod.getCounter("MoveLeft") > 5)
                 movement -= 1;
-            if (inputMod.getCounter("MoveRight") == 1 || inputMod.getCounter("MoveRight") > 4)
+            if (inputMod.getCounter("MoveRight") == 1 || inputMod.getCounter("MoveRight") > 5)
                 movement += 1;
 
             if (movement != 0)
@@ -636,11 +644,18 @@ function main() {
                 let atBottom = !Tetris.tryMovePiece(0, -1);
                 gravityCounter = 0;
     
-                // if (atBottom && !Tetris.timerRunning) {
-                //     Tetris.startLockTimer();
-                // }
-                if(atBottom)
+                if (atBottom && !Tetris.timerRunning) {
+                    Tetris.startLockTimer();
+                }
+            }
+
+            // Deposit piece if lock timer has elapsed AND piece cannot move down
+            if (Tetris.timerRunning) {
+                Tetris.updateLockTimer(deltaTime);
+                if (Tetris.lockTimer <= 0 && !Tetris.tryMovePiece(0, -1)) {
+                    // Timer up!
                     Tetris.finishWithPiece();
+                }
             }
     
             // Deposit piece if timer is elapsed
@@ -694,7 +709,7 @@ function main() {
 
         // Run game tick when time elapses
         if (timeSinceGameTick >= gameTickTime) {
-            updateGame();
+            updateGame(gameTickTime);
             
             timeSinceGameTick = Math.min(timeSinceGameTick - gameTickTime, gameTickTime);
 
