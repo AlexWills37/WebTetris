@@ -52,7 +52,39 @@ class ActivePiece {
         this.blocks = [];
         this.shape = shape;
         this.rotationIndex = 0;
+        this.active = true;
+        this.wasHeld = false;
 
+        let baseShape = ActivePiece.getBaseShape(shape);
+
+        // Create the block at the top/middle of the grid 5, 18
+        for (let i = 0; i < 4; i++) {
+            this.blocks.push([...baseShape[i]]);
+            this.blocks[i][0] += 3;
+            this.blocks[i][1] += 19;
+        }
+    }
+
+
+    static offsets = {
+        O: [[0, 0],
+            [0, -1],
+            [-1, -1],
+            [-1, 0]],
+        I: [[[0, 0], [-1, 0], [-1, 1], [0, 1]], ]
+    }
+
+    static pieces = {
+        O: [[1, 0], [1, 1], [2, 1], [2, 0]],
+        I: [[1, 0], [0, 0], [2, 0], [3, 0]],
+        L: [[1, 0], [0, 0], [2, 0], [2, 1]],
+        J: [[1, 0], [0, 0], [0, 1], [2, 0]],
+        T: [[1, 0], [0, 0], [2, 0], [1, 1]],
+        S: [[1, 0], [0, 0], [1, 1], [2, 1]],
+        Z: [[1, 0], [2, 0], [1, 1], [0, 1]]
+    }
+
+    static getBaseShape(shape) {
         let baseShape;
         switch(shape) {
             case 'O':
@@ -79,38 +111,15 @@ class ActivePiece {
             default:
                 baseShape = [[0, 0], [0, 0], [0, 0], [0, 0]];
         }
-
-        // Create the block at the top/middle of the grid 5, 18
-        for (let i = 0; i < 4; i++) {
-            this.blocks.push([...baseShape[i]]);
-            this.blocks[i][0] += 3;
-            this.blocks[i][1] += 18;
-        }
-    }
-
-
-    static offsets = {
-        O: [[0, 0],
-            [0, -1],
-            [-1, -1],
-            [-1, 0]],
-        I: [[[0, 0], [-1, 0], [-1, 1], [0, 1]], ]
-    }
-
-    static pieces = {
-        O: [[1, 0], [1, 1], [2, 1], [2, 0]],
-        I: [[1, 0], [0, 0], [2, 0], [3, 0]],
-        L: [[1, 0], [0, 0], [2, 0], [2, 1]],
-        J: [[1, 0], [0, 0], [0, 1], [2, 0]],
-        T: [[1, 0], [0, 0], [2, 0], [1, 1]],
-        S: [[1, 0], [0, 0], [1, 1], [2, 1]],
-        Z: [[1, 0], [2, 0], [1, 1], [0, 1]]
+        return baseShape;
     }
 }
 
 class TetrisGame {
     constructor() {
-        this.grid = new Uint32Array(20);
+        this.numRows = 21;
+        this.gameRunning = true;
+        this.grid = new Uint32Array(this.numRows);
         this.rgbGrid = new Uint8Array(600);
         this.colorMap = new Map();
         this.pieceMap = new Map();
@@ -121,6 +130,11 @@ class TetrisGame {
         this.lockTimerDuration = 0.5;
         this.lockBoostCounter = 0;
         this.timerRunning = false;
+
+        this.lineClearCount = 0;
+        this.ticksPerGravity = 15;
+
+        this.heldPiece = null;
 
         this.refillPieceQueue();
         this.grabNextPiece();
@@ -143,7 +157,7 @@ class TetrisGame {
     }
 
     isBlockHere(x, y) {
-        if (x < 0 || y < 0 || x >= 10 || y >= 20) {
+        if (x < 0 || y < 0 || x >= 10 || y >= this.numRows) {
             return true;
         }
         const row = this.grid[y];
@@ -188,25 +202,29 @@ class TetrisGame {
             }
         }
 
-        // Draw ghost blocks to texture
-        for (let i = 0; i < 4; i++ ) {
-            let grey = 200;
-            let ghostStartIndex = 30 * this.ghostBlocks[i][1] + 3 * this.ghostBlocks[i][0];
-            this.rgbGrid[ghostStartIndex] = grey;
-            this.rgbGrid[ghostStartIndex + 1] = grey;
-            this.rgbGrid[ghostStartIndex + 2] = grey;
+        if (this.playerPiece.active) {
+
+            // Draw ghost blocks to texture
+            for (let i = 0; i < 4; i++ ) {
+                let grey = 200;
+                let ghostStartIndex = 30 * this.ghostBlocks[i][1] + 3 * this.ghostBlocks[i][0];
+                this.rgbGrid[ghostStartIndex] = grey;
+                this.rgbGrid[ghostStartIndex + 1] = grey;
+                this.rgbGrid[ghostStartIndex + 2] = grey;
+            }
+    
+            // Draw player blocks to texture
+            let playerBlocks = this.playerPiece.blocks;
+            for (let i = 0; i < 4; i++){
+                let color = this.colorMap.get(this.pieceMap.get(this.playerPiece.shape));
+                let startIndex = 30 * playerBlocks[i][1] + 3 * playerBlocks[i][0];
+                this.rgbGrid[startIndex] = color[0];
+                this.rgbGrid[startIndex + 1] = color[1];
+                this.rgbGrid[startIndex + 2] = color[2];
+    
+            }
         }
 
-        // Draw player blocks to texture
-        let playerBlocks = this.playerPiece.blocks;
-        for (let i = 0; i < 4; i++){
-            let color = this.colorMap.get(this.pieceMap.get(this.playerPiece.shape));
-            let startIndex = 30 * playerBlocks[i][1] + 3 * playerBlocks[i][0];
-            this.rgbGrid[startIndex] = color[0];
-            this.rgbGrid[startIndex + 1] = color[1];
-            this.rgbGrid[startIndex + 2] = color[2];
-
-        }
 
         
 
@@ -369,7 +387,23 @@ class TetrisGame {
         }
         delete this.playerPiece;
         this.playerPiece = new ActivePiece(nextPiece);
+        // Check if move is possible, otherwise game over
+        if (!this.isPlayerPieceValid()) {
+            this.playerPiece.active = false;
+            this.gameRunning = false;
+        }
         this.updateGhostProjections();
+    }
+    
+    isPlayerPieceValid() {
+        let valid = true;
+        for (let i = 0; i < 4 && valid; i++) {
+            if (this.isBlockHere(this.playerPiece.blocks[i][0], this.playerPiece.blocks[i][1])) {
+                valid = false;
+            }
+        }
+
+        return valid;
     }
 
     startLockTimer() {
@@ -395,10 +429,15 @@ class TetrisGame {
     }
 
     finishWithPiece() {
+        let previousClearCount = this.lineClearCount;
         this.depositPlayerPiece();
         this.grabNextPiece();
         this.timerRunning = false;
         this.resolveLineClears();
+
+        // if (previousClearCount != this.lineClearCount) {
+        //     this.ticksPerGravity = Math.max(0, this.ticksPerGravity - 1);
+        // }
     }
     resolveLineClears() {
         // Search from the bottom for full lines
@@ -412,6 +451,7 @@ class TetrisGame {
             // If row is full, clear it
             if (fullRow) {
                 this.clearRow(y);
+                this.lineClearCount++;
                 y--; // Decrease the row to stay at the same coordinate for the next iteration
             }
         }
@@ -420,11 +460,11 @@ class TetrisGame {
 
     clearRow(row) {
         // Copy every row down one
-        for (let y = row; y < 19; y++) {
+        for (let y = row; y < this.numRows - 1; y++) {
             this.grid[y] = this.grid[y + 1]
         }
         // Remove last row
-        this.grid[20] = 0;
+        this.grid[this.numRows - 1] = 0;
     }
 
     updateGhostProjections() {
@@ -450,6 +490,34 @@ class TetrisGame {
                 }
             }
         }
+    }
+
+    holdPiece() {
+        if (this.heldPiece == null) {
+            // Hold the current piece and grab the next one
+            this.heldPiece = this.playerPiece.shape;
+            this.grabNextPiece();
+        } else if (!this.playerPiece.wasHeld) {
+            let nextPiece = this.heldPiece;
+            this.heldPiece = this.playerPiece.shape;
+            this.playerPiece = new ActivePiece(nextPiece);
+            this.playerPiece.wasHeld = true;
+            // Check if move is possible, otherwise game over
+            if (!this.isPlayerPieceValid()) {
+                this.playerPiece.active = false;
+                this.gameRunning = false;
+            }
+            this.updateGhostProjections();
+        }
+    }
+
+    get gameState() {
+        return {
+            board: this.grid,
+            queue: this.pieceQueue,
+            held: this.heldPiece,
+            linesCleared: this.lineClearCount
+        };
     }
 }
 
@@ -481,6 +549,7 @@ class Input {
         this.counters.set("RotateClockwise", 0);
         this.counters.set("RotateAntiClockwise", 0);
         this.counters.set("HardDrop", 0);
+        this.counters.set("Hold", 0);
     }
 
     keyToState(key) {
@@ -535,6 +604,33 @@ class Input {
     
 }
 
+function createQueueTextureData(heldPiece, queue, colorMap, pieceMap) {
+    // Each piece is fits in a 4x2 space, with a possible 0.5 offset for the O or I pieces.
+    // This offset will be handled in the shader?
+    let data = new Uint8Array(8 * 3 * 5);
+    let rowSize = 4 * 3;
+    function encodePiece(piece, startingIndex) {
+        let locations = ActivePiece.getBaseShape(piece);
+        let color = colorMap.get(pieceMap.get(piece));
+        for (let i = 0; i < 4; i++) {
+            let relativeBlock = locations[i];
+            let texStartIndex = startingIndex + relativeBlock[1] * rowSize + relativeBlock[0] * 3;
+            data[texStartIndex] = color[0];
+            data[texStartIndex + 1] = color[1];
+            data[texStartIndex + 2] = color[2];
+        }
+    }
+
+    // Encode the held piece first
+    if (heldPiece != null)
+        encodePiece(heldPiece, 0);
+    // Encode the queued pieces
+    for (let i = 0; i < 4; i++) {
+        encodePiece(queue[i], 24 * (1 + i));
+    }
+
+    return data;
+}
 
 function main() {
     let inputMod = new Input();
@@ -572,9 +668,32 @@ function main() {
             -0.5, -1,
             0.5, -1,
             0.5, 1,
-            -0.5, 1]},
-        a_GridPos: {numComponents: 2, data: [0, 0, 10, 0, 10, 20, 0, 20]},
-        indices: {numComponents: 3, data: [0, 1, 2, 2, 3, 0]}
+            -0.5, 1,
+            -0.75, 1 - 0.2,
+            -0.55, 1 - 0.2,
+            -0.55, 1,
+            -0.75, 1,
+            0.55, 1 - 0.2,
+            0.75, 1 - 0.2,
+            0.75, 1,
+            0.55, 1,
+            0.55, 0.50,
+            0.75, 0.50,
+            0.75, 0.70,
+            0.55, 0.70,
+            0.55, 0.30,
+            0.75, 0.30,
+            0.75, 0.50,
+            0.55, 0.50]},
+        a_GridPos: {numComponents: 2, data: [0, 0, 10, 0, 10, 20, 0, 20, 
+            0, 0, 4, 0, 4, 4, 0, 4, 
+            0, 0, 4, 0, 4, 4, 0, 4,
+            0, 0, 4, 0, 4, 4, 0, 4,
+            0, 0, 4, 0, 4, 4, 0, 4]},
+        a_QueueID: {numComponents: 1 , data: [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]},
+        a_ShaderID: {numComponents: 1, data: [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]},
+        indices: {numComponents: 3, data: [0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4, 8, 9, 10, 10, 11, 8, 12, 13, 14, 14, 15, 12,
+            16, 17, 18, 18, 19, 16]}
     };
 
     const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
@@ -584,6 +703,16 @@ function main() {
     gl.bindTexture(gl.TEXTURE_2D, gridDataTex);
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 10, 20, 0, gl.RGB, gl.UNSIGNED_BYTE, gridData);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    let queueDataTex = gl.createTexture();
+    let queueData = new Uint8Array(3 * 4 * 2 * 5);
+    gl.bindTexture(gl.TEXTURE_2D, queueDataTex);
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 4, 2 * 5, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -607,13 +736,25 @@ function main() {
     
     
     let gravityCounter = 0;
-    let ticksPerGravity = 15;
+    //let ticksPerGravity = 15;
+    let animationCount = 0;
+    let rowCount = 0;
 
     function updateGame(deltaTime) {
         // Handle player input
         inputMod.updateCounters();
-        if (inputMod.getCounter("HardDrop") == 1)
+        if (!Tetris.gameRunning) {
+            animationCount++;
+            if (rowCount < Tetris.numRows && animationCount % 4 == 0) {
+                Tetris.clearRow(0);
+                rowCount++;
+            }
+        }
+        else if (inputMod.getCounter("HardDrop") == 1)
             Tetris.hardDropPlayerPiece();// Do hard drop
+        else if (inputMod.getCounter("Hold") == 1) {
+            Tetris.holdPiece();
+        }
         else {
             // 1 - check for soft drop
             if (inputMod.getInputState("SoftDrop")) {
@@ -643,7 +784,7 @@ function main() {
 
             // Count ticks for gravity
             gravityCounter++;
-            if (gravityCounter >= ticksPerGravity) {
+            if (gravityCounter >= Tetris.ticksPerGravity) {
                 let atBottom = !Tetris.tryMovePiece(0, -1);
                 gravityCounter = 0;
     
@@ -676,6 +817,7 @@ function main() {
     function renderFrame(time) {
         // Get the game state
         gridData = Tetris.generateRGBGrid();
+        queueData = createQueueTextureData(Tetris.heldPiece, Tetris.pieceQueue, Tetris.colorMap, Tetris.pieceMap);
 
         // Resize canvas if it changes
         twgl.resizeCanvasToDisplaySize(gl.canvas);
@@ -684,12 +826,15 @@ function main() {
         // Send the game state to the GPU as a texture
         gl.bindTexture(gl.TEXTURE_2D, gridDataTex);
         gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 10, 20, gl.RGB, gl.UNSIGNED_BYTE, gridData);
-
+        gl.bindTexture(gl.TEXTURE_2D, queueDataTex);
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 4, 10, gl.RGB, gl.UNSIGNED_BYTE, queueData);
+        
         // Create uniform list
         const uniforms = {
             u_Time: time * 0.001,
             u_Resolution: [gl.canvas.width, gl.canvas.height],
             u_GridData: gridDataTex,
+            u_QueueData: queueDataTex,
             u_BlockTexture: blockTexture,
         };
     
