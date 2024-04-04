@@ -119,6 +119,7 @@ class TetrisGame {
 
         this.lockTimer = -1;
         this.lockTimerDuration = 0.5;
+        this.lockBoostCounter = 0;
         this.timerRunning = false;
 
         this.refillPieceQueue();
@@ -374,6 +375,7 @@ class TetrisGame {
     startLockTimer() {
         this.lockTimer = this.lockTimerDuration;
         this.timerRunning = true;
+        this.lockBoostCounter = 0;
     }
 
     updateLockTimer(deltaTime) {
@@ -381,8 +383,9 @@ class TetrisGame {
     }
 
     boostTimer() {
-        if (this.timerRunning) {
+        if (this.timerRunning && this.lockBoostCounter < 30) {
             this.lockTimer = Math.min(this.lockTimer + 0.5, this.lockTimerDuration);
+            this.lockBoostCounter++;
         }
     }
 
