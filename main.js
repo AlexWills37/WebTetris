@@ -78,7 +78,7 @@ class ActivePiece {
             [[2, 0], [0, -2], [-2, 0], [0, 2]]],
         OTHER: [[[0, 0], [0, 0], [0, 0], [0, 0]],
             [[0, 0], [1, 0], [0, 0], [-1, 0]],
-            [[0, 0], [1, -1], [0, 0], [-1, 1]],
+            [[0, 0], [1, -1], [0, 0], [-1, -1]],
             [[0, 0], [0, 2], [0, 0], [0, 2]],
             [[0, 0], [1, 2], [0, 0], [-1, 2]]
     ]
@@ -285,10 +285,10 @@ class TetrisGame {
     }
 
     #resolveRotation(clockwise) {
-        let canRotate = true;
         let rotationTargetIndex =  (this.playerPiece.rotationIndex + 4 + (clockwise ? 1 : -1)) % 4;
         let centerOffset = [...this.playerPiece.blocks[0]];
-        // Deeply copy the blocks to test locations
+
+        // Deeply copy the active blocks for location tests
         let testBlocks = [];
         for (let i = 0; i < 4; i++) {
             testBlocks.push([...this.playerPiece.blocks[i]]);
@@ -303,7 +303,7 @@ class TetrisGame {
         }
         let temp;
 
-        // Pure rotation around the center block
+        // Mathematically rotate the blocks around the center
         for (let i = 0; i < 4; i++) {
             // Move block to sample space
             testBlocks[i][0] -= centerOffset[0];
@@ -317,22 +317,9 @@ class TetrisGame {
             // Move back to game space
             testBlocks[i][0] += centerOffset[0];
             testBlocks[i][1] += centerOffset[1];
-
-            // // Apply initial offset
-            // if(this.playerPiece.shape == 'O') {
-            //     let kickOffset = [];
-            //     for (let i = 0; i < 2; i++){
-            //         kickOffset.push( ActivePiece.offsets.O[this.playerPiece.rotationIndex][i] - ActivePiece.offsets.O[rotationTargetIndex][i]);
-            //     }
-            //     testBlocks[i][0] += kickOffset[0];
-            //     testBlocks[i][1] += kickOffset[1];
-            // }
-
-            // if (this.isBlockHere(testBlocks[i][0], testBlocks[i][1])) {
-            //     canRotate = false;
-            // }
         }
-        // Test 5 offsets and stop at earliest one
+
+        // Get the offset table for the right piece
         let offsetTable;
         switch(this.playerPiece.shape) {
             case 'O':
@@ -346,10 +333,10 @@ class TetrisGame {
                 break;
         }
 
+        // Test up to 5 offsets, stopping early if the test succeeds
         let offsetRow;
         let offset;
-        canRotate = false;
-        // Test up to 5 offsets, stopping early if the test succeeds
+        let canRotate = false;
         for (let i = 0; i < 5 && !canRotate; i++) {
             // Get offset from SRS table
             offsetRow = offsetTable[i];
@@ -377,27 +364,6 @@ class TetrisGame {
             // and this test loop will stop
         }
 
-        // // If needed, test moving to the left
-        // if (!canRotate){
-        //     canRotate = true;
-        //     for (let i = 0; i < 4; i++){
-        //         testBlocks[i][0] += 1;
-        //         if (this.isBlockHere(testBlocks[i][0], testBlocks[i][1])) {
-        //             canRotate = false;
-        //         }
-        //     }
-        // }
-
-        // // If needed, test moving to the right
-        // if (!canRotate) {
-        //     canRotate = true;
-        //     for (let i = 0; i < 4; i++){
-        //         testBlocks[i][0] -= 2;
-        //         if (this.isBlockHere(testBlocks[i][0], testBlocks[i][1])) {
-        //             canRotate = false;
-        //         }
-        //     }
-        // }
 
         // Rotate if one of the positions worked
         if (canRotate) {
@@ -689,6 +655,9 @@ function createQueueTextureData(heldPiece, queue, colorMap, pieceMap) {
 }
 
 function main() {
+
+    var lineClearNode = document.createTextNode("1");
+    document.querySelector("#linesCleared").appendChild(lineClearNode);
     let inputMod = new Input();
     document.addEventListener('keydown', function(event) {
         inputMod.setInputState(event.key, true);
@@ -867,7 +836,7 @@ function main() {
 
         }
 
-
+        lineClearNode.nodeValue = Tetris.lineClearCount;
     }
 
     function renderFrame(time) {
