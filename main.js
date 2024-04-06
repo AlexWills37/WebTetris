@@ -47,15 +47,54 @@ function createProgram(gl, vertexShader, fragmentShader) {
     gl.deleteProgram(program);
 }
 
-class ActivePiece {
+class QuadPiece {
+    /**
+     * Represents a piece with 4 blocks, a shape, a rotation index, whether it is active, and where it came from.
+     * 
+     * @param {string} shape Character representation of the player's shape (O, I, T, J, L, S, Z)
+     * @constructor
+     */
     constructor(shape) {
+        /**
+         * The positions (grid indices) of the piece's 4 blocks.
+         * 
+         * @type {number[][]}
+         */
         this.blocks = [];
+
+        /**
+         * The shape of the piece (O, I, T, J, L, S, or Z are valid shapes).
+         * 
+         * @type {string}
+         */
         this.shape = shape;
+
+        /**
+         * The rotation index of the piece, in the range [0, 3].
+         * 
+         * @type {number}
+         */
         this.rotationIndex = 0;
+
+        /**
+         * Whether the piece should be displayed.
+         * 
+         * Used to hide the piece during a game over.
+         * 
+         * @type {boolean}
+         */
         this.active = true;
+
+        /**
+         * Whether the piece came from the "Hold" spot.
+         * 
+         * @see {@link QuadtrisGame.holdPiece()}
+         * 
+         * @type {boolean}
+         */
         this.wasHeld = false;
 
-        let baseShape = ActivePiece.getBaseShape(shape);
+        let baseShape = QuadPiece.getBaseShape(shape);
 
         // Create the block at the top/middle of the grid 5, 18
         for (let i = 0; i < 4; i++) {
@@ -66,6 +105,22 @@ class ActivePiece {
     }
 
 
+    /**
+     * Offset data for rotating with the SRS.
+     * 
+     * Note: the offsets for the O piece should result in the piece not moving,
+     * so it should always pass the first test.
+     * 
+     * @see {@link QuadtrisGame.tryRotatePiece()}
+     * 
+     * @example
+     * // calculates the offset to apply to the I piece from rotation index 1 to 2 during the first test.
+     * let offsetTable = QuadPiece.offsets.I;
+     * let offsetTest = offsetTable[0];
+     * let offset = [offsetTest[1] - offsetTest[2]];
+     * 
+     * @static
+     */
     static offsets = {
         O: [[[0, 0],
             [0, -1],
@@ -80,12 +135,18 @@ class ActivePiece {
             [[0, 0], [1, 0], [0, 0], [-1, 0]],
             [[0, 0], [1, -1], [0, 0], [-1, -1]],
             [[0, 0], [0, 2], [0, 0], [0, 2]],
-            [[0, 0], [1, 2], [0, 0], [-1, 2]]
-    ]
-
-
+            [[0, 0], [1, 2], [0, 0], [-1, 2]]]
     }
 
+    /**
+     * Relative location for the different piece shapes.
+     * 
+     * Note: The "middle" block, to rotate the piece around, is in index 0 (always [1, 0]).
+     * To access these positions from the shape's representation as a string, use
+     * {@link QuadPiece.getBaseShape()}.
+     * 
+     * @static
+     */
     static pieces = {
         O: [[1, 0], [1, 1], [2, 1], [2, 0]],
         I: [[1, 0], [0, 0], [2, 0], [3, 0]],
@@ -96,29 +157,43 @@ class ActivePiece {
         Z: [[1, 0], [2, 0], [1, 1], [0, 1]]
     }
 
+    /**
+     * Accesses a piece shape's relative positions from its chararacter representation.
+     * 
+     * @see {@link QuadPiece.pieces}
+     * 
+     * @static
+     * 
+     * @example
+     * // returns the locations for the L piece
+     * QuadPiece.getBaseShape('L');
+     * 
+     * @param {string} shape Character representation of the piece (O, I, T, J, L, S, or Z are valid).
+     * @returns {number[][]} 4-element array of 2-element coordinates with the locations of the shape's blocks.
+     */
     static getBaseShape(shape) {
         let baseShape;
         switch(shape) {
             case 'O':
-                baseShape = ActivePiece.pieces.O;
+                baseShape = QuadPiece.pieces.O;
                 break;
             case 'I':
-                baseShape = ActivePiece.pieces.I;
+                baseShape = QuadPiece.pieces.I;
                 break;
             case 'L':
-                baseShape = ActivePiece.pieces.L;
+                baseShape = QuadPiece.pieces.L;
                 break;
             case 'J':
-                baseShape = ActivePiece.pieces.J;
+                baseShape = QuadPiece.pieces.J;
                 break;
             case 'T':
-                baseShape = ActivePiece.pieces.T;
+                baseShape = QuadPiece.pieces.T;
                 break;
             case 'S':
-                baseShape = ActivePiece.pieces.S;
+                baseShape = QuadPiece.pieces.S;
                 break;
             case 'Z':
-                baseShape = ActivePiece.pieces.Z;
+                baseShape = QuadPiece.pieces.Z;
                 break;
             default:
                 baseShape = [[0, 0], [0, 0], [0, 0], [0, 0]];
@@ -127,38 +202,109 @@ class ActivePiece {
     }
 }
 
-class TetrisGame {
+class QuadtrisGame {
+    /**
+     * Represents the data needed to run the game.
+     * 
+     * This constructor also sets up the color and piece maps, used
+     * to represent the different piece shapes as 3-bit integers with color values.
+     * 
+     * @constructor
+     */
     constructor() {
+        /*  ~~~  Properties for the game's setup    */
+
+        /**
+         * Number of rows in the grid.
+         * 
+         * @type {number}
+         */
         this.numRows = 21;
+
+        /**
+         * Time (in seconds) for the grace timer to start with.
+         * 
+         * @see {@link QuadtrisGame.graceTimer}
+         * @type {number}
+         */
+        this.graceTimerDuration = 0.5;
+
+        /*  ~~~  Properties for the game's state    */
+
+        /**
+         * State of the game.
+         * 
+         * @type {boolean}
+         */
         this.gameRunning = true;
+
+        /**
+         * The game's board.
+         * 
+         * Each row is 10 3-bit values, with 2 extra bits at the end.
+         * 
+         * @type {Uint32Array}
+         */
         this.grid = new Uint32Array(this.numRows);
-        this.rgbGrid = new Uint8Array(600);
-        this.colorMap = new Map();
-        this.pieceMap = new Map();
+
+        /**
+         * The player's currently moving and controllable piece.
+         * 
+         * @see {@link QuadPiece}
+         * 
+         * @type {QuadPiece}
+         */
+        this.playerPiece;
+        
+        
+        /**
+         * List of the next pieces, represented by their shape (char).
+         * 
+         * @type {string[]}
+         */
         this.pieceQueue = [];
+        
+        /**
+         * Grid coordinates of the ghost blocks, used to project the player piece's landing spot.
+         * 
+         * @type {number[][]}
+         */
         this.ghostBlocks = [[0, 0],[0, 0],[0, 0],[0, 0]];
-
-        this.lockTimer = -1;
-        this.lockTimerDuration = 0.5;
-        this.lockBoostCounter = 0;
-        this.timerRunning = false;
-
-        this.lineClearCount = 0;
-        this.ticksPerGravity = 15;
-
-        this.heldPiece = null;
-
         this.refillPieceQueue();
         this.grabNextPiece();
+        
+        /**
+         * The piece currently held (stored away).
+         * 
+         * @see {@link QuadtrisGame.holdPiece()}
+         */
+        this.heldPiece = null;
+        
+        /**
+         * The number of lines the player has cleared.
+         * 
+         * @type {number}
+         */
+        this.lineClearCount = 0;
 
-        this.colorMap.set(1, [255, 0, 0]);
-        this.colorMap.set(2, [0, 255, 0]);
-        this.colorMap.set(3, [255, 255, 0]);
-        this.colorMap.set(4, [0, 0, 255]);
-        this.colorMap.set(5, [180, 90, 246]);
-        this.colorMap.set(6, [0, 255, 255]);
-        this.colorMap.set(7, [255, 140, 40]);
 
+        /*  ~~~   Properties for the game's functions   */
+
+        /**
+         * The number of ticks between the game automatically moving the player's piece down.
+         * 
+         * This number decreases to increase the falling speed of the pieces.
+         * 
+         * @type {number}
+         */
+        this.ticksPerGravity = 15;
+
+        /**
+         * Map between piece shapes (char) and their 3-bit ID (1-7).
+         * 
+         * @type {Map<string, number>}
+         */
+        this.pieceMap = new Map();
         this.pieceMap.set('Z', 1);
         this.pieceMap.set('S', 2);
         this.pieceMap.set('O', 3);
@@ -166,8 +312,56 @@ class TetrisGame {
         this.pieceMap.set('T', 5);
         this.pieceMap.set('I', 6);
         this.pieceMap.set('L', 7);
+
+        /**
+         * Timer used to give the player time to move the piece after it lands.
+         * 
+         * @see {@link QuadtrisGame.startGraceTimer}
+         * @see {@link QuadtrisGame.updateGraceTimer}
+         * @see {@link QuadtrisGame.boostGraceTimer}
+         * @type {number}
+         */
+        this.graceTimer = -1;
+
+        /**
+         * Number of times the grace timer has been extended.
+         * 
+         * @see {@link QuadtrisGame.graceTimer}
+         * @type {number}
+         */
+        this.graceBoostCount = 0;
+
+        /**
+         * Whether the grace timer is running.
+         * 
+         * @see {@link QuadtrisGame.graceTimer}
+         * @type {number}
+         */
+        this.timerRunning = false;
+
+        
+
+    
+        
+        this.rgbGrid = new Uint8Array(600);
+        this.colorMap = new Map();
+        this.colorMap.set(1, [255, 0, 0]);
+        this.colorMap.set(2, [0, 255, 0]);
+        this.colorMap.set(3, [255, 255, 0]);
+        this.colorMap.set(4, [0, 0, 255]);
+        this.colorMap.set(5, [180, 90, 246]);
+        this.colorMap.set(6, [0, 255, 255]);
+        this.colorMap.set(7, [255, 140, 40]);
     }
 
+    /**
+     * Checks if a block is in a grid space, or if the space is out of bounds.
+     * 
+     * @param {number}  x   The space's x index (in range [0, 9] ).
+     * @param {number}  y   The space's y index (in range [0, numRows) ).
+     * 
+     * @returns {boolean}   False if the grid space is empty and in-bounds, true otherwise.
+     */
     isBlockHere(x, y) {
         if (x < 0 || y < 0 || x >= 10 || y >= this.numRows) {
             return true;
@@ -177,6 +371,17 @@ class TetrisGame {
         return (row & bitmask) != 0;
     }
 
+    /**
+     * Accesses the value of a grid space.
+     * 
+     * 0 represents an empty space, and 1-7 represent different block colors
+     * specified by {@link QuadtrisGame.colorMap}.
+     *  
+     * @param {number}  x The space's x index.
+     * @param {number}  y The space's y index.
+     * 
+     * @returns {number}    The 3-bit representation of the grid space (0 = no block, 1-7 = different block colors).
+     */
     getBlockData(x, y) {
         const row = this.grid[y];
         const bitshift = (32 - (3 + 3 * x));
@@ -184,6 +389,17 @@ class TetrisGame {
         return (row & bitmask) >>> bitshift;
     }
 
+    /**
+     * Sets a specific grid space to a block's colors.
+     * 
+     * Note: the color must be a number in the range [0, 7].
+     * Since the colors are stored in 3-bit intervals, exceeding this range
+     * may affect unintended parts of the grid.
+     * 
+     * @param {number} x        The space's x index.
+     * @param {number} y        The space's y index.
+     * @param {number} color    The 3-bit representation of the color to set (in range [0, 7]). 
+     */
     placeBlockHere(x, y, color) {
         const bitshift = 32 - (3 + 3 * x);
         // Clear the old bits
@@ -256,14 +472,34 @@ class TetrisGame {
         return this.rgbGrid;
     }
 
+    /**
+     * Moves the player's piece by a set amount.
+     * 
+     * This method does not check if the destination of the player's piece is valid.
+     * 
+     * @param {number} dx The number of grid spaces to move horizontally (positive = right, negative = left)
+     * @param {number} dy The number of grid spaces to move vertically (positive = up, negative = down)
+     */
     #movePlayerPiece(dx, dy) {
         for (let i = 0; i < 4; i++){
             this.playerPiece.blocks[i][0] += dx;
             this.playerPiece.blocks[i][1] += dy;
         }
-        this.updateGhostProjections();
+        
     }
 
+    /**
+     * Attempts to move the player's piece by a set amount.
+     * 
+     * If the player's piece can move, it will move and update the ghost projection.
+     * If the piece successfully moves horizontally, it will attempt to boost the grace timer.
+     * If the piece successfully moves vertically, it will stop the grace timer entirely.
+     * 
+     * @param {number} dx The number of grid spaces to move horizontally (positive = right, negative = left)
+     * @param {number} dy The number of grid spaces to move vertically (positive = up, negative = down)
+     * 
+     * @returns {boolean} Whether the piece was successfully moved by this method.
+     */
     tryMovePiece(dx, dy) {
         let canMove = true;
         for (let i = 0; i < 4 && canMove; i++) {
@@ -275,8 +511,9 @@ class TetrisGame {
 
         if (canMove) {
             this.#movePlayerPiece(dx, dy);
+            this.updateGhostProjections();
             if (dx != 0)
-                this.boostTimer();
+                this.boostGraceTimer();
             if (dy != 0){
                 this.timerRunning = false;
             }
@@ -284,6 +521,18 @@ class TetrisGame {
         return canMove;
     }
 
+    /**
+     * Attempts to rotate the piece 90 degrees according to the SRS.
+     * 
+     * The SRS (Super Rotation System) is outlined here: {@link https://harddrop.com/wiki/SRS}.
+     * It performs a rotation around a designated center block, then calculates a number of
+     * offset translations to test in sequence. The piece will end up in the first position that
+     * is valid.
+     * 
+     * If the rotation succeeds, the grace timer will be boosted and the ghost projection will be updated.
+     * 
+     * @param {boolean} clockwise True for a clockwise rotation (-90 degrees), false for counterclockwise (+90 degrees).
+     */
     #resolveRotation(clockwise) {
         let rotationTargetIndex =  (this.playerPiece.rotationIndex + 4 + (clockwise ? 1 : -1)) % 4;
         let centerOffset = [...this.playerPiece.blocks[0]];
@@ -323,13 +572,13 @@ class TetrisGame {
         let offsetTable;
         switch(this.playerPiece.shape) {
             case 'O':
-                offsetTable = ActivePiece.offsets.O;
+                offsetTable = QuadPiece.offsets.O;
                 break;
             case 'I':
-                offsetTable = ActivePiece.offsets.I;
+                offsetTable = QuadPiece.offsets.I;
                 break;
             default:
-                offsetTable = ActivePiece.offsets.OTHER;
+                offsetTable = QuadPiece.offsets.OTHER;
                 break;
         }
 
@@ -373,7 +622,7 @@ class TetrisGame {
             }
             this.playerPiece.rotationIndex = rotationTargetIndex;
             this.updateGhostProjections();
-            this.boostTimer();
+            this.boostGraceTimer();
         }
     }
 
@@ -381,6 +630,12 @@ class TetrisGame {
         this.#resolveRotation(clockwise);
     }
 
+    /**
+     * Copies the state of the player's piece into the game's grid data.
+     * 
+     * The color to set comes from the game's maps, and the locations come from the
+     * blocks in the player piece.
+     */
     depositPlayerPiece() {
         let x, y;
         let color = this.pieceMap.get(this.playerPiece.shape);
@@ -391,6 +646,12 @@ class TetrisGame {
         }
     }
 
+    /**
+     * Adds the next 7 pieces to the piece queue.
+     * 
+     * The piece queue is semi-random. The queue is always refilled with
+     * each of the 7 piece shapes, but in a random order.
+     */
     refillPieceQueue() {
         let pieces = ['O', 'I', 'T', 'J', 'L', 'S', 'Z'];
         let choice;
@@ -401,6 +662,13 @@ class TetrisGame {
         }
     }
 
+    /**
+     * Replaces the player's current piece with the next piece in the queue.
+     * 
+     * This method also checks for a game over, which occurs if there are blocks
+     * preventing the next piece from starting in an unblocked position.
+     * If the piece queue is running low, it will refill it.
+     */
     grabNextPiece() {
         let nextPiece = this.pieceQueue[0];
         this.pieceQueue.splice(0, 1);
@@ -408,7 +676,7 @@ class TetrisGame {
             this.refillPieceQueue();
         }
         delete this.playerPiece;
-        this.playerPiece = new ActivePiece(nextPiece);
+        this.playerPiece = new QuadPiece(nextPiece);
         // Check if move is possible, otherwise game over
         if (!this.isPlayerPieceValid()) {
             this.playerPiece.active = false;
@@ -417,6 +685,14 @@ class TetrisGame {
         this.updateGhostProjections();
     }
     
+    /**
+     * Checks if the locations of the player piece are valid.
+     * 
+     * A location is valid if it is within the grid's bounds and not occupied by a block
+     * on the grid @see {@link QuadtrisGame.isBlockHere}
+     * 
+     * @returns {boolean} True if the player piece's locations are all valid.
+     */
     isPlayerPieceValid() {
         let valid = true;
         for (let i = 0; i < 4 && valid; i++) {
@@ -428,28 +704,70 @@ class TetrisGame {
         return valid;
     }
 
-    startLockTimer() {
-        this.lockTimer = this.lockTimerDuration;
+    /**
+     * Activates the grace timer.
+     * 
+     * Also resets the boost count, used to limit the number of boosts the player is allowed.
+     * Note: the timer's value must be manually updated every tick with {@link QuadtrisGame.updateGraceTimer}.
+     */
+    startGraceTimer() {
+        this.graceTimer = this.graceTimerDuration;
         this.timerRunning = true;
-        this.lockBoostCounter = 0;
+        this.graceBoostCount = 0;
     }
 
-    updateLockTimer(deltaTime) {
-        this.lockTimer -= deltaTime;
+    /**
+     * Lower's the timer's value.
+     * 
+     * @param {number} deltaTime The time (in seconds) to lower the timer by.
+     */
+    updateGraceTimer(deltaTime) {
+        this.graceTimer -= deltaTime;
     }
 
-    boostTimer() {
-        if (this.timerRunning && this.lockBoostCounter < 30) {
-            this.lockTimer = Math.min(this.lockTimer + 0.5, this.lockTimerDuration);
-            this.lockBoostCounter++;
+    /**
+     * Extends the grace timer to allow the player to continue moving the piece.
+     * 
+     * Once the player's piece hits the ground, before locking into place, a grace timer is
+     * started, and it must finish before locking the piece. If the player moves their piece, 
+     * the timer is extended. The player is only allowed to extend this timer a certain
+     * number of times (to prevent infinite stalling).
+     */    
+    boostGraceTimer() {
+        if (this.timerRunning && this.graceBoostCount < 30) {
+            this.graceTimer = Math.min(this.graceTimer + 0.5, this.graceTimerDuration);
+            this.graceBoostCount++;
         }
     }
 
+    /**
+     * Moves the player's piece as far down as it can go.
+     * 
+     * The player's piece will land where the projected ghost blocks are.
+     * The piece will also be locked into the board, preventing the player from moving the piece further.
+     * 
+     * @see {@link QuadtrisGame.finishWithPiece}
+     */
     hardDropPlayerPiece() {
         while (this.tryMovePiece(0, -1)) {}
         this.finishWithPiece();
     }
 
+    /**
+     * Runs the functions to handle the player's piece being locked into place.
+     * 
+     * 1. Places the player's piece on the grid.
+     * 
+     * 2. Deletes the current player piece and replaces it with the next in the queue.
+     * 
+     * 3. Stops the timer used for giving the player a small grace period to move the piece.
+     * 
+     * 4. Resolves any line clears.
+     * 
+     * @see {@link QuadtrisGame.depositPlayerPiece}
+     * @see {@link QuadtrisGame.grabNextPiece}
+     * @see {@link QuadtrisGame.resolveLineClears}
+     */
     finishWithPiece() {
         let previousClearCount = this.lineClearCount;
         this.depositPlayerPiece();
@@ -461,9 +779,17 @@ class TetrisGame {
         //     this.ticksPerGravity = Math.max(0, this.ticksPerGravity - 1);
         // }
     }
+
+    /**
+     * Scans the game board, clearing full rows and updating score.
+     * 
+     * Also updates the ghost projections, since the board's data may have changed.
+     * 
+     * @see {@link QuadtrisGame.clearRow}
+     */
     resolveLineClears() {
         // Search from the bottom for full lines
-        for (let y = 0; y < 20; y++) {
+        for (let y = 0; y < this.numRows; y++) {
             let fullRow = true;
             for (let x = 0; x < 10 && fullRow; x++) {
                 if (!this.isBlockHere(x, y)) {
@@ -480,6 +806,11 @@ class TetrisGame {
         this.updateGhostProjections();
     }
 
+    /**
+     * Removes the blocks from a row, moving the above rows down.
+     * 
+     * @param {number}  row The index of the row to clear (0 represents the bottom row). 
+     */
     clearRow(row) {
         // Copy every row down one
         for (let y = row; y < this.numRows - 1; y++) {
@@ -489,8 +820,14 @@ class TetrisGame {
         this.grid[this.numRows - 1] = 0;
     }
 
+    /**
+     * Recalculates the positions of the ghost blocks.
+     * 
+     * The ghost blocks indicate where the player's current piece will land if the player
+     * does not move or rotate it.
+     */
     updateGhostProjections() {
-        // Start with the player's block pieces
+        // Start with a copy of the player's block pieces
         for (let i = 0; i < 4; i++) {
             this.ghostBlocks[i] = [...this.playerPiece.blocks[i]];
         }
@@ -505,7 +842,7 @@ class TetrisGame {
                 }
             }
 
-            // If ready for next loop, move ghosts down
+            // If blocks won't collide, move ghosts down and iterate again
             if (!willCollide) {
                 for (let i = 0; i < 4; i++) {
                     this.ghostBlocks[i][1] -= 1;
@@ -514,21 +851,40 @@ class TetrisGame {
         }
     }
 
+    /**
+     * Stores the player's current piece in the "Hold" space if possible.
+     * 
+     * The player can only hold a piece once; if the player's piece came from this function,
+     * it will not be able to be stored again.
+     * If there is already a piece in the "Hold" space, it will be swapped with the player's piece.
+     * Otherwise, the player will receive the next piece in the queue. The player's new piece will start
+     * at the top of the board, and can possibly trigger a game over.
+     */
     holdPiece() {
+        // If this is the first time the player is holding a piece, we get the next piece from the queue.
         if (this.heldPiece == null) {
             // Hold the current piece and grab the next one
             this.heldPiece = this.playerPiece.shape;
             this.grabNextPiece();
+        
+            // Otherwise, we can only hold a piece that hasn't been held before (it came from the queue)
         } else if (!this.playerPiece.wasHeld) {
             let nextPiece = this.heldPiece;
             this.heldPiece = this.playerPiece.shape;
-            this.playerPiece = new ActivePiece(nextPiece);
+
+            // Construct the new piece from the held piece data, and prevent it from being held again
+            this.playerPiece = new QuadPiece(nextPiece);
             this.playerPiece.wasHeld = true;
+
             // Check if move is possible, otherwise game over
+            // Note: this should realistically never happen (the grid has not changed since the last piece),
+            //      but it is possible due to different piece shapes
             if (!this.isPlayerPieceValid()) {
                 this.playerPiece.active = false;
                 this.gameRunning = false;
             }
+
+            // With a new piece, we need a new projection!
             this.updateGhostProjections();
         }
     }
@@ -545,15 +901,28 @@ class TetrisGame {
 
 class Input {
     constructor() {
-        this.inputStates = new Map();
-        this.inputStates.set("HardDrop", false);
-        this.inputStates.set("SoftDrop", false);
-        this.inputStates.set("MoveLeft", false);
-        this.inputStates.set("MoveRight", false);
-        this.inputStates.set("Hold", false);
-        this.inputStates.set("RotateClockwise", false);
-        this.inputStates.set("RotateAntiClockwise", false);
+        /**
+         * Accurate representation of action states based on user input.
+         * 
+         * @type {Map<string, boolean}
+         */
+        this.actionStates = new Map();
+        this.actionStates.set("HardDrop", false);
+        this.actionStates.set("SoftDrop", false);
+        this.actionStates.set("MoveLeft", false);
+        this.actionStates.set("MoveRight", false);
+        this.actionStates.set("Hold", false);
+        this.actionStates.set("RotateClockwise", false);
+        this.actionStates.set("RotateAntiClockwise", false);
 
+        /**
+         * Key bindings from key representations to action states.
+         * 
+         * Note: single character keys should be uppercase, or they will not be accessed properly.
+         * 
+         * 
+         * @type {Map<string, string>}
+         */
         this.inputKeys = new Map();
         this.inputKeys.set("A", "MoveLeft");
         this.inputKeys.set("D", "MoveRight");
@@ -565,6 +934,22 @@ class Input {
         this.inputKeys.set("ArrowRight", "RotateClockwise");
         this.inputKeys.set("L", "RotateClockwise");
         
+        /**
+         * Counters for connecting action states to tick counts.
+         * 
+         * When {@link Input.updateCounters()} is called, the counters for any
+         * active actions will be increased, and the counters for any inactive actions
+         * will be cleared.
+         * 
+         * @example
+         * // Every tick, update the counters
+         * inputMod.updateCounters();
+         * // Check if this is the first tick the player is pressing the hold button
+         * if (inputMod.getCounter("Hold") == 1)
+         *      // Hold the piece
+         * 
+         * @type {Map<string, number>}
+         */
         this.counters = new Map();
         this.counters.set("MoveLeft", 0);
         this.counters.set("MoveRight", 0);
@@ -574,6 +959,15 @@ class Input {
         this.counters.set("Hold", 0);
     }
 
+    /**
+     * Accesses the input action that a key is bound to.
+     * 
+     * If the key is a single character, it will be set to uppercase,
+     * so 'a' and 'A' both correspond to the same action.
+     * 
+     * @param {string} key The key being pressed.
+     * @returns {string} The input action this key is bound to in {@link Input.inputKeys}.
+     */
     keyToState(key) {
         if (key.length == 1) {
             key = key.toUpperCase();
@@ -582,25 +976,67 @@ class Input {
         return this.inputKeys.get(key);
     }
 
+    /**
+     * Updates the state of an input action from a key.
+     * 
+     * This will override the current value of the input action, so if you have multiple keys
+     * bound to the same action, the action's state will match the most recent keyboard event.
+     * 
+     * @see {@link Input.inputKeys}
+     * 
+     * @param {string} key The key from a keyboard event.
+     * @param {boolean} value The new value for the input action (should be true for keydown, false for keyup).
+     */
     setInputState(key, value) {
         let action = this.keyToState(key);
         if (action != null) {
-            this.inputStates.set(action, value);
+            this.actionStates.set(action, value);
         }
     }
 
+    /**
+     * Accesses the value of an input state.
+     * 
+     * @see {@link Input.actionStates}.
+     * 
+     * @param {string} inputAction The input action to read.
+     * @returns {boolean} True if the input action was set to true by a bound key.
+     */
     getInputState(inputAction) {
-        if (this.inputStates.has(inputAction)) {
-            return this.inputStates.get(inputAction);
+        if (this.actionStates.has(inputAction)) {
+            return this.actionStates.get(inputAction);
         } else {
             console.log("ERROR: trying to access an input action that doesn't exist (" + inputAction + "). The allowed options are:");
-            this.inputStates.forEach(function(value, key, map) {
+            this.actionStates.forEach(function(value, key, map) {
                 console.log("    - " + key);
             });
         }
         return null;
     }
 
+    /**
+     * Updates the values of the counters for input actions.
+     * 
+     * This function should be called once every game tick, before
+     * the counters are checked.
+     * 
+     * @example
+     * inputMod = new Input();
+     * // ...
+     * // Every tick:
+     * inputMod.updateCounters();
+     * if (inputMod.getCounter("Action") == 1) {
+     *      // This blcok will happen only once each time the player presses the button
+     * }
+     * 
+     * if (inputMod.getCounter("Action2") == 1 || inputMod.getCounter("Action2") > 5) {
+     *      // This block will happen immediately when the player presses the button,
+     *      // then it will skip the next 4 ticks, and execute again after the player has
+     *      // held the button for 5 ticks, every tick.
+     * }
+     * 
+     * @see {@link Input.counters}
+     */
     updateCounters() {      
         for (const [key, value] of this.counters) {
             if (this.getInputState(key)) {
@@ -611,6 +1047,29 @@ class Input {
         }
     }
 
+    /**
+     * Accesses the input action's counter.
+     * 
+     * If {@link Input.updateCounters()} is called once at the start of every game tick,
+     * the counters will represent the number of ticks an input has been held.
+     * 
+     * @see {@link Input.counters}
+     * 
+     * @example
+     * // Run code once when the player presses the button
+     * if (inputMod.getCounter("Action") == 1) {
+     *      //...
+     * }
+     * @example
+     * // Run code repeatedly after the player has held the button for 10 ticks
+     * if (inputMod.getCounter("Action") >= 10) {
+     *      //...
+     * }
+     * 
+     * @param {string} inputAction The input action to check.
+     * @returns {number} The number of consecutive ticks this action has been held 
+     * (assuming {@link Input.updateCounters()} has been called once each tick).
+     */
     getCounter(inputAction) {
         if (this.counters.has(inputAction)) {
             return this.counters.get(inputAction);
@@ -632,7 +1091,7 @@ function createQueueTextureData(heldPiece, queue, colorMap, pieceMap) {
     let data = new Uint8Array(8 * 3 * 5);
     let rowSize = 4 * 3;
     function encodePiece(piece, startingIndex) {
-        let locations = ActivePiece.getBaseShape(piece);
+        let locations = QuadPiece.getBaseShape(piece);
         let color = colorMap.get(pieceMap.get(piece));
         for (let i = 0; i < 4; i++) {
             let relativeBlock = locations[i];
@@ -746,7 +1205,7 @@ function main() {
     let blockImg = {src: "textures/block.png", mag: gl.LINEAR};
     let blockTexture = twgl.createTexture(gl, blockImg);
 
-    let Tetris = new TetrisGame();
+    let Tetris = new QuadtrisGame();
     // Tetris.placeBlockHere(0, 5, 1);
     // Tetris.placeBlockHere(1, 5, 2);
     // Tetris.placeBlockHere(2, 5, 3);
@@ -814,13 +1273,13 @@ function main() {
                 gravityCounter = 0;
     
                 if (atBottom && !Tetris.timerRunning) {
-                    Tetris.startLockTimer();
+                    Tetris.startGraceTimer();
                 }
             }
 
             // Deposit piece if lock timer has elapsed AND piece cannot move down
             if (Tetris.timerRunning) {
-                Tetris.updateLockTimer(deltaTime);
+                Tetris.updateGraceTimer(deltaTime);
                 if (Tetris.lockTimer <= 0 && !Tetris.tryMovePiece(0, -1)) {
                     // Timer up!
                     Tetris.finishWithPiece();
