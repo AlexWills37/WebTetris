@@ -209,9 +209,6 @@ export class QuadtrisGame {
         
         this.#ticksPerGravity = 15;
 
-        
-
-        
         this.pieceMap.set('Z', 1);
         this.pieceMap.set('S', 2);
         this.pieceMap.set('O', 3);
@@ -220,71 +217,7 @@ export class QuadtrisGame {
         this.pieceMap.set('I', 6);
         this.pieceMap.set('L', 7);
 
-        
-
-        
-
-    
-        
-        this.rgbGrid = new Uint8Array(600);
-        this.colorMap = new Map();
-        this.colorMap.set(1, [255, 0, 0]);
-        this.colorMap.set(2, [0, 255, 0]);
-        this.colorMap.set(3, [255, 255, 0]);
-        this.colorMap.set(4, [0, 0, 255]);
-        this.colorMap.set(5, [180, 90, 246]);
-        this.colorMap.set(6, [0, 255, 255]);
-        this.colorMap.set(7, [255, 140, 40]);
     }
-
-    generateRGBGrid() {
-        for (let iy = 0; iy < 20; iy++){
-            for (let ix = 0; ix < 10; ix++) {
-                let blockData = this.getBlockData(ix, iy);
-
-                let startIndex = 30 * iy + 3 * ix;
-                if (blockData != 0){
-                    let color = this.colorMap.get(blockData);
-                    this.rgbGrid[startIndex] = color[0];
-                    this.rgbGrid[startIndex + 1] = color[1];
-                    this.rgbGrid[startIndex + 2] = color[2];
-                } else {
-                    this.rgbGrid[startIndex] = 0;
-                    this.rgbGrid[startIndex + 1] = 0;
-                    this.rgbGrid[startIndex + 2] = 0;
-                }
-            }
-        }
-
-        if (this.gameState.playerPiece.active) {
-
-            // Draw ghost blocks to texture
-            for (let i = 0; i < 4; i++ ) {
-                let grey = 200;
-                let ghostStartIndex = 30 * this.gameState.ghostBlocks[i][1] + 3 * this.gameState.ghostBlocks[i][0];
-                this.rgbGrid[ghostStartIndex] = grey;
-                this.rgbGrid[ghostStartIndex + 1] = grey;
-                this.rgbGrid[ghostStartIndex + 2] = grey;
-            }
-    
-            // Draw player blocks to texture
-            let playerBlocks = this.gameState.playerPiece.blocks;
-            for (let i = 0; i < 4; i++){
-                let color = this.colorMap.get(this.pieceMap.get(this.gameState.playerPiece.shape));
-                let startIndex = 30 * playerBlocks[i][1] + 3 * playerBlocks[i][0];
-                this.rgbGrid[startIndex] = color[0];
-                this.rgbGrid[startIndex + 1] = color[1];
-                this.rgbGrid[startIndex + 2] = color[2];
-    
-            }
-        }
-
-
-        
-
-        return this.rgbGrid;
-    }
-
     
 
     /**
