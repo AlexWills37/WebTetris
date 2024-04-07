@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<title>TetrisGL</title>
         <link rel="shortcut icon" type="image/x-icon" href="facivon.ico">
-		<script type="module" crossorigin src="/WebTetris/assets/index-B5BmVd4h.js"></script>
+		<script type="module" crossorigin src="/WebTetris/assets/index-AenAuriS.js"></script>
 		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-COA5-JfP.css">
 	</head>
 	<body>
@@ -14,6 +14,7 @@
             <div id="overlay">
                 Lines Cleared: 
                 <br> <span id="linesCleared"></span>
+                <br> <span id="debug"></span>
             </div>
 
         </div>
@@ -62,9 +63,6 @@
                 if (a_ShaderID == 1.) {
                     v_QueueID = a_QueueID;
                     v_GridPos = v_GridPos * (2. + boarder) / 2. - boarder;
-                }
-                else if (a_ShaderID == 2.) {
-                    gl_Position = vec4(a_Position.xy, 1, 1);
                 }
             }
            
@@ -138,9 +136,7 @@
                     
 
 
-                } else if (v_ShaderID == 2.) {  // Background shader
-                    gl_FragColor = vec4(0, 0, 0, 1);
-                }
+                } 
 
             }
         
