@@ -81,14 +81,52 @@ export class QuadtrisRenderer {
             document.body.appendChild(document.createTextNode("WebGL is not supported."));
         }
 
+        function quadFromDimensions(left, top, width, height) {
+            let data = [
+                left, top + height,
+                left + width, top + height,
+                left + width, top,
+                left, top
+            ];
+            return data;
+        }
+        function createGameQuads(gridHeight, spaceFromBoard, pixelsBetween, size) {
+            let gridWH = [gridHeight/2, gridHeight];
+            let positions = [];
+            
+            let gridTop = (300 - gridWH[1]) / 2;
+            let gridLeft = (400 - gridWH[0]) / 2;
+            positions.push(...quadFromDimensions(gridLeft, gridTop, gridWH[0], gridWH[1]));
+            
+            // Hold square
+            positions.push(...quadFromDimensions(gridLeft - spaceFromBoard - size, gridTop, size, size));
+            
+            // Queue
+            for (let i = 0; i < 3; i++) {
+                positions.push(...quadFromDimensions(gridLeft + spaceFromBoard + gridWH[0], gridTop + (i * (size + pixelsBetween)), size, size));
+                
+            }
+
+
+            return positions;
+        }
+
+        
+
+
         // Create base vertex data
         const vertexArrays = {
-            a_Position: {numComponents: 2, data:[
-                -0.5, -1, 0.5, -1, 0.5, 1, -0.5, 1,
-                -0.75, 1 - 0.2, -0.55, 1 - 0.2, -0.55, 1, -0.75, 1,
-                0.55, 1 - 0.2, 0.75, 1 - 0.2, 0.75, 1, 0.55, 1,
-                0.55, 0.50, 0.75, 0.50, 0.75, 0.70, 0.55, 0.70,
-                0.55, 0.30, 0.75, 0.30, 0.75, 0.50, 0.55, 0.50]},
+            a_Position: {numComponents: 2, data: createGameQuads(250, 3, 2, 30)
+                
+            //     [
+            //     138, 274, 262, 274, 262, 26, 138, 26,
+            //     109, 51, 134, 51, 134, 26, 109, 26,
+            //     266, 51, 291, 51, 291, 26, 266, 26,
+                
+            //     266, 82, 291, 82, 291, 57, 266, 57,
+            //     266, 113, 291, 113, 291, 88, 266, 88
+            // ]
+        },
             a_GridPos: {numComponents: 2, data: [0, 0, 10, 0, 10, 20, 0, 20, 
                 0, 0, 4, 0, 4, 4, 0, 4, 
                 0, 0, 4, 0, 4, 4, 0, 4,
