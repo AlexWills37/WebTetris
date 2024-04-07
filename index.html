@@ -4,11 +4,19 @@
 		<meta charset="utf-8">
 		<title>TetrisGL</title>
         <link rel="shortcut icon" type="image/x-icon" href="facivon.ico">
-		<script type="module" crossorigin src="/WebTetris/assets/index-DfLiAlmE.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-DJN6ve2P.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-e2Vt5kpf.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-COA5-JfP.css">
 	</head>
 	<body>
-        <canvas id="canvas"></canvas>
+        <div class="container">
+
+            <canvas id="canvas"></canvas>
+            <div id="overlay">
+                Lines Cleared: 
+                <br> <span id="linesCleared"></span>
+            </div>
+
+        </div>
 
         <script id="vertex-shader-2d" type="notjs">
      
@@ -50,7 +58,6 @@
             // fragment shaders don't have a default precision so we need
             // to pick one. mediump is a good default
             precision highp float;
-            uniform float u_Time;
 
             uniform sampler2D u_GridData;
             uniform sampler2D u_BlockTexture;
