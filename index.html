@@ -124,7 +124,10 @@
                                 gl_FragColor = blockData * texColor;
                             }
                         }
-                    } else {
+                    } else if ((v_QueueID == 0. || v_GridPos.x < -boarderSize || v_GridPos.x >= 4. + boarderSize) 
+                        || (v_QueueID == 1. && v_GridPos.y >= 4. + boarderSize)
+                        || (v_QueueID == 3. && v_GridPos.y < -boarderSize))
+                    {
                         gl_FragColor = vec4(0, 1, 1, 1);
                     }
 

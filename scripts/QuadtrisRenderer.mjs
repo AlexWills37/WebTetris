@@ -116,7 +116,7 @@ export class QuadtrisRenderer {
 
         // Create base vertex data
         const vertexArrays = {
-            a_Position: {numComponents: 2, data: createGameQuads(250, 3, 2, 30)
+            a_Position: {numComponents: 2, data: createGameQuads(250, 3, 0, 30)
                 
             //     [
             //     138, 274, 262, 274, 262, 26, 138, 26,
