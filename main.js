@@ -42,6 +42,8 @@ function createProgram(gl, vertexShader, fragmentShader) {
 
 
 function main() {
+    let debugLog = document.createTextNode('');
+    document.querySelector("#debug").appendChild(debugLog);
 
     // Create input module
     let inputMod = new Input();
@@ -73,7 +75,7 @@ function main() {
         // Update buffers if the game state changes
         if (game.isStateChanged) {
             renderer.updateData(game.gameState);
-        }
+        } 
 
         // Render frame
         renderer.renderGame();

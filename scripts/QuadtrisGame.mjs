@@ -124,7 +124,15 @@ export class QuadtrisGame {
          * 
          * @type {number}
          */
-        linesCleared: 0
+        linesCleared: 0,
+
+
+        /**
+         * The level of speed the pieces fall at.
+         * 
+         * @type {number}
+         */
+        speedLevel: 1
     }
 
     /**
@@ -137,6 +145,21 @@ export class QuadtrisGame {
         let value = this.#isStateChanged;
         this.#isStateChanged = false;
         return value;
+    }
+
+    static levels = {
+        1: 15,
+        2: 14,
+        3: 13,
+        4: 12,
+        5: 11,
+        6: 10,
+        7: 9,
+        8: 7,
+        9: 5,
+        10: 3,
+        11: 1,
+        max: 11
     }
 
     // Private properties
@@ -423,10 +446,15 @@ export class QuadtrisGame {
      * @see {@link QuadtrisGame.#resolveLineClears}
      */
     finishWithPiece() {
+        const previousLinesCleared = this.gameState.linesCleared;
         this.#depositPlayerPiece();
         this.#grabNextPiece();
         this.#timerRunning = false;
         this.#resolveLineClears();
+
+        if (this.gameState.linesCleared != previousLinesCleared) {
+            this.#updateSpeedLevel();
+        }
     }
 
     /**
@@ -802,7 +830,10 @@ export class QuadtrisGame {
     }
 
     
-
+    #updateSpeedLevel() {
+        this.gameState.speedLevel = Math.min(Math.floor(this.gameState.linesCleared / 10) + 1, QuadtrisGame.levels.max);
+        this.#ticksPerGravity = QuadtrisGame.levels[this.gameState.speedLevel];
+    }
     
 }
 

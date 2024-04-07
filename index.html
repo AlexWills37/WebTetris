@@ -13,6 +13,10 @@
             <div id="overlay">
                 Lines Cleared: 
                 <br> <span id="linesCleared"></span>
+                <br>
+                <br> Speed Level:
+                <br> <span id="speedLevel"></span>
+                <br> <span id="debug"></span>
             </div>
 
         </div>
@@ -57,10 +61,10 @@
 
                 v_GridPos = a_GridPos;
                 v_ShaderID = a_ShaderID;
-                float boarder = 0.5;
+                float border = 0.5;
                 if (a_ShaderID == 1.) {
                     v_QueueID = a_QueueID;
-                    v_GridPos = v_GridPos * (2. + boarder) / 2. - boarder;
+                    v_GridPos = v_GridPos * (2. + border) / 2. - border;
                 }
             }
            
@@ -109,8 +113,8 @@
                 } else if (v_ShaderID == 1.) {
                     gl_FragColor = vec4(vec3(0.35), 1);
 
-                    float boarderSize = 0.2;
-                    if (v_GridPos.y >= -boarderSize && v_GridPos.y < 4. + boarderSize && v_GridPos.x >= -boarderSize && v_GridPos.x < 4. + boarderSize) {
+                    float borderSize = 0.2;
+                    if (v_GridPos.y >= -borderSize && v_GridPos.y < 4. + borderSize && v_GridPos.x >= -borderSize && v_GridPos.x < 4. + borderSize) {
 
                         if (v_GridPos.y >= 1. && v_GridPos.y < 3. && v_GridPos.x >= 0. && v_GridPos.x < 4.) {
                             vec2 dataLocation = v_GridPos / vec2(4., 10.);
@@ -124,9 +128,9 @@
                                 gl_FragColor = blockData * texColor;
                             }
                         }
-                    } else if ((v_QueueID == 0. || v_GridPos.x < -boarderSize || v_GridPos.x >= 4. + boarderSize) 
-                        || (v_QueueID == 1. && v_GridPos.y >= 4. + boarderSize)
-                        || (v_QueueID == 3. && v_GridPos.y < -boarderSize))
+                    } else if ((v_QueueID == 0. || v_GridPos.x < -borderSize || v_GridPos.x >= 4. + borderSize) 
+                        || (v_QueueID == 1. && v_GridPos.y >= 4. + borderSize)
+                        || (v_QueueID == 3. && v_GridPos.y < -borderSize))
                     {
                         gl_FragColor = vec4(0, 1, 1, 1);
                     }
@@ -134,7 +138,7 @@
                     
 
 
-                }
+                } 
 
             }
         

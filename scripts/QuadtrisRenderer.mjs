@@ -14,6 +14,9 @@ export class QuadtrisRenderer {
     /** WebGL context. @type {WebGLRenderingContext} */
     gl;
 
+    #overlayDiv = document.querySelector("#overlay");
+    #overlayDimensions = [67, 70, 17, 21, 3.5];
+
 
     /** Map between block type (1-7) and block color. @type {Map<number, number[]>} */
     #colorMap = new Map();
@@ -52,11 +55,19 @@ export class QuadtrisRenderer {
 
     /** Text to display number of line clears. @type {Text} */
     #lineClearNode = document.createTextNode('0');
+
+    #speedLevelNode = document.createTextNode('1');
+
+    #previousWidth = 0;
+    #previousHeight = 0;
     
 
     constructor() {
         // Attach the line clear count to the HTML
         document.querySelector("#linesCleared").appendChild(this.#lineClearNode);
+        document.querySelector("#speedLevel").appendChild(this.#speedLevelNode);
+
+        console.log(this.#overlayDimensions);
 
         // Create color map
         this.#colorMap.set(1, [255, 0, 0]);
@@ -115,6 +126,8 @@ export class QuadtrisRenderer {
 
 
         // Create base vertex data
+        //positions.push(...[-1, -1, 1, -1, 1, 1, -1, 1]);
+
         const vertexArrays = {
             a_Position: {numComponents: 2, data: createGameQuads(250, 3, 0, 30)
                 
@@ -135,7 +148,7 @@ export class QuadtrisRenderer {
             a_QueueID: {numComponents: 1 , data: [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]},
             a_ShaderID: {numComponents: 1, data: [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]},
             indices: {numComponents: 3, data: [0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4, 8, 9, 10, 10, 11, 8, 12, 13, 14, 14, 15, 12,
-                16, 17, 18, 18, 19, 16]}
+                16, 17, 18, 18, 19, 16, 20]}
         };
 
         this.#vertexBufferInfo = twgl.createBufferInfoFromArrays(gl, vertexArrays);
@@ -198,6 +211,7 @@ export class QuadtrisRenderer {
      * @param {number[][]}  gameState.ghostBlocks   The locations of the 4 ghost blocks, used to project the player piece's 
      *                                              landing spot.
      * @param {number}      gameState.linesCleared  The number of lines the player has cleared.
+     * @param {number}      gameState.speedLevel    The speed level the game is on.
      */
     updateData(gameState) {
         // Update the grid texture
@@ -212,8 +226,10 @@ export class QuadtrisRenderer {
      * Renders the current data to the WebGL-enabled canvas.
      */
     renderGame() {
+        // Update HTML scale
         twgl.resizeCanvasToDisplaySize(this.gl.canvas);
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+        this.#scaleHTMLElements();
 
         // Update dynamic uniforms
         let uniforms = {
@@ -226,6 +242,7 @@ export class QuadtrisRenderer {
 
         twgl.setUniforms(this.#shaderInfo, uniforms);
         twgl.drawBufferInfo(this.gl, this.#vertexBufferInfo);
+
     }
 
     /**
@@ -266,7 +283,7 @@ export class QuadtrisRenderer {
         // If the player piece is active, draw it
         if (gameState.playerPiece.active) {
             // Start with the ghost projections, since the piece may be on top
-            let grey = 200;
+            let grey = 170;
             for (let i = 0; i < 4; i++) {
                 let ghostStartIndex = 3 * (10 * gameState.ghostBlocks[i][1] + gameState.ghostBlocks[i][0]);
                 this.#gridRGBData[ghostStartIndex] = grey;
@@ -355,8 +372,43 @@ export class QuadtrisRenderer {
      * 
      * @param {Object}  gameState               The data needed to render the game.
      * @param {number}  gameState.linesCleared  The number of lines the player has cleared.
+     * @param {number}  gameState.speedLevel    The speed level the game is on.
      */
     #updateGUIOverlay(gameState) {
         this.#lineClearNode.nodeValue = gameState.linesCleared;
+        this.#speedLevelNode.nodeValue = gameState.speedLevel == 11 ? "MAX" : gameState.speedLevel;
+        
+    }
+
+    #scaleHTMLElements() {
+        // Update position for screen size
+        let width = this.gl.canvas.width;
+        let height = this.gl.canvas.height;
+
+        if (width != this.#previousWidth || height != this.#previousHeight) {
+
+            if (this.gl.canvas.width * 3 >= this.gl.canvas.height * 4) {
+                // Canvas is too wide; change x scaling
+                //this.#overlayDiv.style.left = (this.#overlayDimensions[0] * (400 * height / (3 * width * 100) ) + ((3 * width - 4 * height) * 100 / (6 * width))) + 'vw';
+                this.#overlayDiv.style.right = ((4 * height * (this.#overlayDimensions[0] - 50) + 150 * width) / (3 * width)) + 'vw';
+                this.#overlayDiv.style.width = (this.#overlayDimensions[2] * 4 * height / (3 * width)) + 'vw';
+                this.#overlayDiv.style.top = this.#overlayDimensions[1] + 'vh';
+                this.#overlayDiv.style.height = this.#overlayDimensions[3] + 'vh';
+
+                this.#overlayDiv.style.fontSize = this.#overlayDimensions[4] + 'vh';
+            } else {
+                // Canvas is too tall; change y scaling
+                this.#overlayDiv.style.top = (this.#overlayDimensions[1] * 3 * width / (4 * height) + (100 * height - 75 * width) / (2 * height)) + 'vh';
+                this.#overlayDiv.style.height = (this.#overlayDimensions[3] * 3 * width / (4 * height)) + 'vh';
+                this.#overlayDiv.style.right = this.#overlayDimensions[0] + 'vw';
+                this.#overlayDiv.style.width = this.#overlayDimensions[2] + 'vw';
+
+                this.#overlayDiv.style.fontSize = (this.#overlayDimensions[4] * 3 * width / (4 * height)) + 'vh';
+            }
+
+            this.#previousHeight = height;
+            this.#previousWidth = width;
+        } 
+
     }
 }
