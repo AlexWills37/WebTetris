@@ -142,7 +142,7 @@ export class QuadtrisGame {
      * @type {boolean}
      */
     get isStateChanged() {
-        let value = this.#isStateChanged;
+        const value = this.#isStateChanged;
         this.#isStateChanged = false;
         return value;
     }
