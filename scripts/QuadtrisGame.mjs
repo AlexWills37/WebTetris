@@ -74,7 +74,7 @@ export class QuadtrisGame {
          * Whether the game is running.
          * @type {boolean}
          */
-        gameRunning: true,
+        gameRunning: false,
 
         /**
          * The game's board.
@@ -229,6 +229,7 @@ export class QuadtrisGame {
         // Set up the piece queue and initialize the first piece.
         this.#refillPieceQueue();
         this.#grabNextPiece();
+        this.#updateGhostProjections();
         
         this.#ticksPerGravity = 15;
 

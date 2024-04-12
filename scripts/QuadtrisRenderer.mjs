@@ -115,7 +115,6 @@ export class QuadtrisRenderer {
             
             // Hold square
             positions.push(...quadFromDimensions(gridLeft - spaceFromBoard - size, gridTop, size, size));
-            console.log("l: " + (gridLeft - spaceFromBoard - size) + "\nt: " + gridTop + "\nw/h: " + size);
             // Queue
             for (let i = 0; i < 3; i++) {
                 positions.push(...quadFromDimensions(gridLeft + spaceFromBoard + gridWH[0], gridTop + (i * (size + pixelsBetween)), size, size));
@@ -200,13 +199,12 @@ export class QuadtrisRenderer {
         twgl.setUniforms(this.#shaderInfo, uniforms);
 
 
-        const dec = document.styleSheets[0].cssRules[3];
-
-        console.log(dec);
+        
 
         this.#registerElementStyle("#scoreOverlay");
         this.#registerElementStyle("#controlsGuide");
         this.#registerElementStyle("#heldPieceOverlay");
+        this.#registerElementStyle("#gameSpace");
     }
 
     /**

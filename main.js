@@ -45,6 +45,9 @@ function main() {
     let debugLog = document.createTextNode('');
     document.querySelector("#debug").appendChild(debugLog);
 
+    const startButton = document.querySelector("#startButton");
+    
+
     // Create input module
     let inputMod = new Input();
     document.addEventListener('keydown', function(event) {
@@ -66,16 +69,20 @@ function main() {
         lastFrameTime = time;
         timeSinceGameTick += deltaTime;
 
-        // Run game ticks at a fixed interval
-        if (timeSinceGameTick >= game.gameTickTime) {
-            game.runTick(inputMod);
-            timeSinceGameTick = Math.min(timeSinceGameTick - game.gameTickTime, game.gameTickTime);
+
+        if (game.gameState.gameRunning) {
+            // Run game ticks at a fixed interval
+            if (timeSinceGameTick >= game.gameTickTime) {
+                game.runTick(inputMod);
+                timeSinceGameTick = Math.min(timeSinceGameTick - game.gameTickTime, game.gameTickTime);
+            }
+    
+            // Update buffers if the game state changes
+            if (game.isStateChanged) {
+                renderer.updateData(game.gameState);
+            } 
         }
 
-        // Update buffers if the game state changes
-        if (game.isStateChanged) {
-            renderer.updateData(game.gameState);
-        } 
 
         // Render frame
         renderer.renderGame();
@@ -83,7 +90,15 @@ function main() {
         // Queue up next frame
         requestAnimationFrame(processFrame);
     }
+
+    function startGame() {
+        game.gameState.gameRunning = true;
+        document.querySelector("#titleScreen").classList.add("hide");
+    }
+    
+    startButton.addEventListener("click", startGame);
     requestAnimationFrame(processFrame);
+
 
 }
 

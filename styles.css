@@ -1,5 +1,6 @@
 body {
     margin: 0;
+    font-family: "Quicksand";
 }
 canvas {
     width: 100vw;
@@ -14,9 +15,9 @@ canvas {
 #scoreOverlay {
     position: absolute;
     right: 67vw;
-    width: 25vw;
+    width: 30vw;
     top: 70vh;
-    height: 21vh;
+    height: 22vh;
     font-size: 3.5vh;
     border-style:double;
 
@@ -25,9 +26,9 @@ canvas {
 #controlsGuide {
     position:absolute;
     right: 67vw;
-    width: 25vw;
+    width: 30vw;
     top: 45vh;
-    height: 19vh;
+    height: 20vh;
     font-size: 2.5vh;
     border-style: solid;
 }
@@ -40,6 +41,7 @@ canvas {
     height: 13vh;
     font-size: 2.1vh;
     border-style:none;
+    transition: background-color 0.5s;
 }
 
 #holdText {
@@ -47,4 +49,71 @@ canvas {
     bottom: 0%;
     width:100%;
     text-align: center;
+}
+
+#heldPieceOverlay:hover{
+    background-color: rgba(125, 229, 255, 0.5);
+}
+
+#gameSpace {
+    position:absolute;
+    bottom: 0vh;
+    left: 0vw;
+    width: 100vw;
+    height: 100vh;
+    font-size: 3.5vh;
+    background-color: rgba(125, 229, 255, 0.0);
+    /* display:none; */
+}
+
+#titleScreen {
+    position:absolute;
+    bottom:0%;
+    left:0%;
+    width:100%;
+    height:100%;
+    background-color: rgb(191, 252, 254);;
+    text-align: center;
+    /* display:none; */
+
+}
+
+button {
+    font-family: "Quicksand";
+    position:relative;
+    top:10%;
+    left:0%;
+    width:27%;
+    height:12%;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    font-size: 3.4vh;
+
+    background-color: #BBFFDB;
+    transition: background-color 0.5s;
+    border-radius: 10px;
+    border-style: outset;
+    border-width: 3px;
+    border-color: #88B2B5;
+    
+}
+
+button:hover {
+    background-color: #0DE3DF;
+
+}
+button.off:hover{
+    background-color: rgb(191, 252, 254);
+    transition: none;
+}
+
+div.hide {
+    display:none;
+}
+
+#GitHub {
+    position: absolute;
+    bottom:5%;
+    left: 10%;
+    width:80%;
 }
