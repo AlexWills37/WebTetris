@@ -8,53 +8,64 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-C6A4WxRH.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-EK7egZRp.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-CeolnsrR.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-CgnBWpKR.css">
 	</head>
 	<body>
         <div class="container">
 
             <canvas id="canvas"> The tetris game board! If you see this text, the canvas displaying the game could not load. If you'd like to try, maybe a different browser would work. </canvas>
-            <div id="scoreOverlay">
-                Lines Cleared: 
-                <br> <span id="linesCleared"></span>
-                <br>
-                <br> Speed Level:
-                <br> <span id="speedLevel"></span>
-                <br> <span id="debug"></span>
-            </div>
-            <div id="controlsGuide">
-                Controls:
-                <br> A/D - Move left/right
-                <br> ←/→ (or J/L) - Rotate left/right
-                <br> E - Hold piece
-                <br> W - Hard drop
-                <br> S - Soft drop
-            </div>
-            <div id="heldPieceOverlay">
-                <div id="holdText">HOLD [E]</div>
-            </div>
-            <div id="pieceQueueOverlay">
-                
-            </div>
+            
             
             <div id="gameSpace">
                 
-
-
-
-                <div id="titleScreen">
+                
+                
+                <div class="fill hide" id="gameGUI">
+                    <div id="scoreOverlay">
+                        Lines Cleared: 
+                        <br> <span id="linesCleared"></span>
+                        <br>
+                        <br> Speed Level:
+                        <br> <span id="speedLevel"></span>
+                        <br> <span id="debug"></span>
+                    </div>
+                    <div id="controlsGuide">
+                        Controls:
+                        <br> A/D - Move left/right
+                        <br> ←/→ (or J/L) - Rotate left/right
+                        <br> E - Hold piece
+                        <br> W - Hard drop
+                        <br> S - Soft drop
+                    </div>
+                    <div id="heldPieceOverlay">
+                        <div id="holdText">HOLD [E]</div>
+                    </div>
+                    <div id="pieceQueueOverlay">
+                        
+                    </div>
+                </div>
+                
+                <div class="fill" id="titleScreen">
                     <h1>Quadtris</h1>
                     A JavaScript + WebGL implementation of the popular block-falling game 
                     <br>(<i>it rhymes with "Betris"!</i>)
-                    <br><button id="startButton">Start Game</button>
+                    <br><button id="startButton">Start Game
+                        <div class="buttonBackground"></div>
+                        <div class="buttonFadeIn"></div>
+                    </button>
                     <br>
                     <br>
                     <br><button class="off" disabled>About 
-                    <br>    (under construction)</button>
+                        <br>    (under construction)
+                        <div class="buttonBackground"></div>
+                        <div class="buttonFadeIn"></div>
+                    </button>
                     <br>
                     <br><span id="GitHub">View the code on <a href="https://github.com/AlexWills37/WebTetris" target="_blank">GitHub</a>!</span>
                 </div>
+                
+                
             </div>
 
         </div>
