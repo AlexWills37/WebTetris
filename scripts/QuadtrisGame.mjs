@@ -380,6 +380,7 @@ export class QuadtrisGame {
     startNewGame() {
         this.gameState.gameOver = false;
         this.gameState.isPaused = false;
+        this.#gameOverAnimation = false;
 
         // Reset grid
         for (let i = 0; i < this.gameState.gridData.length; i++) {
