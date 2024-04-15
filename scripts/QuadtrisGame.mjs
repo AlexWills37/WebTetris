@@ -220,6 +220,11 @@ export class QuadtrisGame {
      */
     #timerRunning = false;
 
+    /**
+     * Whether the game is playing its game over animation, before setting the game state's game over to true.
+     */
+    #gameOverAnimation = false;
+
 
     /**
      * Represents the data needed to run the game.
@@ -264,8 +269,8 @@ export class QuadtrisGame {
             let pieceMoved = false;
     
             // Handle player input
-            if (this.gameState.gameOver) {
-                // Game over
+            if (this.#gameOverAnimation) {
+                // Game over animation
                 if (this.animationCount == null || this.rowCount == null) {
                     this.animationCount = 0;
                     this.rowCount = 0;
@@ -275,8 +280,12 @@ export class QuadtrisGame {
                         this.clearRow(0);
                         this.rowCount++;
                         this.#isStateChanged = true;
+                    } else if (this.rowCount == this.numRows) {
+                        // True game over; the animation is finished
+                        this.rowCount++;
+                        this.gameState.gameOver = true;
                     }
-                }
+                } 
     
             }
             else if (inputMod.getCounter("HardDrop") == 1) {
@@ -475,7 +484,7 @@ export class QuadtrisGame {
             //      but it is possible due to different piece shapes
             if (!this.isPlayerPieceValid()) {
                 this.gameState.playerPiece.active = false;
-                this.gameState.gameOver = true;
+                this.#gameOverAnimation = true;
             }
 
         }
@@ -778,7 +787,7 @@ export class QuadtrisGame {
         // Check if move is possible, otherwise game over
         if (!this.isPlayerPieceValid()) {
             this.gameState.playerPiece.active = false;
-            this.gameState.gameOver = true;
+            this.#gameOverAnimation = true;
         }
     }
     
