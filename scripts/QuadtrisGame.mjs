@@ -381,6 +381,8 @@ export class QuadtrisGame {
         this.gameState.gameOver = false;
         this.gameState.isPaused = false;
         this.#gameOverAnimation = false;
+        this.animationCount = null;
+        this.rowCount = null;
 
         // Reset grid
         for (let i = 0; i < this.gameState.gridData.length; i++) {
