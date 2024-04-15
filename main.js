@@ -60,44 +60,95 @@ function main() {
     // Create game and renderer
     let game = new QuadtrisGame();
     let renderer = new QuadtrisRenderer();
+
+    const titleScreen = document.querySelector("#titleScreen");
+    const pauseScreen = document.querySelector("#pauseScreen");
+    const gameOverScreen = document.querySelector("#gameOverScreen");
+    let onTitleScreen = true;
+
     
     // Create the engine loop
     let timeSinceGameTick = 0;
     let lastFrameTime = 0;
-    function processFrame(time) {
+    function runGameFrame(time) {
         let deltaTime = (time - lastFrameTime) * 0.001;
         lastFrameTime = time;
         timeSinceGameTick += deltaTime;
 
-
-        if (game.gameState.gameRunning) {
+        // If the game is running, update the game:
+        if (!game.gameState.gameOver) {
             // Run game ticks at a fixed interval
             if (timeSinceGameTick >= game.gameTickTime) {
-                game.runTick(inputMod);
                 timeSinceGameTick = Math.min(timeSinceGameTick - game.gameTickTime, game.gameTickTime);
+                game.runTick(inputMod);
+
+                // Handle pause/unpause
+                if (inputMod.getCounter("Pause") == 1) {
+                    if (!game.gameState.isPaused) {
+                        // Pause game
+                        game.pauseGame(true);
+                        pauseScreen.classList.remove("hide");
+                    } else {
+                        // Unpause game
+                        game.pauseGame(false);
+                        pauseScreen.classList.add("hide");
+                    }
+                } // End of pause/unpause logic
             }
     
             // Update buffers if the game state changes
             if (game.isStateChanged) {
                 renderer.updateData(game.gameState);
             } 
-        }
+        } else if (!onTitleScreen) { // Game is over, AND the game was started (not on title screen)
+            // Game over! Stop running the game and load the game over screen
+            if (gameOverScreen.classList.contains("hide")) {
+                // Display game over screen
+                gameOverScreen.classList.remove("hide");
+            }
+        } else {    // Game is "over" and not started (on the title screen)
 
+        }
 
         // Render frame
         renderer.renderGame();
 
         // Queue up next frame
-        requestAnimationFrame(processFrame);
+        requestAnimationFrame(runGameFrame);
     }
 
     function startGame() {
-        game.gameState.gameRunning = true;
+        game.startNewGame();
+        renderer.updateData(game.gameState);
+        renderer.renderGame();
         document.querySelector("#titleScreen").classList.add("hide");
+        document.querySelector("#gameGUI").classList.remove("hide");
+        requestAnimationFrame(runGameFrame);
+        onTitleScreen = false;
     }
     
     startButton.addEventListener("click", startGame);
-    requestAnimationFrame(processFrame);
+    document.querySelector("#heldPieceOverlay").addEventListener("click", function() {
+        game.startNewGame();
+    });
+    document.querySelector("#unpauseButton").addEventListener("click", function() {
+        game.gameState.isPaused = false;
+        pauseScreen.classList.add("hide");
+    });
+    document.querySelector("#replayButton").addEventListener("click", function() {
+        game.startNewGame();
+        renderer.updateData(game.gameState);
+        renderer.renderGame();
+        gameOverScreen.classList.add("hide");
+    });
+
+    document.querySelector("#returnToTitleButton").addEventListener("click", function() {
+        titleScreen.classList.remove("hide");
+        gameOverScreen.classList.add("hide");
+        onTitleScreen = true;
+    });
+
+    requestAnimationFrame(runGameFrame);
 
 
 }

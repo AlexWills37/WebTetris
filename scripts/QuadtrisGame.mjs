@@ -12,8 +12,11 @@ import {QuadtrisInput} from './QuadtrisInput.mjs'
 /**
  * Creates and manages a game of Quadtris.
  * 
+ * By default, gameState.gameOver is true and gameState.isPaused is false.
+ * 
  * At a rate consistent with {@link QuadtrisGame.gameTickTime}, run the
- * {@link QuadtrisGame.runTick()} function to run the game.
+ * {@link QuadtrisGame.runTick()} function to run the game. If gameState.isPaused is true,
+ * running the tick will check for the game to unpause.
  * 
  * To visualize the game, you can use {@link QuadtrisGame.gameState} to access
  * all of the relevant data for visualization, and you can use {@link QuadtrisGame.isStateChanged}
@@ -74,7 +77,9 @@ export class QuadtrisGame {
          * Whether the game is running.
          * @type {boolean}
          */
-        gameRunning: false,
+        isPaused: false,
+
+        gameOver: true,
 
         /**
          * The game's board.
@@ -240,7 +245,7 @@ export class QuadtrisGame {
         this.pieceMap.set('T', 5);
         this.pieceMap.set('I', 6);
         this.pieceMap.set('L', 7);
-
+        this.gameState.isPaused = true;
     }
     
 
@@ -250,90 +255,135 @@ export class QuadtrisGame {
      * @param {QuadtrisInput} inputMod 
      */
     runTick(inputMod) {
-        let pieceMoved = false;
 
-        // Handle player input
+
+        // If game is paused, only the input mod will update
         inputMod.updateCounters();
-        if (!this.gameState.gameRunning) {
-            // Game over
-            if (this.animationCount == null || this.rowCount == null) {
-                this.animationCount = 0;
-                this.rowCount = 0;
-            } else {
-                this.animationCount++;
-                if (this.rowCount < this.numRows && this.animationCount % 4 == 0) {
-                    this.clearRow(0);
-                    this.rowCount++;
-                    this.#isStateChanged = true;
-                }
-            }
+        if (!this.gameState.isPaused) {
 
-        }
-        else if (inputMod.getCounter("HardDrop") == 1) {
-            this.hardDropPlayerPiece();// Do hard drop
-            this.finishWithPiece();
-            pieceMoved = true;
-        }
-        else if (inputMod.getCounter("Hold") == 1) {
-            this.holdPiece();
-            pieceMoved = true;
-        }
-        else {
-            // 1 - check for soft drop
-            if (inputMod.getInputState("SoftDrop")) {
-                pieceMoved = this.tryMovePiece(0, -1) || pieceMoved;
-            }
+            let pieceMoved = false;
     
-            // 2 - rotate piece
-            let rotation = 0;
-            if (inputMod.getCounter("RotateClockwise") == 1)
-                rotation += 1;
-            if (inputMod.getCounter("RotateAntiClockwise") == 1)
-                rotation -= 1;
-
-            if (rotation != 0)
-                pieceMoved = this.tryRotatePiece(rotation == 1) || pieceMoved;
-
-            // 3 - move piece
-            let movement = 0;
-            if (inputMod.getCounter("MoveLeft") == 1 || inputMod.getCounter("MoveLeft") > 5)
-                movement -= 1;
-            if (inputMod.getCounter("MoveRight") == 1 || inputMod.getCounter("MoveRight") > 5)
-                movement += 1;
-
-            if (movement != 0)
-                pieceMoved = this.tryMovePiece(movement, 0) || pieceMoved;
-
-
-            // Count ticks for gravity
-            this.#gravityTickCounter++;
-            if (this.#gravityTickCounter >= this.#ticksPerGravity) {
-                let atBottom = !this.tryMovePiece(0, -1);
-                pieceMoved ||= !atBottom;
-                this.#gravityTickCounter = 0;
-    
-                if (atBottom && !this.#timerRunning) {
-                    this.#startGraceTimer();
-                }
-            }
-
-            // Deposit piece if lock timer has elapsed AND piece cannot move down
-            if (this.#timerRunning) {
-                this.#updateGraceTimer(this.gameTickTime);
-                if (this.#graceTimer <= 0) {
-                    let atBottom = !this.tryMovePiece(0, -1);
-                    pieceMoved = true; 
-                    if (atBottom) {
-                        this.finishWithPiece();
+            // Handle player input
+            if (this.gameState.gameOver) {
+                // Game over
+                if (this.animationCount == null || this.rowCount == null) {
+                    this.animationCount = 0;
+                    this.rowCount = 0;
+                } else {
+                    this.animationCount++;
+                    if (this.rowCount < this.numRows && this.animationCount % 4 == 0) {
+                        this.clearRow(0);
+                        this.rowCount++;
+                        this.#isStateChanged = true;
                     }
                 }
+    
             }
+            else if (inputMod.getCounter("HardDrop") == 1) {
+                this.hardDropPlayerPiece();// Do hard drop
+                this.finishWithPiece();
+                pieceMoved = true;
+            }
+            else if (inputMod.getCounter("Hold") == 1) {
+                this.holdPiece();
+                pieceMoved = true;
+            }
+            else {
+                // 1 - check for soft drop
+                if (inputMod.getInputState("SoftDrop")) {
+                    pieceMoved = this.tryMovePiece(0, -1) || pieceMoved;
+                }
+        
+                // 2 - rotate piece
+                let rotation = 0;
+                if (inputMod.getCounter("RotateClockwise") == 1)
+                    rotation += 1;
+                if (inputMod.getCounter("RotateAntiClockwise") == 1)
+                    rotation -= 1;
+    
+                if (rotation != 0)
+                    pieceMoved = this.tryRotatePiece(rotation == 1) || pieceMoved;
+    
+                // 3 - move piece
+                let movement = 0;
+                if (inputMod.getCounter("MoveLeft") == 1 || inputMod.getCounter("MoveLeft") > 5)
+                    movement -= 1;
+                if (inputMod.getCounter("MoveRight") == 1 || inputMod.getCounter("MoveRight") > 5)
+                    movement += 1;
+    
+                if (movement != 0)
+                    pieceMoved = this.tryMovePiece(movement, 0) || pieceMoved;
+    
+    
+                // Count ticks for gravity
+                this.#gravityTickCounter++;
+                if (this.#gravityTickCounter >= this.#ticksPerGravity) {
+                    let atBottom = !this.tryMovePiece(0, -1);
+                    pieceMoved ||= !atBottom;
+                    this.#gravityTickCounter = 0;
+        
+                    if (atBottom && !this.#timerRunning) {
+                        this.#startGraceTimer();
+                    }
+                }
+    
+                // Deposit piece if lock timer has elapsed AND piece cannot move down
+                if (this.#timerRunning) {
+                    this.#updateGraceTimer(this.gameTickTime);
+                    if (this.#graceTimer <= 0) {
+                        let atBottom = !this.tryMovePiece(0, -1);
+                        pieceMoved = true; 
+                        if (atBottom) {
+                            this.finishWithPiece();
+                        }
+                    }
+                }
+    
+            }
+            if (pieceMoved) {
+                this.#updateGhostProjections();
+                this.#isStateChanged = true;
+            }
+        } // End of unpause block.
 
+        //     if (inputMod.getCounter("Pause") == 1) {
+        //         this.gameState.isPaused = true;
+        //     }
+        // } else {    // If isPaused is false, 
+        //     if (inputMod.getCounter("Pause") == 1) {
+        //         this.gameState.isPaused = false;
+        //     }
+        // }
+
+    }
+
+    pauseGame(pause) {
+        this.gameState.isPaused = pause;
+    }
+
+    /**
+     * Resets the game's data and begins a new game.
+     * 
+     * After calling this function, consistently call {@link QuadtrisGame.runTick()}
+     * to play the game, and access the data to render with {@link QuadtrisGame.isStateChanged}
+     * and {@link QuadtrisGame.gameState}.
+     */
+    startNewGame() {
+        this.gameState.gameOver = false;
+        this.gameState.isPaused = false;
+
+        // Reset grid
+        for (let i = 0; i < this.gameState.gridData.length; i++) {
+            this.gameState.gridData[i] = 0;
         }
-        if (pieceMoved) {
-            this.#updateGhostProjections();
-            this.#isStateChanged = true;
-        }
+
+        this.gameState.linesCleared = 0;
+        this.gameState.speedLevel = 0;
+        this.gameState.pieceQueue = [];
+        this.#refillPieceQueue();
+        this.#grabNextPiece();
+        this.#updateGhostProjections();
+        this.#updateSpeedLevel();
     }
 
     /**
@@ -425,7 +475,7 @@ export class QuadtrisGame {
             //      but it is possible due to different piece shapes
             if (!this.isPlayerPieceValid()) {
                 this.gameState.playerPiece.active = false;
-                this.gameState.gameRunning = false;
+                this.gameState.gameOver = true;
             }
 
         }
@@ -728,7 +778,7 @@ export class QuadtrisGame {
         // Check if move is possible, otherwise game over
         if (!this.isPlayerPieceValid()) {
             this.gameState.playerPiece.active = false;
-            this.gameState.gameRunning = false;
+            this.gameState.gameOver = true;
         }
     }
     

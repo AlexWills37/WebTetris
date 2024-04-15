@@ -14,46 +14,84 @@
         <div class="container">
 
             <canvas id="canvas"> The tetris game board! If you see this text, the canvas displaying the game could not load. If you'd like to try, maybe a different browser would work. </canvas>
-            <div id="scoreOverlay">
-                Lines Cleared: 
-                <br> <span id="linesCleared"></span>
-                <br>
-                <br> Speed Level:
-                <br> <span id="speedLevel"></span>
-                <br> <span id="debug"></span>
-            </div>
-            <div id="controlsGuide">
-                Controls:
-                <br> A/D - Move left/right
-                <br> ←/→ (or J/L) - Rotate left/right
-                <br> E - Hold piece
-                <br> W - Hard drop
-                <br> S - Soft drop
-            </div>
-            <div id="heldPieceOverlay">
-                <div id="holdText">HOLD [E]</div>
-            </div>
-            <div id="pieceQueueOverlay">
-                
-            </div>
+            
             
             <div id="gameSpace">
                 
+                
+                
+                <div class="fill" id="gameGUI">
+                    <div id="scoreOverlay">
+                        Lines Cleared: 
+                        <br> <span id="linesCleared"></span>
+                        <br>
+                        <br> Speed Level:
+                        <br> <span id="speedLevel"></span>
+                        <br> <span id="debug"></span>
+                    </div>
+                    <div id="controlsGuide">
+                        Controls:
+                        <br> A/D - Move left/right
+                        <br> ←/→ (or J/L) - Rotate left/right
+                        <br> E - Hold piece
+                        <br> W - Hard drop
+                        <br> S - Soft drop
+                    </div>
+                    <div id="heldPieceOverlay">
+                        <div id="holdText">HOLD [E]</div>
+                    </div>
+                    <div id="pieceQueueOverlay">
+                        
+                    </div>
+                    <!-- <div id="gameBoardOutline"></div>
+                </div> -->
 
-
-
-                <div id="titleScreen">
+                <div class="fill hide" id="pauseScreen">
+                    <br>
+                    <h1><i>Game Paused</i></h1>
+                    <br><button id="unpauseButton">Continue Game
+                        <div class="buttonBackground"></div>
+                        <div class="buttonFadeIn"></div>
+                    </button>
+                </div>
+                
+                <div class="fill" id="titleScreen">
                     <h1>Quadtris</h1>
                     A JavaScript + WebGL implementation of the popular block-falling game 
                     <br>(<i>it rhymes with "Betris"!</i>)
-                    <br><button id="startButton">Start Game</button>
+                    <br><button id="startButton">Start Game
+                        <div class="buttonBackground"></div>
+                        <div class="buttonFadeIn"></div>
+                    </button>
                     <br>
                     <br>
                     <br><button class="off" disabled>About 
-                    <br>    (under construction)</button>
+                        <br>    (under construction)
+                        <div class="buttonBackground"></div>
+                        <div class="buttonFadeIn"></div>
+                    </button>
                     <br>
                     <br><span id="GitHub">View the code on <a href="https://github.com/AlexWills37/WebTetris" target="_blank">GitHub</a>!</span>
                 </div>
+
+                <div class="fill hide" id="gameOverScreen">
+                    <h1>Game Over!</h1>
+                    <p>Your score: <span id="finalScore"></span></p>
+                    <p>jof</p>
+                    <p>jof</p>
+                    <br><button id="replayButton">Play Again
+                        <div class="buttonBackground"></div>
+                        <div class="buttonFadeIn"></div>
+                    </button>
+                    <br><button id="returnToTitleButton">Return to Title
+                            <div class="buttonBackground"></div>
+                            <div class="buttonFadeIn"></div>
+                        </button>
+                    
+
+                </div>
+                
+                
             </div>
 
         </div>
@@ -169,7 +207,7 @@
                         || (v_QueueID == 1. && v_GridPos.y >= 4. + borderSize)
                         || (v_QueueID == 3. && v_GridPos.y < -borderSize))
                     {
-                        gl_FragColor = vec4(0, 1, 1, 1);
+                        gl_FragColor = vec4(0.424, 0.447, 0.580, 1);
                     }
 
                     

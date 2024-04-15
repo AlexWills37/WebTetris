@@ -1,6 +1,7 @@
 body {
     margin: 0;
     font-family: "Quicksand";
+    background-color: #BFFCFF;
 }
 canvas {
     width: 100vw;
@@ -12,34 +13,130 @@ canvas {
     position:relative;
 }
 
+.fill {
+    position:absolute;
+    bottom:0%;
+    left:0%;
+    width:100%;
+    height:100%;
+}
+
+#gameSpace {
+    position:absolute;
+    bottom: 0vh;
+    left: 0vw;
+    width: 100vw;
+    height: 100vh;
+    font-size: 3.5vh;
+    background-color: rgba(125, 229, 255, 0.0);
+    /* display:none; */
+}
+
+/* Button animations */
+button {
+    font-family: "Quicksand";
+    position:relative;
+    top:10%;
+    left:0%;
+    width:27%;
+    height:12%;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    font-size: 3.4vh;
+
+    background-color: rgba(13, 227, 223, 0);
+    border-radius: 10px;
+    /* border-style: outset; */
+    border-width: 3px;
+    border-color: #6C7294;
+    z-index:0;
+    transition:border-color 0.3s;
+    
+}
+
+button:hover, button:focus{
+    border-color:white;
+}
+
+div.buttonFadeIn {
+    position:absolute;
+    border-radius: 7px;
+    bottom:50%;
+    left:50%;
+    width:0%;
+    height:0%;
+    background-color: rgba(187, 255, 219, 0.5);
+    transition: all 0.3s;
+    z-index:-1;
+}
+
+button:hover div.buttonFadeIn {
+    left: 0%;
+    bottom: 0%;
+    height: 100%;
+    width: 100%;
+}
+
+button:active div.buttonFadeIn {
+    background-color: #88B2B5;
+}
+
+div.buttonBackground {
+    position:absolute;
+    border-radius: 7px;
+    bottom:0%;
+    left:0%;
+    width:100%;
+    height:100%;
+    background-color: #0DE3DF;
+    z-index:-2;
+}
+
+
+div.hide {
+    display:none;
+}
+
+/* Game GUI elements */
 #scoreOverlay {
     position: absolute;
-    right: 67vw;
-    width: 30vw;
-    top: 70vh;
-    height: 22vh;
-    font-size: 3.5vh;
-    border-style:double;
-
+    right: 67%;
+    width: 29%;
+    top: 69.5%;
+    height: 22%;
+    font-size: 1em;
+    border-style:solid;
+    border-width:2px;
+    padding-left:1%;
+    border-radius: 2px;
+    border-color: #6C7294;
+    background-color: #BBFFDB;
+    
 }
 
 #controlsGuide {
     position:absolute;
-    right: 67vw;
-    width: 30vw;
-    top: 45vh;
-    height: 20vh;
-    font-size: 2.5vh;
-    border-style: solid;
+    right: 67%;
+    width: 29%;
+    top: 45%;
+    height: 20%;
+    font-size: 0.71em;
+    padding-left:1%;
+    border-style:solid;
+    border-width:2px;
+    padding-left:1%;
+    border-radius: 2px;
+    border-color: #6C7294;
+    background-color: #BBFFDB;
 }
 
 #heldPieceOverlay {
     position: absolute;
-    left: 26.125vw;
-    top: 8.333vh;
-    width: 7.5vw;
-    height: 13vh;
-    font-size: 2.1vh;
+    left: 26.125%;
+    top: 8.333%;
+    width: 7.5%;
+    height: 13%;
+    font-size: 0.6em;
     border-style:none;
     transition: background-color 0.5s;
 }
@@ -55,65 +152,47 @@ canvas {
     background-color: rgba(125, 229, 255, 0.5);
 }
 
-#gameSpace {
+#gameBoardOutline {
+    border-width: 0.35em;
+    border-style:solid;
     position:absolute;
-    bottom: 0vh;
-    left: 0vw;
-    width: 100vw;
-    height: 100vh;
-    font-size: 3.5vh;
-    background-color: rgba(125, 229, 255, 0.0);
-    /* display:none; */
+    top: calc(8.667% - 0.3em);
+    left: calc(34.5% - 0.3em);
+    width:31%;
+    height:82.667%;
+
+    border-radius:0.3em;
+    border-color: #6C7294;
 }
 
+
+/* Title screen elements */
 #titleScreen {
-    position:absolute;
-    bottom:0%;
-    left:0%;
-    width:100%;
-    height:100%;
+    
     background-color: rgb(191, 252, 254);;
     text-align: center;
     /* display:none; */
 
 }
 
-button {
-    font-family: "Quicksand";
-    position:relative;
-    top:10%;
-    left:0%;
-    width:27%;
-    height:12%;
-    margin-top: 1%;
-    margin-bottom: 1%;
-    font-size: 3.4vh;
-
-    background-color: #BBFFDB;
-    transition: background-color 0.5s;
-    border-radius: 10px;
-    border-style: outset;
-    border-width: 3px;
-    border-color: #88B2B5;
-    
-}
-
-button:hover {
-    background-color: #0DE3DF;
-
-}
-button.off:hover{
-    background-color: rgb(191, 252, 254);
-    transition: none;
-}
-
-div.hide {
-    display:none;
-}
 
 #GitHub {
     position: absolute;
     bottom:5%;
     left: 10%;
     width:80%;
+}
+
+
+
+/* Game over elements */
+#gameOverScreen {
+    background-color: #88B2B5;
+    text-align: center;
+}
+
+/* Pause screen elements */
+#pauseScreen {
+    text-align: center;
+    background-color: #6C7294;
 }

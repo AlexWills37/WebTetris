@@ -200,10 +200,7 @@ export class QuadtrisRenderer {
 
 
         
-
-        this.#registerElementStyle("#scoreOverlay");
-        this.#registerElementStyle("#controlsGuide");
-        this.#registerElementStyle("#heldPieceOverlay");
+        
         this.#registerElementStyle("#gameSpace");
     }
 

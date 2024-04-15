@@ -49,6 +49,7 @@ export class QuadtrisInput {
         this.actionStates.set("Hold", false);
         this.actionStates.set("RotateClockwise", false);
         this.actionStates.set("RotateAntiClockwise", false);
+        this.actionStates.set("Pause", false);
 
         /**
          * Key bindings from key representations to action states.
@@ -67,7 +68,7 @@ export class QuadtrisInput {
         this.inputKeys.set("ArrowLeft", "RotateAntiClockwise");
         this.inputKeys.set("J", "RotateAntiClockwise");
         this.inputKeys.set("ArrowRight", "RotateClockwise");
-        this.inputKeys.set("L", "RotateClockwise");
+        this.inputKeys.set("Escape", "Pause");
         
         /**
          * Counters for connecting action states to tick counts.
@@ -92,6 +93,7 @@ export class QuadtrisInput {
         this.counters.set("RotateAntiClockwise", 0);
         this.counters.set("HardDrop", 0);
         this.counters.set("Hold", 0);
+        this.counters.set("Pause", 0);
     }
 
     /**
