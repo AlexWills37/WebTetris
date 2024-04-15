@@ -8,8 +8,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-CeolnsrR.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-CgnBWpKR.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-rc_KCOuv.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-B7Lcv0xB.css">
 	</head>
 	<body>
         <div class="container">
@@ -21,7 +21,7 @@
                 
                 
                 
-                <div class="fill hide" id="gameGUI">
+                <div class="fill" id="gameGUI">
                     <div id="scoreOverlay">
                         Lines Cleared: 
                         <br> <span id="linesCleared"></span>
@@ -44,6 +44,16 @@
                     <div id="pieceQueueOverlay">
                         
                     </div>
+                    <!-- <div id="gameBoardOutline"></div>
+                </div> -->
+
+                <div class="fill hide" id="pauseScreen">
+                    <br>
+                    <h1><i>Game Paused</i></h1>
+                    <br><button id="unpauseButton">Continue Game
+                        <div class="buttonBackground"></div>
+                        <div class="buttonFadeIn"></div>
+                    </button>
                 </div>
                 
                 <div class="fill" id="titleScreen">
@@ -63,6 +73,23 @@
                     </button>
                     <br>
                     <br><span id="GitHub">View the code on <a href="https://github.com/AlexWills37/WebTetris" target="_blank">GitHub</a>!</span>
+                </div>
+
+                <div class="fill hide" id="gameOverScreen">
+                    <h1>Game Over!</h1>
+                    <p>Your score: <span id="finalScore"></span></p>
+                    <p>jof</p>
+                    <p>jof</p>
+                    <br><button id="replayButton">Play Again
+                        <div class="buttonBackground"></div>
+                        <div class="buttonFadeIn"></div>
+                    </button>
+                    <br><button id="returnToTitleButton">Return to Title
+                            <div class="buttonBackground"></div>
+                            <div class="buttonFadeIn"></div>
+                        </button>
+                    
+
                 </div>
                 
                 
@@ -181,7 +208,7 @@
                         || (v_QueueID == 1. && v_GridPos.y >= 4. + borderSize)
                         || (v_QueueID == 3. && v_GridPos.y < -borderSize))
                     {
-                        gl_FragColor = vec4(0, 1, 1, 1);
+                        gl_FragColor = vec4(0.424, 0.447, 0.580, 1);
                     }
 
                     
