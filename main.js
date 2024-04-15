@@ -128,6 +128,7 @@ function main() {
     }
     
     startButton.addEventListener("click", startGame);
+    startButton.addEventListener("touchstart", startGame);
     document.querySelector("#heldPieceOverlay").addEventListener("click", function() {
         game.startNewGame();
     });

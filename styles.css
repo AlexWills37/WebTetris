@@ -187,12 +187,12 @@ div.hide {
 
 /* Game over elements */
 #gameOverScreen {
-    background-color: #88B2B5;
+    background-color: #BBFFDB;
     text-align: center;
 }
 
 /* Pause screen elements */
 #pauseScreen {
     text-align: center;
-    background-color: #6C7294;
+    background-color: #88B2B5;
 }
