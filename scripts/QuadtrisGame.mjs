@@ -153,16 +153,16 @@ export class QuadtrisGame {
     }
 
     static levels = {
-        1: 15,
-        2: 14,
-        3: 13,
+        1: 25,
+        2: 20,
+        3: 16,
         4: 12,
-        5: 11,
-        6: 10,
-        7: 9,
-        8: 7,
-        9: 5,
-        10: 3,
+        5: 10,
+        6: 8,
+        7: 6,
+        8: 5,
+        9: 4,
+        10: 2,
         11: 1,
         max: 11
     }
@@ -472,15 +472,17 @@ export class QuadtrisGame {
             // Hold the current piece and grab the next one
             this.gameState.heldPiece = this.gameState.playerPiece.shape;
             this.#grabNextPiece();
-        
+            this.#isStateChanged = true;
+            
             // Otherwise, we can only hold a piece that hasn't been held before (it came from the queue)
         } else if (!this.gameState.playerPiece.wasHeld) {
             let nextPiece = this.gameState.heldPiece;
             this.gameState.heldPiece = this.gameState.playerPiece.shape;
-
+            
             // Construct the new piece from the held piece data, and prevent it from being held again
             this.gameState.playerPiece = new QuadPiece(nextPiece);
             this.gameState.playerPiece.wasHeld = true;
+            this.#isStateChanged = true;
 
             // Check if move is possible, otherwise game over
             // Note: this should realistically never happen (the grid has not changed since the last piece),

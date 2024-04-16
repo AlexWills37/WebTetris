@@ -5,6 +5,7 @@
  */
 import * as twgl from 'twgl.js/dist/5.x/twgl-full.js';
 import {QuadPiece} from './QuadtrisGame.mjs'
+import { OverlayNode } from 'three/examples/jsm/nodes/display/BlendModeNode.js';
 
 export class QuadtrisRenderer {
     
@@ -63,7 +64,10 @@ export class QuadtrisRenderer {
     /** @type {Map<HTMLElement, CSS2Properties>} */
     #elementStyles = new Map();
 
-    #cssStyleRules = document.styleSheets[0].cssRules;
+    #cssStyleRules;
+
+    
+
 
     
 
@@ -71,6 +75,16 @@ export class QuadtrisRenderer {
         // Attach the line clear count to the HTML
         document.querySelector("#linesCleared").appendChild(this.#lineClearNode);
         document.querySelector("#speedLevel").appendChild(this.#speedLevelNode);
+
+        // Save the style rules from the main css file
+        const styleSheets = document.styleSheets;
+        let foundSheet = false;
+        for (let i = 0; i < styleSheets.length && !foundSheet; i++) {
+            if (styleSheets[i].href.includes("WebTetris")) {
+                this.#cssStyleRules = styleSheets[i].cssRules;
+                foundSheet = true;
+            }
+        }
 
 
         // Create color map
@@ -197,7 +211,6 @@ export class QuadtrisRenderer {
             u_BlockTexture: this.#blockTex
         };
         twgl.setUniforms(this.#shaderInfo, uniforms);
-
 
         
         

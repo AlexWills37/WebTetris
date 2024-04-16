@@ -66,6 +66,8 @@ function main() {
     const gameOverScreen = document.querySelector("#gameOverScreen");
     let onTitleScreen = true;
 
+    const finalScoreNode = document.createTextNode('0');
+    document.querySelector("#finalScore").appendChild(finalScoreNode);
     
     // Create the engine loop
     let timeSinceGameTick = 0;
@@ -105,6 +107,7 @@ function main() {
             if (gameOverScreen.classList.contains("hide")) {
                 // Display game over screen
                 gameOverScreen.classList.remove("hide");
+                finalScoreNode.textContent = game.gameState.linesCleared;
             }
         } else {    // Game is "over" and not started (on the title screen)
 
@@ -128,9 +131,9 @@ function main() {
     }
     
     startButton.addEventListener("click", startGame);
-    startButton.addEventListener("touchstart", startGame);
+    // startButton.addEventListener("touchstart", startGame);
     document.querySelector("#heldPieceOverlay").addEventListener("click", function() {
-        game.startNewGame();
+        game.holdPiece();
     });
     document.querySelector("#unpauseButton").addEventListener("click", function() {
         game.gameState.isPaused = false;
