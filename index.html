@@ -8,7 +8,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-h4ksN_qX.js"></script>
+		<script type="module" crossorigin src="/WebTetris/assets/index-ZDITQRDw.js"></script>
 		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-BOtT81U_.css">
 	</head>
 	<body>
@@ -44,19 +44,28 @@
                     <div id="pieceQueueOverlay">
                         
                     </div>
-                    <!-- <div id="gameBoardOutline"></div>
-                </div> -->
+                    <!-- <div id="gameBoardOutline"></div> -->
+                </div>
 
-                <div class="fill hide" id="pauseScreen">
+                <div class="fill" id="pauseScreen">
                     <br>
                     <h1><i>Game Paused</i></h1>
+                    <div>
+                        Controls:
+                        <br> A/D - Move left/right
+                        <br> ←/→ (or J/L) - Rotate left/right
+                        <br> E - Hold piece
+                        <br> W - Hard drop
+                        <br> S - Soft drop
+                    </div>
                     <br><button id="unpauseButton">Continue Game
                         <div class="buttonBackground"></div>
                         <div class="buttonFadeIn"></div>
                     </button>
                 </div>
+
                 
-                <div class="fill" id="titleScreen">
+                <div class="fill hide" id="titleScreen">
                     <h1>Quadtris</h1>
                     A JavaScript + WebGL implementation of the popular block-falling game 
                     <br>(<i>it rhymes with "Betris"!</i>)
