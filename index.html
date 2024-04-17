@@ -8,8 +8,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-CuENPExR.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-BOtT81U_.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-DKNtzfYs.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-DaexAqQK.css">
 	</head>
 	<body>
         <div class="container">
@@ -24,10 +24,11 @@
                     <div id="scoreOverlay">
                         Lines Cleared: 
                         <br> <span id="linesCleared"></span>
-                        <br>
                         <br> Speed Level:
                         <br> <span id="speedLevel"></span>
+                        <br> Score: <span id="score">
                         <br> <span id="debug"></span>
+
                     </div>
                     <div id="controlsGuide">
                         Controls:
@@ -65,9 +66,9 @@
 
                 
                 <div class="fill" id="titleScreen">
-                    <h1>4tris</h1>
+                    <h1>Quadtris</h1>
                     A JavaScript + WebGL implementation of the popular block-falling game 
-                    <br>(<i>it sounds like "Fortress"!</i>)
+                    <br>(<i>it rhymes with "Fortress"!</i>)
                     <br><button id="startButton">Start Game
                         <div class="buttonBackground"></div>
                         <div class="buttonFadeIn"></div>
@@ -85,7 +86,8 @@
 
                 <div class="fill hide" id="gameOverScreen">
                     <h1>Game Over!</h1>
-                    <p>Lines cleared: <span id="finalScore"></span></p>
+                    <p>Final score: <span id="finalScore"></span></p>
+                    <p>Lines cleared: <span id="finalLines"></span></p>
                     <p></p>
                     <p></p>
                     <br><button id="replayButton">Play Again
