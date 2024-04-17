@@ -35,6 +35,14 @@
  * game.runTick(inputMod);
  */
 export class QuadtrisInput {
+
+    selectedKey = "";
+    originalKeybind = "";
+    selectedAction = "";
+
+    /** @type {HTMLElement} */
+    selectedSpan = null;
+
     constructor() {
         /**
          * Accurate representation of action states based on user input.
@@ -68,6 +76,7 @@ export class QuadtrisInput {
         this.inputKeys.set("ArrowLeft", "RotateAntiClockwise");
         this.inputKeys.set("J", "RotateAntiClockwise");
         this.inputKeys.set("ArrowRight", "RotateClockwise");
+        this.inputKeys.set("L", "RotateClockwise");
         this.inputKeys.set("Escape", "Pause");
         
         /**
@@ -111,6 +120,35 @@ export class QuadtrisInput {
         }
 
         return this.inputKeys.get(key);
+    }
+
+    rebindControl(action, key) {
+        // Find existing control map and remove it
+        let rebindSuccessful = false;
+        let oldKey = "";
+        this.inputKeys.forEach(function(value, key, map) {
+            if (value == action) {
+                oldKey = key;
+            }
+        });
+
+        if (oldKey != "") {
+
+            // If the key exists for another action, do not rebind (can't have 1 key with 2 values)
+            if (this.inputKeys.has(key) && key != oldKey) {
+
+            } else {
+                // Key is either the same, or the key is not in the control scheme yet
+                this.inputKeys.delete(oldKey);
+
+                // Add new key
+                this.inputKeys.set(key, action);
+                rebindSuccessful = true;
+            }
+
+        }
+
+        return rebindSuccessful;
     }
 
     /**

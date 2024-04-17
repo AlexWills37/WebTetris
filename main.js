@@ -41,6 +41,8 @@ function createProgram(gl, vertexShader, fragmentShader) {
 }
 
 
+
+
 function main() {
     let debugLog = document.createTextNode('');
     document.querySelector("#debug").appendChild(debugLog);
@@ -155,6 +157,80 @@ function main() {
     });
 
     requestAnimationFrame(runGameFrame);
+
+    
+    function rebindControlKeypress(event) {
+
+        inputMod.selectedKey = event.key.length > 1 ? event.key : event.key.toUpperCase();
+        resolveRebind();
+    }
+
+    function resolveRebind() {
+
+        function endRebindProcess() {
+            // Remove listener to prevent further calls
+            document.removeEventListener("keydown", rebindControlKeypress);
+            inputMod.selectedSpan.innerText = inputMod.selectedKey;
+    
+            // Deselect everything
+            inputMod.selectedAction = "";
+            inputMod.selectedKey = "";
+            inputMod.selectedSpan.classList.add("ready");
+            inputMod.selectedSpan.classList.remove("waiting");
+            inputMod.selectedSpan = null;
+        }
+
+        // If escape is pressed, cancel the rebinding process
+        if (inputMod.selectedKey == "Escape") {
+            inputMod.selectedKey = inputMod.originalKeybind;
+            endRebindProcess();
+            // console.log("Rebind canceled.");
+
+            // Otherwise, try to rebind key
+        } else if (inputMod.rebindControl(inputMod.selectedAction, inputMod.selectedKey)){
+                // Rebind was successful!
+                endRebindProcess();
+                // console.log("Rebind complete!");
+        } else {
+            // Rebind did not succeed - key is already bound to another action
+            // console.log("Rebind failed...");
+        }
+        
+    }
+
+
+    let controlRebindElements = document.querySelectorAll(".controlRebind");
+
+    for (let i = 0; i < controlRebindElements.length; i++) {
+        let rebindButton = controlRebindElements[i];
+        rebindButton.classList.add("ready");
+        rebindButton.addEventListener("click", function() {
+            console.log("Rebind starting...");
+
+            // If rebind is in progress, cancel the old one
+            if (inputMod.selectedSpan != null) {
+
+            } else {
+
+            }
+
+            // Start rebind process - save the starting parameters
+            inputMod.originalKeybind = rebindButton.innerText;
+            inputMod.selectedSpan = rebindButton;
+            inputMod.selectedAction = rebindButton.id.substring(2);
+
+            // Prime the document to read and store the next keypress
+            document.addEventListener("keydown", rebindControlKeypress);
+
+            // Change the visual state of the button
+            rebindButton.classList.remove("ready");
+            rebindButton.classList.add("waiting");
+            rebindButton.innerText = "...";
+        });
+    }
+    controlRebindElements.forEach(function(value, key, parent) {
+        console.log(value.id);
+    })
 
 
 }

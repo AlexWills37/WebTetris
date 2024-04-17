@@ -197,3 +197,59 @@ div.hide {
     text-align: center;
     background-color: #88B2B5;
 }
+
+
+#settingsScreen {
+    background-color: #6C7294;
+    color: white;
+    text-align: center;
+    
+}
+
+#controlMapArea {
+    text-align: left;
+    position:relative;
+    /* background-color: rgba(187, 255, 219, 0.2); */
+    left:3%;
+    top: 5%;
+    width:94%;
+}
+
+.controlRebind {
+    color: #6C7294;
+    border-width: 3px;
+    border-style:solid;
+    border-color: white;
+    background-color:#0DE3DF;
+    padding: 0.5% 1%;
+    margin-left: 2%;
+    margin-right: 2%;
+    transition: 0.5s;
+    border-radius:2px;
+}
+
+.controlRebind:hover, .controlRebind.waiting{
+    background-color: #BBFFDB;
+    border-color:#88B2B5;
+}
+
+#settingsScreen button {
+    position: absolute;
+    top: 80%;
+    left: 36.5%;
+}
+
+.leftHalf {
+    position:absolute;
+    top: 0%;
+    height: 100%;
+    left: 0%;
+    width: 50%;
+}
+.rightHalf {
+    position:absolute;
+    top: 0%;
+    height: 100%;
+    right: 0%;
+    width: 50%;
+}
