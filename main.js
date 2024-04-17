@@ -67,8 +67,9 @@ function main() {
     let onTitleScreen = true;
 
     const finalScoreNode = document.createTextNode('0');
+    const finalLinesNode = document.createTextNode('0');
     document.querySelector("#finalScore").appendChild(finalScoreNode);
-    
+    document.querySelector("#finalLines").append(finalLinesNode);
     // Create the engine loop
     let timeSinceGameTick = 0;
     let lastFrameTime = 0;
@@ -107,7 +108,8 @@ function main() {
             if (gameOverScreen.classList.contains("hide")) {
                 // Display game over screen
                 gameOverScreen.classList.remove("hide");
-                finalScoreNode.textContent = game.gameState.linesCleared;
+                finalScoreNode.textContent = game.gameState.score;
+                finalLinesNode.textContent = game.gameState.linesCleared;
             }
         } else {    // Game is "over" and not started (on the title screen)
 

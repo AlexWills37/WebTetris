@@ -137,7 +137,9 @@ export class QuadtrisGame {
          * 
          * @type {number}
          */
-        speedLevel: 1
+        speedLevel: 1,
+
+        score: 0
     }
 
     /**
@@ -191,7 +193,7 @@ export class QuadtrisGame {
      */
     #gravityTickCounter = 0;
 
-    
+    #possibleTSpin = false;
 
 
     /**
@@ -298,6 +300,11 @@ export class QuadtrisGame {
                 pieceMoved = true;
             }
             else {
+
+                // First, update the grace timer (to allow for it to be boosted by player action)
+                if (this.#timerRunning)
+                    this.#updateGraceTimer(this.gameTickTime);
+
                 // 1 - check for soft drop
                 if (inputMod.getInputState("SoftDrop")) {
                     pieceMoved = this.tryMovePiece(0, -1) || pieceMoved;
@@ -337,14 +344,20 @@ export class QuadtrisGame {
                 }
     
                 // Deposit piece if lock timer has elapsed AND piece cannot move down
-                if (this.#timerRunning) {
-                    this.#updateGraceTimer(this.gameTickTime);
-                    if (this.#graceTimer <= 0) {
-                        let atBottom = !this.tryMovePiece(0, -1);
-                        pieceMoved = true; 
-                        if (atBottom) {
-                            this.finishWithPiece();
-                        }
+                if (this.#timerRunning && this.#graceTimer <= 0) {
+                    let atBottom = !this.tryMovePiece(0, -1);
+                    pieceMoved = true; 
+                    if (atBottom) {
+                        this.finishWithPiece();
+                    }
+                } else if (!this.#timerRunning) {
+                    // Start timer if the block is at the bottom (independent of gravity ticks)
+                    let atBottom = false;
+                    for (const block of this.gameState.playerPiece.blocks) {
+                        atBottom = atBottom || this.isBlockHere(block[0], block[1] - 1);
+                    }
+                    if (atBottom) {
+                        this.#startGraceTimer();
                     }
                 }
     
@@ -391,7 +404,9 @@ export class QuadtrisGame {
 
         this.gameState.linesCleared = 0;
         this.gameState.speedLevel = 0;
+        this.gameState.score = 0;
         this.gameState.pieceQueue = [];
+        this.gameState.heldPiece = null;
         this.#refillPieceQueue();
         this.#grabNextPiece();
         this.#updateGhostProjections();
@@ -421,8 +436,10 @@ export class QuadtrisGame {
 
         if (canMove) {
             this.#movePlayerPiece(dx, dy);
-            if (dx != 0)
+            if (dx != 0) {
                 this.#boostGraceTimer();
+            }
+            
             if (dy != 0){
                 this.#timerRunning = false;
             }
@@ -473,6 +490,8 @@ export class QuadtrisGame {
             this.gameState.heldPiece = this.gameState.playerPiece.shape;
             this.#grabNextPiece();
             this.#isStateChanged = true;
+            this.#gravityTickCounter = 0;
+
             
             // Otherwise, we can only hold a piece that hasn't been held before (it came from the queue)
         } else if (!this.gameState.playerPiece.wasHeld) {
@@ -483,6 +502,8 @@ export class QuadtrisGame {
             this.gameState.playerPiece = new QuadPiece(nextPiece);
             this.gameState.playerPiece.wasHeld = true;
             this.#isStateChanged = true;
+            this.#gravityTickCounter = 0;
+            
 
             // Check if move is possible, otherwise game over
             // Note: this should realistically never happen (the grid has not changed since the last piece),
@@ -512,13 +533,21 @@ export class QuadtrisGame {
      */
     finishWithPiece() {
         const previousLinesCleared = this.gameState.linesCleared;
+        // Calculate score possibilities
+        // Check for T spins
+        if (this.gameState.playerPiece.shape == 'T') {
+            this.#possibleTSpin = true;
+        }
         this.#depositPlayerPiece();
         this.#grabNextPiece();
         this.#timerRunning = false;
         this.#resolveLineClears();
 
+        // If lines are cleared, update score/level
+
         if (this.gameState.linesCleared != previousLinesCleared) {
             this.#updateSpeedLevel();
+            this.gameState.score += Math.pow(this.gameState.linesCleared - previousLinesCleared, 2) * 100;
         }
     }
 
@@ -794,6 +823,9 @@ export class QuadtrisGame {
             this.gameState.playerPiece.active = false;
             this.#gameOverAnimation = true;
         }
+
+        this.#gravityTickCounter = 0;
+
     }
     
     
@@ -829,9 +861,9 @@ export class QuadtrisGame {
      */    
     #boostGraceTimer() {
         if (this.#timerRunning && this.#graceBoostCount < 30) {
-            this.#graceTimer = Math.min(this.#graceTimer + 0.5, this.graceTimerDuration);
+            this.#graceTimer = this.graceTimerDuration;
             this.#graceBoostCount++;
-        }
+        } 
     }
 
     

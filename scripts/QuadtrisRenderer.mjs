@@ -56,6 +56,7 @@ export class QuadtrisRenderer {
     #lineClearNode = document.createTextNode('0');
 
     #speedLevelNode = document.createTextNode('1');
+    #scoreNode = document.createTextNode("0");
 
     #previousWidth = 0;
     #previousHeight = 0;
@@ -67,7 +68,8 @@ export class QuadtrisRenderer {
     #cssStyleRules;
 
     
-
+    #buttonFontSize;
+    #buttons = document.querySelectorAll("button");
 
     
 
@@ -75,6 +77,7 @@ export class QuadtrisRenderer {
         // Attach the line clear count to the HTML
         document.querySelector("#linesCleared").appendChild(this.#lineClearNode);
         document.querySelector("#speedLevel").appendChild(this.#speedLevelNode);
+        document.querySelector("#score").appendChild(this.#scoreNode);
 
         // Save the style rules from the main css file
         const styleSheets = document.styleSheets;
@@ -215,6 +218,11 @@ export class QuadtrisRenderer {
         
         
         this.#registerElementStyle("#gameSpace");
+        this.#buttonFontSize = this.#findCSSRules("button").fontSize;
+        this.#buttonFontSize = Number(this.#buttonFontSize.substring(0, this.#buttonFontSize.length - 2));
+        console.log(this.#buttonFontSize);
+        console.log(this.#buttons);
+        
     }
 
     /**
@@ -233,6 +241,7 @@ export class QuadtrisRenderer {
      *                                              landing spot.
      * @param {number}      gameState.linesCleared  The number of lines the player has cleared.
      * @param {number}      gameState.speedLevel    The speed level the game is on.
+     * @param {number}      gameState.score         The player's score.
      */
     updateData(gameState) {
         // Update the grid texture
@@ -396,10 +405,12 @@ export class QuadtrisRenderer {
      * @param {Object}  gameState               The data needed to render the game.
      * @param {number}  gameState.linesCleared  The number of lines the player has cleared.
      * @param {number}  gameState.speedLevel    The speed level the game is on.
+     * @param {number}  gameState.score         The player's score.
      */
     #updateGUIOverlay(gameState) {
         this.#lineClearNode.nodeValue = gameState.linesCleared;
         this.#speedLevelNode.nodeValue = gameState.speedLevel == 11 ? "MAX" : gameState.speedLevel;
+        this.#scoreNode.nodeValue = gameState.score;
         
     }
 
@@ -504,5 +515,15 @@ export class QuadtrisRenderer {
             key.style.width = width;
             key.style.height = height;
         });
+
+        // Rescale the buttons font sizes
+        const buttonFontSize = (tooWide ? 
+            this.#buttonFontSize
+            : this.#buttonFontSize * 3 * canvasWidth / (4 * canvasHeight));
+
+        for(let i = 0; i < this.#buttons.length; i++) {
+            let button = this.#buttons[i];
+            button.style.fontSize = buttonFontSize + "vh";
+        }
     }
 }
