@@ -259,13 +259,15 @@ export class QuadtrisGame {
     /**
      * Progresses the game by 1 tick.
      * 
+     * Update the input module with inputMod.updateCounters() exactly one time before 
+     * calling this function each tick.
+     * 
      * @param {QuadtrisInput} inputMod 
      */
     runTick(inputMod) {
 
 
         // If game is paused, only the input mod will update
-        inputMod.updateCounters();
         if (!this.gameState.isPaused) {
 
             let pieceMoved = false;

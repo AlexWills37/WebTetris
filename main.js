@@ -71,11 +71,16 @@ function main() {
     const gameOverScreen = document.querySelector("#gameOverScreen");
     const settingsScreen = document.querySelector("#settingsScreen");
     let onTitleScreen = true;
+    let onSettings = false;
 
     const finalScoreNode = document.createTextNode('0');
     const finalLinesNode = document.createTextNode('0');
     document.querySelector("#finalScore").appendChild(finalScoreNode);
     document.querySelector("#finalLines").append(finalLinesNode);
+
+
+    
+
     // Create the engine loop
     let timeSinceGameTick = 0;
     let lastFrameTime = 0;
@@ -84,11 +89,22 @@ function main() {
         lastFrameTime = time;
         timeSinceGameTick += deltaTime;
 
+        // If settings screen is open, only process escape key
+        if (!settingsScreen.classList.contains("hide")) {
+            inputMod.updateCounters();
+            if (inputMod.getCounter("Pause") == 1) {
+                settingsScreen.classList.add("hide");
+            }
+        
+
         // If the game is running, update the game:
-        if (!game.gameState.gameOver) {
+        } else if (!game.gameState.gameOver) {
+
             // Run game ticks at a fixed interval
             if (timeSinceGameTick >= game.gameTickTime) {
                 timeSinceGameTick = Math.min(timeSinceGameTick - game.gameTickTime, game.gameTickTime);
+                
+                inputMod.updateCounters();
                 game.runTick(inputMod);
 
                 // Handle pause/unpause
@@ -164,7 +180,7 @@ function main() {
 
     let settingsDebugMessage = document.createTextNode('');
     document.querySelector("#settingsConsoleText").appendChild(settingsDebugMessage);
-    RebindMod.connectHTMLElements(".controlRebind", inputMod, settingsDebugMessage);
+    RebindMod.connectHTMLElements(".controlRebind", inputMod, settingsDebugMessage, settingsScreen);
     
     
 
@@ -173,7 +189,6 @@ function main() {
     });
 
     document.querySelectorAll(".settingsButton").forEach(function(button, key, parent) {
-        console.log(button);
         button.addEventListener("click", function() {settingsScreen.classList.remove("hide")});
     });
     

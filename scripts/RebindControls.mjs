@@ -7,6 +7,9 @@ let outputText = null;
 /** @type {Map<string, NodeListOf<Element>} */
 let controlLabels = new Map();
 
+/** @type {HTMLElement} */
+let settingsScreen;
+
 /**
  * 
  * @param {QuadtrisInput} inputModule 
@@ -104,12 +107,14 @@ function connectAllRebindButtons(selectorText, inputMod){
          */
         function resolveRebind() {
 
-            // If escape is pressed, cancel the rebinding process
-            if (inputMod.selectedKey == "Escape") {
+            // If escape is pressed or the settings was closed, cancel the rebinding process
+            if (inputMod.selectedKey == "Escape" || settingsScreen.classList.contains("hide")) {
                 inputMod.selectedKey = inputMod.originalKeybind;
                 endRebindProcess();
                 // console.log("Rebind canceled.");
                 outputText.textContent = "Rebind canceled.";
+                // Prevent the counter from thinking escape was pressed on the next frame
+                inputMod.updateCounters();
     
                 // Otherwise, try to rebind key
             } else if (inputMod.rebindControl(inputMod.selectedAction, inputMod.selectedKey)){
@@ -122,6 +127,7 @@ function connectAllRebindButtons(selectorText, inputMod){
             } else {
                 // Rebind did not succeed - key is already bound to another action
                 // console.log("Rebind failed...");
+                outputText.textContent = '\'' + inputMod.selectedKey + "\' is already in use (press another key)..."
             }
 
             function endRebindProcess() {
@@ -158,7 +164,8 @@ function connectAllRebindButtons(selectorText, inputMod){
  * @param {QuadtrisInput}   inputMod 
  * @param {Text}            rebindOutputTextNode 
  */
-export function connectHTMLElements(rebindSelectorText, inputMod, rebindOutputTextNode) {
+export function connectHTMLElements(rebindSelectorText, inputMod, rebindOutputTextNode, settingsScreenElement) {
+    settingsScreen = settingsScreenElement;
     outputText = rebindOutputTextNode;
     connectAllRebindButtons(rebindSelectorText, inputMod);
 
