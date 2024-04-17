@@ -90,6 +90,8 @@ function connectAllRebindButtons(selectorText, inputMod){
 
         // Also update the button's text with the correct key
         rebindButton.innerText = inputMod.actionToKey(rebindButton.id.substring(2));
+        if (rebindButton.innerText == " ")
+            rebindButton.innerText = "Space";
 
         // Keypress event functions
         /**
@@ -135,9 +137,10 @@ function connectAllRebindButtons(selectorText, inputMod){
                 document.removeEventListener("keydown", rebindControlKeypress);
                 
                 // Update text for control
-                inputMod.selectedSpan.innerText = inputMod.selectedKey;
+                const newKeyLabel = inputMod.selectedKey == " " ? "Space" : inputMod.selectedKey;
+                inputMod.selectedSpan.innerText = newKeyLabel;
                 controlLabels.get(inputMod.selectedAction).forEach(function(element, key, parent) {
-                    element.innerText = inputMod.selectedKey;
+                    element.innerText = newKeyLabel;
                 });
         
                 // Deselect everything
@@ -175,7 +178,9 @@ export function connectHTMLElements(rebindSelectorText, inputMod, rebindOutputTe
 
         // Update the text with the initial controls
         controlLabels.get(action).forEach(function(element, key, parent) {
-            element.innerText = inputMod.actionToKey(action);
+            const keyLabel = inputMod.actionToKey(action);
+            element.innerText = keyLabel == " " ? "Space" : keyLabel;
+            
         });
     });
 }
