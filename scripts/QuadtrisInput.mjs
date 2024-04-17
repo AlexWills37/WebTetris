@@ -74,9 +74,7 @@ export class QuadtrisInput {
         this.inputKeys.set("S", "SoftDrop");
         this.inputKeys.set("E", "Hold");
         this.inputKeys.set("ArrowLeft", "RotateAntiClockwise");
-        this.inputKeys.set("J", "RotateAntiClockwise");
         this.inputKeys.set("ArrowRight", "RotateClockwise");
-        this.inputKeys.set("L", "RotateClockwise");
         this.inputKeys.set("Escape", "Pause");
         
         /**
@@ -120,6 +118,16 @@ export class QuadtrisInput {
         }
 
         return this.inputKeys.get(key);
+    }
+
+    actionToKey(action) {
+        let foundKey = "";
+        this.inputKeys.forEach(function(value, key, map) {
+            if (value == action)
+                foundKey = key;
+        });
+
+        return foundKey;
     }
 
     rebindControl(action, key) {

@@ -220,8 +220,7 @@ export class QuadtrisRenderer {
         this.#registerElementStyle("#gameSpace");
         this.#buttonFontSize = this.#findCSSRules("button").fontSize;
         this.#buttonFontSize = Number(this.#buttonFontSize.substring(0, this.#buttonFontSize.length - 2));
-        console.log(this.#buttonFontSize);
-        console.log(this.#buttons);
+        
         
     }
 

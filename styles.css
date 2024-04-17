@@ -21,6 +21,16 @@ canvas {
     height:100%;
 }
 
+.leftAlign {
+    text-align: left;
+}
+
+.middleBox {
+    position: relative;
+    left:22.5%;
+    width: 55%;
+}
+
 #gameSpace {
     position:absolute;
     bottom: 0vh;
@@ -37,7 +47,7 @@ button {
     font-family: "Quicksand";
     color: black;
     position:relative;
-    top:10%;
+    top:0%;
     left:0%;
     width:27%;
     height:12%;
@@ -119,8 +129,8 @@ div.hide {
     position:absolute;
     right: 67%;
     width: 29%;
-    top: 39%;
-    height: 20%;
+    top: 33%;
+    height: 26%;
     font-size: 0.71em;
     padding-left:1%;
     border-style:solid;
@@ -210,9 +220,9 @@ div.hide {
     text-align: left;
     position:relative;
     /* background-color: rgba(187, 255, 219, 0.2); */
-    left:3%;
+    left:12.5%;
     top: 5%;
-    width:94%;
+    width:75%;
 }
 
 .controlRebind {
@@ -224,8 +234,15 @@ div.hide {
     padding: 0.5% 1%;
     margin-left: 2%;
     margin-right: 2%;
-    transition: 0.5s;
+    transition: background-color, border-color 0.5s;
     border-radius:2px;
+
+    display:inline-block;
+    position:relative;
+    right:0%;
+    text-align: center;
+    width: 37%;
+    height: 1.2em;
 }
 
 .controlRebind:hover, .controlRebind.waiting{
@@ -252,4 +269,5 @@ div.hide {
     height: 100%;
     right: 0%;
     width: 50%;
+    text-align: right;
 }

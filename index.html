@@ -31,11 +31,12 @@
                     </div>
                     <div id="controlsGuide">
                         Controls:
-                        <br> A/D - Move left/right
-                        <br> ←/→ (or J/L) - Rotate left/right
-                        <br> E - Hold piece
-                        <br> W - Hard drop
-                        <br> S - Soft drop
+                        <br> Pause - Escape
+                        <br> Move - <span class="cd_MoveLeft"></span> / <span class="cd_MoveRight"></span>
+                        <br> Rotate - <span class="cd_RotateAntiClockwise"></span> / <span class="cd_RotateClockwise"></span>
+                        <br> Hold piece - <span class="cd_Hold"></span>
+                        <br> Hard drop - <span class="cd_HardDrop"></span>
+                        <br> Soft drop - <span class="cd_SoftDrop"></span>
                     </div>
                     <div id="heldPieceOverlay">
                         <div id="holdText">HOLD [E]</div>
@@ -49,15 +50,20 @@
                 <div class="fill hide" id="pauseScreen">
                     <br>
                     <h1><i>Game Paused</i></h1>
-                    <div>
-                        Controls:
-                        <br> A/D - Move left/right
-                        <br> ←/→ (or J/L) - Rotate left/right
-                        <br> E - Hold piece
-                        <br> W - Hard drop
-                        <br> S - Soft drop
+                    Controls:
+                    <div class="leftAlign middleBox">
+                        <br> Pause - Escape
+                        <br> Move Left/Right - <span class="cd_MoveLeft"></span> / <span class="cd_MoveRight"></span>
+                        <br> Rotate Left/Right - <span class="cd_RotateAntiClockwise"></span> / <span class="cd_RotateClockwise"></span>
+                        <br> Hold piece - <span class="cd_Hold"></span>
+                        <br> Hard drop - <span class="cd_HardDrop"></span>
+                        <br> Soft drop - <span class="cd_SoftDrop"></span>
                     </div>
                     <br><button id="unpauseButton">Continue Game
+                        <div class="buttonBackground"></div>
+                        <div class="buttonFadeIn"></div>
+                    </button>
+                    <br><button class="settingsButton">Change Controls
                         <div class="buttonBackground"></div>
                         <div class="buttonFadeIn"></div>
                     </button>
@@ -68,17 +74,19 @@
                     <h1>Quadtris</h1>
                     A JavaScript + WebGL implementation of the popular block-falling game 
                     <br>(<i>it rhymes with "Fortress"!</i>)
+                    <br>
+                    <br>
                     <br><button id="startButton">Start Game
                         <div class="buttonBackground"></div>
                         <div class="buttonFadeIn"></div>
                     </button>
                     <br>
                     <br>
-                    <!-- <br><button class="off" disabled>About 
-                        <br>    (under construction)
+                    <br><button class="settingsButton">Settings 
+                        <!-- <br>    (under construction) -->
                         <div class="buttonBackground"></div>
                         <div class="buttonFadeIn"></div>
-                    </button> -->
+                    </button>
                     <br>
                     <br><span id="GitHub">View the code on <a href="https://github.com/AlexWills37/WebTetris" target="_blank">GitHub</a>!</span>
                 </div>
@@ -101,19 +109,21 @@
 
                 </div>
                 
-                <div class="fill" id="settingsScreen">
+                <div class="fill hide" id="settingsScreen">
                     <h1>Settings</h1>
                     To change a control, click on it's blue box, 
                     <br>then press the key you want to change it to.
+                    <br>
+                    <br><i><span id="settingsConsoleText"></span></i>
                     <div id="controlMapArea">
                         <div class="leftHalf">
-                            Move Left <span class="controlRebind" id="c_MoveLeft"> A </span>
+                           ← Move Left <span class="controlRebind" id="c_MoveLeft"> A </span>
                            <br>
-                           <br> Move Right <span class="controlRebind" id="c_MoveRight"> D </span>
+                           <br> → Move Right <span class="controlRebind" id="c_MoveRight"> D </span>
                            <br>
-                           <br> Rotate Left <span class="controlRebind" id="c_RotateAntiClockwise"> J </span> (also LeftArrow)
+                           <br> ↺ Rotate Left <span class="controlRebind" id="c_RotateAntiClockwise"> J </span>
                            <br>
-                           <br> Rotate Right <span class="controlRebind" id="c_RotateClockwise"> L </span> (also RightArrow)
+                           <br> ↻ Rotate Right <span class="controlRebind" id="c_RotateClockwise"> L </span>
 
                         </div>
                         <div class="rightHalf">
@@ -125,7 +135,7 @@
                         </div>
                     </div>
 
-                    <button>Return to pause
+                    <button id="exitSettingsButton">Exit Settings
                         <div class="buttonBackground"></div>
                         <div class="buttonFadeIn"></div>
                     </button>

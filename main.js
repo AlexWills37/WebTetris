@@ -3,6 +3,8 @@ import {QuadtrisGame} from './scripts/QuadtrisGame.mjs'
 import {QuadtrisInput as Input} from './scripts/QuadtrisInput.mjs'
 import {QuadtrisRenderer} from './scripts/QuadtrisRenderer.mjs'
 
+import * as RebindMod from './scripts/RebindControls.mjs'
+
 /**
  * Game state:
  *      Grid
@@ -52,6 +54,7 @@ function main() {
 
     // Create input module
     let inputMod = new Input();
+    RebindMod.loadInputSettings(inputMod);
     document.addEventListener('keydown', function(event) {
         inputMod.setInputState(event.key, true);
     });
@@ -66,6 +69,7 @@ function main() {
     const titleScreen = document.querySelector("#titleScreen");
     const pauseScreen = document.querySelector("#pauseScreen");
     const gameOverScreen = document.querySelector("#gameOverScreen");
+    const settingsScreen = document.querySelector("#settingsScreen");
     let onTitleScreen = true;
 
     const finalScoreNode = document.createTextNode('0');
@@ -158,79 +162,23 @@ function main() {
 
     requestAnimationFrame(runGameFrame);
 
+    let settingsDebugMessage = document.createTextNode('');
+    document.querySelector("#settingsConsoleText").appendChild(settingsDebugMessage);
+    RebindMod.connectHTMLElements(".controlRebind", inputMod, settingsDebugMessage);
     
-    function rebindControlKeypress(event) {
-
-        inputMod.selectedKey = event.key.length > 1 ? event.key : event.key.toUpperCase();
-        resolveRebind();
-    }
-
-    function resolveRebind() {
-
-        function endRebindProcess() {
-            // Remove listener to prevent further calls
-            document.removeEventListener("keydown", rebindControlKeypress);
-            inputMod.selectedSpan.innerText = inputMod.selectedKey;
     
-            // Deselect everything
-            inputMod.selectedAction = "";
-            inputMod.selectedKey = "";
-            inputMod.selectedSpan.classList.add("ready");
-            inputMod.selectedSpan.classList.remove("waiting");
-            inputMod.selectedSpan = null;
-        }
 
-        // If escape is pressed, cancel the rebinding process
-        if (inputMod.selectedKey == "Escape") {
-            inputMod.selectedKey = inputMod.originalKeybind;
-            endRebindProcess();
-            // console.log("Rebind canceled.");
+    document.querySelector("#exitSettingsButton").addEventListener("click", function(){
+        settingsScreen.classList.add("hide");
+    });
 
-            // Otherwise, try to rebind key
-        } else if (inputMod.rebindControl(inputMod.selectedAction, inputMod.selectedKey)){
-                // Rebind was successful!
-                endRebindProcess();
-                // console.log("Rebind complete!");
-        } else {
-            // Rebind did not succeed - key is already bound to another action
-            // console.log("Rebind failed...");
-        }
-        
-    }
-
-
-    let controlRebindElements = document.querySelectorAll(".controlRebind");
-
-    for (let i = 0; i < controlRebindElements.length; i++) {
-        let rebindButton = controlRebindElements[i];
-        rebindButton.classList.add("ready");
-        rebindButton.addEventListener("click", function() {
-            console.log("Rebind starting...");
-
-            // If rebind is in progress, cancel the old one
-            if (inputMod.selectedSpan != null) {
-
-            } else {
-
-            }
-
-            // Start rebind process - save the starting parameters
-            inputMod.originalKeybind = rebindButton.innerText;
-            inputMod.selectedSpan = rebindButton;
-            inputMod.selectedAction = rebindButton.id.substring(2);
-
-            // Prime the document to read and store the next keypress
-            document.addEventListener("keydown", rebindControlKeypress);
-
-            // Change the visual state of the button
-            rebindButton.classList.remove("ready");
-            rebindButton.classList.add("waiting");
-            rebindButton.innerText = "...";
-        });
-    }
-    controlRebindElements.forEach(function(value, key, parent) {
-        console.log(value.id);
-    })
+    document.querySelectorAll(".settingsButton").forEach(function(button, key, parent) {
+        console.log(button);
+        button.addEventListener("click", function() {settingsScreen.classList.remove("hide")});
+    });
+    
+    
+    
 
 
 }
