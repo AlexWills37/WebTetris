@@ -178,6 +178,7 @@ function main() {
 
     requestAnimationFrame(runGameFrame);
 
+    // Setup settings page
     let settingsDebugMessage = document.createTextNode('');
     document.querySelector("#settingsConsoleText").appendChild(settingsDebugMessage);
     RebindMod.connectHTMLElements(".controlRebind", inputMod, settingsDebugMessage, settingsScreen);

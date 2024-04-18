@@ -93,65 +93,66 @@ function connectAllRebindButtons(selectorText, inputMod){
         if (rebindButton.innerText == " ")
             rebindButton.innerText = "Space";
 
-        // Keypress event functions
-        /**
-         * Saves the selected key and resolves the rebind.
-         * 
-         * @param {*} event 
-         */
-        function rebindControlKeypress(event) {
-            inputMod.selectedKey = event.key.length > 1 ? event.key : event.key.toUpperCase();
-            resolveRebind();
-        }
+    }
 
-        /**
-         * Processes the rebind request, removing the keydown event listener if successful.
-         */
-        function resolveRebind() {
+    // Keypress event functions
+    /**
+     * Saves the selected key and resolves the rebind.
+     * 
+     * @param {*} event 
+     */
+    function rebindControlKeypress(event) {
+        inputMod.selectedKey = event.key.length > 1 ? event.key : event.key.toUpperCase();
+        resolveRebind();
+    }
 
-            // If escape is pressed or the settings was closed, cancel the rebinding process
-            if (inputMod.selectedKey == "Escape" || settingsScreen.classList.contains("hide")) {
-                inputMod.selectedKey = inputMod.originalKeybind;
+    /**
+     * Processes the rebind request, removing the keydown event listener if successful.
+     */
+    function resolveRebind() {
+
+        // If escape is pressed or the settings were closed, cancel the rebinding process
+        if (inputMod.selectedKey == "Escape" || settingsScreen.classList.contains("hide")) {
+            inputMod.selectedKey = inputMod.originalKeybind;
+            endRebindProcess();
+            // console.log("Rebind canceled.");
+            outputText.textContent = "Rebind canceled.";
+            // Prevent the counter from thinking escape was pressed on the next frame
+            inputMod.updateCounters();
+
+            // Otherwise, try to rebind key
+        } else if (inputMod.rebindControl(inputMod.selectedAction, inputMod.selectedKey)){
+                // Rebind was successful!
+                outputText.textContent = "Rebind successful!";
                 endRebindProcess();
-                // console.log("Rebind canceled.");
-                outputText.textContent = "Rebind canceled.";
-                // Prevent the counter from thinking escape was pressed on the next frame
-                inputMod.updateCounters();
-    
-                // Otherwise, try to rebind key
-            } else if (inputMod.rebindControl(inputMod.selectedAction, inputMod.selectedKey)){
-                    // Rebind was successful!
-                    outputText.textContent = "Rebind successful!";
-                    endRebindProcess();
-                    saveInputSettings(inputMod);
-                    // console.log("Rebind complete!");
+                saveInputSettings(inputMod);
+                // console.log("Rebind complete!");
 
-            } else {
-                // Rebind did not succeed - key is already bound to another action
-                // console.log("Rebind failed...");
-                outputText.textContent = '\'' + inputMod.selectedKey + "\' is already in use (press another key)..."
-            }
-
-            function endRebindProcess() {
-                // Remove listener to prevent further calls
-                document.removeEventListener("keydown", rebindControlKeypress);
-                
-                // Update text for control
-                const newKeyLabel = inputMod.selectedKey == " " ? "Space" : inputMod.selectedKey;
-                inputMod.selectedSpan.innerText = newKeyLabel;
-                controlLabels.get(inputMod.selectedAction).forEach(function(element, key, parent) {
-                    element.innerText = newKeyLabel;
-                });
-        
-                // Deselect everything
-                inputMod.selectedAction = "";
-                inputMod.selectedKey = "";
-                inputMod.selectedSpan.classList.add("ready");
-                inputMod.selectedSpan.classList.remove("waiting");
-                inputMod.selectedSpan = null;
-            }
-            
+        } else {
+            // Rebind did not succeed - key is already bound to another action
+            // console.log("Rebind failed...");
+            outputText.textContent = '\'' + inputMod.selectedKey + "\' is already in use (press another key)..."
         }
+
+        function endRebindProcess() {
+            // Remove listener to prevent further calls
+            document.removeEventListener("keydown", rebindControlKeypress);
+            
+            // Update text for control
+            const newKeyLabel = inputMod.selectedKey == " " ? "Space" : inputMod.selectedKey;
+            inputMod.selectedSpan.innerText = newKeyLabel;
+            controlLabels.get(inputMod.selectedAction).forEach(function(element, key, parent) {
+                element.innerText = newKeyLabel;
+            });
+    
+            // Deselect everything
+            inputMod.selectedAction = "";
+            inputMod.selectedKey = "";
+            inputMod.selectedSpan.classList.remove("waiting");
+            inputMod.selectedSpan.classList.add("ready");
+            inputMod.selectedSpan = null;
+        }
+        
     }
 }
 

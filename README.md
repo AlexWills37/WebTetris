@@ -20,11 +20,14 @@ The game ends when the blocks reach the top of the grid.
 
 ### Controls
 
+> The listed key binds are the default controls. Any of the actions
+> can be bound to different controls in the game's settings.
+
 **Move the falling blocks left/right** - [A] and [D]
 
-**Rotate the falling blocks clockwise** - [L] or [Right Arrow Key]
+**Rotate the falling blocks clockwise** - [Right Arrow Key]
 
-**Rotate the falling blocks counter-clockwise** - [J] or [Left Arrow Key]
+**Rotate the falling blocks counter-clockwise** - [Left Arrow Key]
 
 **Hold a piece** - [E]
 
@@ -37,6 +40,8 @@ The game ends when the blocks reach the top of the grid.
 > This quickly moves the piece to the bottom, as far as it can go. Be careful, you won't be able to move the piece any more after doing this!
 
 **Pause game** - [Escape]
+
+> This action cannot be bound to another key.
 
 ## Game development
 
@@ -92,6 +97,6 @@ The texture is 4x10, where each 4x2 rectangle fits one piece. The first piece is
 Below are some features planned for development:
 
 - [ ] Save user's top scores
-- [ ] Allow custom controls
+- [x] Allow custom controls
 - [ ] Mobile controls + full support
 - [ ] Better visuals
