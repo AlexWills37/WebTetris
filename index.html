@@ -242,8 +242,11 @@
                     gl_FragColor = vec4(vec3(0.35), 1);
 
                     float borderSize = 0.2;
+
+                    // If we are within the border
                     if (v_GridPos.y >= -borderSize && v_GridPos.y < 4. + borderSize && v_GridPos.x >= -borderSize && v_GridPos.x < 4. + borderSize) {
 
+                        // If we are in the space to draw a block
                         if (v_GridPos.y >= 1. && v_GridPos.y < 3. && v_GridPos.x >= 0. && v_GridPos.x < 4.) {
                             vec2 dataLocation = v_GridPos / vec2(4., 10.);
                             dataLocation.y += ((2. * v_QueueID - 1.)/10.);
@@ -256,16 +259,14 @@
                                 gl_FragColor = blockData * texColor;
                             }
                         }
+                        
+                        // If we are in the border area, where a border should be
                     } else if ((v_QueueID == 0. || v_GridPos.x < -borderSize || v_GridPos.x >= 4. + borderSize) 
                         || (v_QueueID == 1. && v_GridPos.y >= 4. + borderSize)
                         || (v_QueueID == 3. && v_GridPos.y < -borderSize))
                     {
                         gl_FragColor = vec4(0.424, 0.447, 0.580, 1);
                     }
-
-                    
-
-
                 } 
 
             }
