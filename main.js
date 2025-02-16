@@ -2,6 +2,7 @@
 import {QuadtrisGame} from './scripts/QuadtrisGame.mjs'
 import {QuadtrisInput as Input} from './scripts/QuadtrisInput.mjs'
 import {QuadtrisRenderer} from './scripts/QuadtrisRenderer.mjs'
+import { TouchInput } from './scripts/TouchInput.mjs'
 
 import * as RebindMod from './scripts/RebindControls.mjs'
 
@@ -62,6 +63,9 @@ function main() {
         inputMod.setInputState(event.key, false);
     });
 
+    
+    let touchInput = new TouchInput(document.querySelector("#gameGUI"));
+
     // Create game and renderer
     let game = new QuadtrisGame();
     let renderer = new QuadtrisRenderer();
@@ -104,8 +108,12 @@ function main() {
             if (timeSinceGameTick >= game.gameTickTime) {
                 timeSinceGameTick = Math.min(timeSinceGameTick - game.gameTickTime, game.gameTickTime);
                 
+
+
                 inputMod.updateCounters();
-                game.runTick(inputMod);
+                updateInputs(game, inputMod, touchInput);
+                game.runTick();
+
 
                 // Handle pause/unpause
                 if (inputMod.getCounter("Pause") == 1) {
@@ -192,13 +200,50 @@ function main() {
     document.querySelectorAll(".settingsButton").forEach(function(button, key, parent) {
         button.addEventListener("click", function() {settingsScreen.classList.remove("hide")});
     });
-    
-    
-    
-
-
 }
 
+/**
+ * Processes input modules to update the game's state.
+ * @param {QuadtrisGame} game
+ * @param {QuadtrisInput} inputMod
+ * @param {TouchInput} touchInput
+ */
+function updateInputs(game, inputMod, touchInput) {
+    // Single inputs (holding input does not activate multiple actions)
+    if (inputMod.getCounter("HardDrop") == 1) {
+        game.input.hardDrop = true;
+    }
+    if (inputMod.getCounter("Hold") == 1) {
+        game.input.hold = true;
+    }
+    if (inputMod.getCounter("RotateClockwise") == 1) {
+        game.input.rotClockwise = true;
+    }
+    if (inputMod.getCounter("RotateAntiClockwise") == 1) {
+        game.input.rotAntiClockwise= true;
+    }
+    
+    // Continuous inputs (holding input activates repeatedly)
+    if (inputMod.getInputState("SoftDrop")) {
+        game.input.softDrop = true;
+    }
+    if (inputMod.getCounter("MoveLeft") == 1 || inputMod.getCounter("MoveLeft") > 5) {
+        game.input.moveLeft = true;
+    }
+    if (inputMod.getCounter("MoveRight") == 1 || inputMod.getCounter("MoveRight") > 5) {
+        game.input.moveRight = true;
+    }
+
+    // Touch controls
+    if (touchInput.leftQueue > 0) {
+        game.input.moveLeft = true;
+        touchInput.leftQueue--;
+    }
+    if (touchInput.rightQueue > 0) {
+        game.input.moveRight = true;
+        touchInput.rightQueue--;
+    }
+}
 
 
 main();

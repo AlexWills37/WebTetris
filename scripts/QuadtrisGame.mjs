@@ -4,10 +4,9 @@
  * Note: {@link QuadtrisGame.runTick()} is dependent on the QuadtrisInput class.
  * 
  * @author Alex Wills
- * @version 1.0.0
+ * @version 1.1.0
  */
 
-import {QuadtrisInput} from './QuadtrisInput.mjs'
 
 /**
  * Creates and manages a game of Quadtris.
@@ -36,6 +35,16 @@ import {QuadtrisInput} from './QuadtrisInput.mjs'
  * }
  */
 export class QuadtrisGame {
+
+    input = {
+        moveLeft: false,
+        moveRight: false,
+        hardDrop: false,
+        softDrop: false,
+        hold: false,
+        rotClockwise: false,
+        rotAntiClockwise: false
+    }
 
     /**
      * Number of rows in the grid.
@@ -254,132 +263,128 @@ export class QuadtrisGame {
         this.pieceMap.set('L', 7);
         this.gameState.isPaused = true;
     }
-    
 
     /**
      * Progresses the game by 1 tick.
-     * 
-     * Update the input module with inputMod.updateCounters() exactly one time before 
-     * calling this function each tick.
-     * 
-     * @param {QuadtrisInput} inputMod 
+     * Make sure to update the {@link QuadtrisGame.input} to instruct the game which actions to take.
      */
-    runTick(inputMod) {
+    runTick() {
+        if (this.gameState.isPaused) {
+            return;
+        }
 
+        let pieceMoved = false;
 
-        // If game is paused, only the input mod will update
-        if (!this.gameState.isPaused) {
-
-            let pieceMoved = false;
-    
-            // Handle player input
-            if (this.#gameOverAnimation) {
-                // Game over animation
-                if (this.animationCount == null || this.rowCount == null) {
-                    this.animationCount = 0;
-                    this.rowCount = 0;
-                } else {
-                    this.animationCount++;
-                    if (this.rowCount < this.numRows && this.animationCount % 4 == 0) {
-                        this.clearRow(0);
-                        this.rowCount++;
-                        this.#isStateChanged = true;
-                    } else if (this.rowCount == this.numRows) {
-                        // True game over; the animation is finished
-                        this.rowCount++;
-                        this.gameState.gameOver = true;
-                    }
-                } 
-    
-            }
-            else if (inputMod.getCounter("HardDrop") == 1) {
-                this.hardDropPlayerPiece();// Do hard drop
-                this.finishWithPiece();
-                pieceMoved = true;
-            }
-            else if (inputMod.getCounter("Hold") == 1) {
-                this.holdPiece();
-                pieceMoved = true;
-            }
-            else {
-
-                // First, update the grace timer (to allow for it to be boosted by player action)
-                if (this.#timerRunning)
-                    this.#updateGraceTimer(this.gameTickTime);
-
-                // 1 - check for soft drop
-                if (inputMod.getInputState("SoftDrop")) {
-                    pieceMoved = this.tryMovePiece(0, -1) || pieceMoved;
+        // Handle everything in a priority. A few actions override others
+        // Game over overrides everything. Inputs no longer necessary.
+        if (this.#gameOverAnimation) {
+            // Game over animation
+            if (this.animationCount == null || this.rowCount == null) {
+                this.animationCount = 0;
+                this.rowCount = 0;
+            } else {
+                this.animationCount++;
+                if (this.rowCount < this.numRows && this.animationCount % 4 == 0) {
+                    this.clearRow(0);
+                    this.rowCount++;
+                    this.#isStateChanged = true;
+                } else if (this.rowCount == this.numRows) {
+                    // True game over; the animation is finished
+                    this.rowCount++;
+                    this.gameState.gameOver = true;
                 }
-        
-                // 2 - rotate piece
-                let rotation = 0;
-                if (inputMod.getCounter("RotateClockwise") == 1)
-                    rotation += 1;
-                if (inputMod.getCounter("RotateAntiClockwise") == 1)
-                    rotation -= 1;
-    
-                if (rotation != 0)
-                    pieceMoved = this.tryRotatePiece(rotation == 1) || pieceMoved;
-    
-                // 3 - move piece
-                let movement = 0;
-                if (inputMod.getCounter("MoveLeft") == 1 || inputMod.getCounter("MoveLeft") > 5)
-                    movement -= 1;
-                if (inputMod.getCounter("MoveRight") == 1 || inputMod.getCounter("MoveRight") > 5)
-                    movement += 1;
-    
-                if (movement != 0)
-                    pieceMoved = this.tryMovePiece(movement, 0) || pieceMoved;
-    
-    
-                // Count ticks for gravity
-                this.#gravityTickCounter++;
-                if (this.#gravityTickCounter >= this.#ticksPerGravity) {
-                    let atBottom = !this.tryMovePiece(0, -1);
-                    pieceMoved ||= !atBottom;
-                    this.#gravityTickCounter = 0;
-        
-                    if (atBottom && !this.#timerRunning) {
-                        this.#startGraceTimer();
-                    }
-                }
-    
-                // Deposit piece if lock timer has elapsed AND piece cannot move down
-                if (this.#timerRunning && this.#graceTimer <= 0) {
-                    let atBottom = !this.tryMovePiece(0, -1);
-                    pieceMoved = true; 
-                    if (atBottom) {
-                        this.finishWithPiece();
-                    }
-                } else if (!this.#timerRunning) {
-                    // Start timer if the block is at the bottom (independent of gravity ticks)
-                    let atBottom = false;
-                    for (const block of this.gameState.playerPiece.blocks) {
-                        atBottom = atBottom || this.isBlockHere(block[0], block[1] - 1);
-                    }
-                    if (atBottom) {
-                        this.#startGraceTimer();
-                    }
-                }
-    
-            }
-            if (pieceMoved) {
-                this.#updateGhostProjections();
-                this.#isStateChanged = true;
-            }
-        } // End of unpause block.
+            } 
+            return;
+        }
 
-        //     if (inputMod.getCounter("Pause") == 1) {
-        //         this.gameState.isPaused = true;
-        //     }
-        // } else {    // If isPaused is false, 
-        //     if (inputMod.getCounter("Pause") == 1) {
-        //         this.gameState.isPaused = false;
-        //     }
-        // }
+        // Hard drop finishes user input by moving the piece to it's destination.
+        if (this.input.hardDrop) {
+            this.hardDropPlayerPiece();// Do hard drop
+            this.finishWithPiece();
+            pieceMoved = true;
 
-    }
+        } else if (this.input.hold) {   // Hold finishes user input by swapping the current piece.
+            this.holdPiece();
+            pieceMoved = true;
+
+        } else { // Piece is in play. Update movement.
+
+            // First, update the grace timer (some inputs may reset the timer later)
+            if (this.#timerRunning) {
+                this.#updateGraceTimer(this.gameTickTime);
+            }
+
+            // Then move down if soft drop is used
+            if (this.input.softDrop) {
+                pieceMoved = this.tryMovePiece(0, -1) || pieceMoved;
+            }
+
+            // Next, process rotation
+            let rotation = 0;
+            if (this.input.rotClockwise)
+                rotation += 1;
+            if (this.input.rotAntiClockwise)
+                rotation -= 1;
+            if (rotation != 0)
+                pieceMoved = this.tryRotatePiece(rotation == 1) || pieceMoved;
+
+            // Next, process horizontal input
+            let movement = 0;
+            if (this.input.moveLeft)
+                movement -= 1;
+            if (this.input.moveRight)
+                movement += 1;
+            if (movement != 0)
+                pieceMoved = this.tryMovePiece(movement, 0) || pieceMoved;
+
+            // Next, process gravity. Gravity does not always happen every tick, rather every so many ticks based on the level.
+            this.#gravityTickCounter++;
+            if (this.#gravityTickCounter >= this.#ticksPerGravity) {
+                let atBottom = !this.tryMovePiece(0, -1);
+                pieceMoved ||= !atBottom;
+                this.#gravityTickCounter = 0;
+    
+                if (atBottom && !this.#timerRunning) {
+                    this.#startGraceTimer();
+                }
+            }
+
+            // Finally, deposit piece if lock timer has elapsed AND piece cannot move down
+            if (this.#timerRunning && this.#graceTimer <= 0) {
+                let atBottom = !this.tryMovePiece(0, -1);
+                pieceMoved = true; 
+                if (atBottom) {
+                    this.finishWithPiece();
+                }
+            } else if (!this.#timerRunning) {
+                // Start timer if the block is at the bottom (independent of gravity ticks)
+                let atBottom = false;
+                for (const block of this.gameState.playerPiece.blocks) {
+                    atBottom = atBottom || this.isBlockHere(block[0], block[1] - 1);
+                }
+                if (atBottom) {
+                    this.#startGraceTimer();
+                }
+            }    
+        }
+
+        // Update visual dependencies if the piece moved.
+        if (pieceMoved) {
+            this.#updateGhostProjections();
+            this.#isStateChanged = true;
+        }
+
+        // Clear inputs for next tick.
+        this.input = {
+            moveLeft: false,
+            moveRight: false,
+            hardDrop: false,
+            softDrop: false,
+            hold: false,
+            rotClockwise: false,
+            rotAntiClockwise: false
+        };
+    }    
 
     pauseGame(pause) {
         this.gameState.isPaused = pause;
