@@ -243,6 +243,18 @@ function updateInputs(game, inputMod, touchInput) {
         game.input.moveRight = true;
         touchInput.rightQueue--;
     }
+
+    if (touchInput.moveDown) {
+        game.input.softDrop = true;
+    }
+
+    if (touchInput.rotate.left) {
+        game.input.rotAntiClockwise = true;
+    } else if (touchInput.rotate.right) {
+        game.input.rotClockwise = true;
+    }
+    touchInput.rotate = {left: false, right: false};
+    
 }
 
 
