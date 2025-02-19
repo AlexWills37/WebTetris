@@ -246,14 +246,27 @@
                     // If we are within the border
                     if (v_GridPos.y >= -borderSize && v_GridPos.y < 4. + borderSize && v_GridPos.x >= -borderSize && v_GridPos.x < 4. + borderSize) {
 
+                        vec2 offsetGridPos = v_GridPos;
+
+                        // Shift the blocks over to center the 3-wide pieces or the I piece
+                        vec2 dataPixel = vec2(0.9, 0.15);
+                        dataPixel.y += ((2. * v_QueueID)/10.);
+                        if (texture2D(u_QueueData, dataPixel).r == 1.) {
+                            offsetGridPos.x = offsetGridPos.x - 0.5;
+                        }
+                        if (texture2D(u_QueueData, dataPixel).g == 1.) {
+                            offsetGridPos.y -= 0.5;
+                        }
+
                         // If we are in the space to draw a block
-                        if (v_GridPos.y >= 1. && v_GridPos.y < 3. && v_GridPos.x >= 0. && v_GridPos.x < 4.) {
-                            vec2 dataLocation = v_GridPos / vec2(4., 10.);
+                        if (offsetGridPos.y >= 1. && offsetGridPos.y < 3. && offsetGridPos.x >= 0. && offsetGridPos.x < 4.
+                            && (offsetGridPos.x < 3. || offsetGridPos.y < 2.)) {    // Ignore the top right block (it's used to encode the offset information)
+                            vec2 dataLocation = offsetGridPos / vec2(4., 10.);
                             dataLocation.y += ((2. * v_QueueID - 1.)/10.);
                             vec4 blockData = texture2D(u_QueueData, dataLocation);
                             if (blockData != vec4(0, 0, 0, 1)) {
     
-                                vec2 texCoord = fract(v_GridPos);
+                                vec2 texCoord = fract(offsetGridPos);
                                 texCoord.y = 1. - texCoord.y;
                                 vec4 texColor = texture2D(u_BlockTexture, texCoord);
                                 gl_FragColor = blockData * texColor;

@@ -211,7 +211,7 @@ export class QuadtrisRenderer {
             u_Resolution: [this.gl.canvas.width, this.gl.canvas.height],
             u_GridData: this.#gridDataTex,
             u_QueueData: this.#queueDataTex,
-            u_BlockTexture: this.#blockTex
+            u_BlockTexture: this.#blockTex,
         };
         twgl.setUniforms(this.#shaderInfo, uniforms);
 
@@ -267,8 +267,7 @@ export class QuadtrisRenderer {
             u_Resolution: [this.gl.canvas.width, this.gl.canvas.height],
             u_GridData: this.#gridDataTex,
             u_QueueData: this.#queueDataTex,
-            u_BlockTexture: this.#blockTex
-            
+            u_BlockTexture: this.#blockTex,
         };
 
         twgl.setUniforms(this.#shaderInfo, uniforms);
@@ -396,6 +395,15 @@ export class QuadtrisRenderer {
             this.#queueRGBData[texStartIndex + 1] = color[1];
             this.#queueRGBData[texStartIndex + 2] = color[2];
         }
+
+        // Encode the top right pixel to indicate a 3-wide piece (we will want to move it to the right to center it)
+        if (piece != 'I' && piece != 'O') {
+            let texStartIndex = startingIndex + 21;
+            this.#queueRGBData[texStartIndex] = 255;
+        } else if (piece == 'I') { // Encode the top right pixel to indicate an I piece (we will want to move it up to center it)
+            this.#queueRGBData[startingIndex + 21 + 1] = 255;
+        }
+
     }
 
     /**
