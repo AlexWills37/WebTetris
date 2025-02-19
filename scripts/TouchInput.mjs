@@ -29,6 +29,14 @@ export class TouchInput {
         parentHtml.addEventListener("touchend", (event) => {this.touchEnd(event)});
         parentHtml.addEventListener("touchcancel", (event) => {this.touchEnd(event)});
         this.#parent = parentHtml;
+
+        document.addEventListener(
+        "dblclick",
+        function (event) {
+            event.preventDefault();
+        },
+        { passive: false }
+        );
     }
 
     /**

@@ -2,11 +2,15 @@ body {
     margin: 0;
     font-family: "Quicksand";
     background-color: #BFFCFF;
+    position: relative;
 }
 canvas {
     width: 100vw;
     height: 100vh;
     display: block;
+}
+body, html {
+    overflow: hidden;
 }
 
 .container {
