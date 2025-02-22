@@ -8,7 +8,7 @@ export class TouchInput {
     /********* Output variables (query these variables to register input) *********/
     leftQueue = 0;  // How many "left" inputs the user has activated (resets on touch release or change in swipe direction)
     rightQueue = 0; // How many "right" inputs the user has activated (resets on touch release or change in swipe direction)
-    moveDown = false;   // True if the user has swiped down (resets on touch release or if the user swipes up)
+    moveDown = false;   // True if the user has swiped down (resets on touch release or change in swipe direction (including upwards))
     // Whether the left or right half of the screen has been "tapped" (does not reset! manually reset after processing the rotation)
     rotate = {
         left: false,
@@ -151,7 +151,7 @@ export class TouchInput {
         } 
 
         // Moving far enough past the anchor left/right will move the piece in that direction.
-        if (!this.moveDown && Math.abs(touch.pageX - this.#prevAnchorX) > this.dragSensitivity) {
+        if (Math.abs(touch.pageX - this.#prevAnchorX) > this.dragSensitivity) {
             // Moving another increment
             if (this.#currentlyLeft) {
                 this.leftQueue++;
@@ -163,6 +163,7 @@ export class TouchInput {
             updateAnchor = true;
 
             this.#slamDownInfo.startTime = 0;   // If a sideways gesture is registered, we will not hard drop (even if the other conditions are met)
+            this.moveDown = false;  // Moving sideways will cancel a soft drop
         } 
         
         // Moving down will start to soft drop the piece
