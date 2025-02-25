@@ -275,3 +275,48 @@ div.hide {
     width: 50%;
     text-align: right;
 }
+
+#tib_MoveLeft {
+    background: url('textures/block.png');
+    /* background-repeat: no-repeat; */
+    /* background-position: center; */
+}
+
+.controller {
+    display: grid;
+    grid-template-areas: 
+        ". hardDrop . . . ."
+        "moveLeft . moveRight . . rotateClockwise"
+        ". softDrop . . rotateAnticlockwise hold";
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 50%;
+    height: 20%;
+}
+
+.moveLeft {
+    grid-area: moveLeft;
+}
+.moveRight {
+    grid-area: moveRight;
+}
+.hold {
+    grid-area: hold;
+}
+.softDrop {
+    grid-area: softDrop;
+}
+.hardDrop {
+    grid-area: hardDrop;
+}
+.rotateClockwise {
+    grid-area: rotateClockwise;
+}
+.rotateAnticlockwise {
+    grid-area: rotateAnticlockwise;
+}
+.controlButton {
+    width: 100%;
+    height: 100%;
+}

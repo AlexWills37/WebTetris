@@ -62,7 +62,7 @@ export class TouchInput {
      * @param {TouchEvent} event 
      */
     touchStart(event) {
-        if (this.#currentTouchId === null) {
+        if (this.#currentTouchId === null && !event.target.classList.contains("blockGestures")) {
             let mainTouch = event.touches.item(0);
             this.#currentTouchId = mainTouch.identifier;
             this.#prevAnchorX = mainTouch.pageX;
