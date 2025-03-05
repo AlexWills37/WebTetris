@@ -8,42 +8,76 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-CdhlHCSm.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-CThU6S3e.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-DNswbNxW.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-Zupo8pSq.css">
 	</head>
 	<body>
         <div class="container">
-
-            <canvas id="canvas"> The tetris game board! If you see this text, the canvas displaying the game could not load. If you'd like to try, maybe a different browser would work. </canvas>
-            
-            <div id="gameSpace">
-                
-                
-                
-                <div class="fill" id="gameGUI">
-                    <div id="scoreOverlay">
-                        Lines Cleared: 
-                        <br> <span id="linesCleared"></span>
-                        <br> Speed Level:
-                        <br> <span id="speedLevel"></span>
-                        <br> Score: <span id="score">
-                        <br> <span id="debug"></span>
-
-                    </div>
-                    <div id="controlsGuide">
-                        Controls:
-                        <br> Pause - Escape
-                        <br> Move - <span class="cd_MoveLeft"></span> / <span class="cd_MoveRight"></span>
-                        <br> Rotate - <span class="cd_RotateAntiClockwise"></span> / <span class="cd_RotateClockwise"></span>
-                        <br> Hold piece - <span class="cd_Hold"></span>
-                        <br> Hard drop - <span class="cd_HardDrop"></span>
-                        <br> Soft drop - <span class="cd_SoftDrop"></span>
-                    </div>
+            <div class="canvasSpace">
+                <canvas id="canvas"> The tetris game board! If you see this text, the canvas displaying the game could not load. If you'd like to try, maybe a different browser would work. </canvas>
+                <div class="canvas-overlay">  
+                    
                     <div id="heldPieceOverlay">
-                        <div id="holdText">HOLD [<span class="cd_Hold"></span>]</div>
+                        HOLD [<span class="cd_Hold"></span>]
                     </div>
+
+                    <div id="underHoldSpace">
+                        <div id="scoreOverlay">
+                            Lines Cleared: 
+                            <br> <span id="linesCleared"></span>
+                            <br> Speed Level:
+                            <br> <span id="speedLevel"></span>
+                            <br> Score: <span id="score">
+                            <br> <span id="debug"></span> 
+                        </div>
+                        <div id="controlsGuide">
+                            Controls:
+                            <br> Pause - Escape
+                            <br> Move - <span class="cd_MoveLeft"></span> / <span class="cd_MoveRight"></span>
+                            <br> Rotate - <span class="cd_RotateAntiClockwise"></span> / <span class="cd_RotateClockwise"></span>
+                            <br> Hold piece - <span class="cd_Hold"></span>
+                            <br> Hard drop - <span class="cd_HardDrop"></span>
+                            <br> Soft drop - <span class="cd_SoftDrop"></span>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div id="gameSpace">
+                 
+                <div class="fill" id="gameGUI">
+                    
                     <div id="pieceQueueOverlay">
                         
+                    </div>
+
+                    <div class="controller">
+                        <div class="small-grid left">
+                            <button id="tib_MoveLeft" class="controlButton blockGestures west">
+                                <img src="textures/left-arrow.png">    
+                            </button>
+                            <button id="tib_MoveRight" class="controlButton blockGestures east">
+                                <img src="textures/left-arrow.png">  
+                            </button>
+                            <button id="tib_HardDrop" class="controlButton blockGestures north">
+                                <img src="textures/hard-drop.png">  
+                            </button>
+                            <button id="tib_SoftDrop" class="controlButton blockGestures south">
+                                <img src="textures/down-arrow.png">  
+                            </button>
+                        </div>
+                        <div class="small-grid right">
+                            <button id="tib_Hold" class="controlButton blockGestures southeast">
+                                <img src="textures/hold.png">  
+                            </button>
+                            <button id="tib_RotateClockwise" class="controlButton blockGestures east">
+                                <img src="textures/anti-rotate.png">  
+                            </button>
+                            <button id="tib_RotateAnticlockwise" class="controlButton blockGestures south">
+                                <img src="textures/anti-rotate.png">  
+                            </button>
+                        </div>
                     </div>
                     <!-- <div id="gameBoardOutline"></div> -->
                 </div>
@@ -147,6 +181,8 @@
                 </div>
                 
             </div>
+            
+
 
         </div>
 
@@ -169,21 +205,10 @@
             void main() {
                 vec4 scaledPos = a_Position;
                 
-                // Convert the position from the range (0, 0), (400, 300) to (-1, -1), (+1, +1)
-                // This changes the aspect ratio from 4:3 to 1:1
-                scaledPos /= vec4(200, 150, 1, 1);
+                // Convert the position from the range (0, 0), (400, 500) to (-1, -1), (+1, +1)
+                scaledPos /= vec4(200, 250, 1, 1);
                 scaledPos -= vec4(1, 1, 0, 0);
                 scaledPos.y *= -1.;
-
-                // Restore the aspect ratio, fitting the larger dimension to the edges
-                if (u_Resolution.x * 3. > u_Resolution.y * 4.) {
-                    // Canvas is too wide for 4:3, so scale the x relative to y
-                    scaledPos.x = scaledPos.x * 4. * u_Resolution.y / (3. * u_Resolution.x);
-                } else {
-                    // Canvas is too tall for 4:3, so scale the y relative to x
-                    scaledPos.y = scaledPos.y * 3. * u_Resolution.x / (4. * u_Resolution.y);
-                }
-
 
 
                 gl_Position = scaledPos;
