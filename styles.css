@@ -9,7 +9,6 @@ canvas {
     width: 100%;
     height: auto;
     aspect-ratio: 4 / 5;
-    background-color: black;
 }
 
 .canvasSpace {

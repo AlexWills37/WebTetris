@@ -114,7 +114,7 @@ export class QuadtrisRenderer {
             let gridWH = [gridHeight/2, gridHeight];
             let positions = [];
             
-            let gridTop = (300 - gridWH[1]) / 2;
+            let gridTop = (500 - gridWH[1]) / 2;
             let gridLeft = (400 - gridWH[0]) / 2;
             positions.push(...quadFromDimensions(gridLeft, gridTop, gridWH[0], gridWH[1]));
             
@@ -136,7 +136,7 @@ export class QuadtrisRenderer {
         //positions.push(...[-1, -1, 1, -1, 1, 1, -1, 1]);
 
         const vertexArrays = {
-            a_Position: {numComponents: 2, data: createGameQuads(250, 3, 0, 30)
+            a_Position: {numComponents: 2, data: createGameQuads(500, 5, 0, 70)
                 
             //     [
             //     138, 274, 262, 274, 262, 26, 138, 26,
