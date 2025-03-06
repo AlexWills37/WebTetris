@@ -14,23 +14,21 @@
         <div class="container">
             <div class="canvasSpace">
                 <canvas id="canvas"> The tetris game board! If you see this text, the canvas displaying the game could not load. If you'd like to try, maybe a different browser would work. </canvas>
-            </div>
-            
-            <div id="gameSpace">
-                
-                
-                
-                <div class="fill" id="gameGUI">
-                    <div id="scoreOverlay">
+                <div id="heldPiece"></div>
+                <div id="heldPieceText">
+                    HOLD [<span class="cd_Hold"></span>]
+                </div>
+
+                <div id="underHoldSpace">
+                    <div class="guiInfoBox">
                         Lines Cleared: 
                         <br> <span id="linesCleared"></span>
                         <br> Speed Level:
                         <br> <span id="speedLevel"></span>
                         <br> Score: <span id="score">
-                        
-
                     </div>
-                    <div id="controlsGuide">
+                    
+                    <div class="guiInfoBox">
                         Controls:
                         <br> Pause - Escape
                         <br> Move - <span class="cd_MoveLeft"></span> / <span class="cd_MoveRight"></span>
@@ -39,12 +37,15 @@
                         <br> Hard drop - <span class="cd_HardDrop"></span>
                         <br> Soft drop - <span class="cd_SoftDrop"></span>
                     </div>
-                    <div id="heldPieceOverlay">
-                        <div id="holdText">HOLD [<span class="cd_Hold"></span>]</div>
-                    </div>
-                    <div id="pieceQueueOverlay">
-                        
-                    </div>
+                </div>
+                
+            </div>
+            
+            <div id="gameSpace">
+                
+                
+                
+                <div class="fill" id="gameGUI">
 
                     <div class="controller">
                         <button id="tib_MoveLeft" class="controlButton blockGestures moveLeft">Hi! </button>

@@ -183,9 +183,9 @@ function main() {
     debugLog.textContent = "Connecting buttons";
     startButton.addEventListener("click", startGame);
     // startButton.addEventListener("touchstart", startGame);
-    document.querySelector("#heldPieceOverlay").addEventListener("click", function() {
-        game.holdPiece();
-    });
+    // document.querySelector("#heldPieceOverlay").addEventListener("click", function() {
+    //     game.holdPiece();
+    // });
     document.querySelector("#unpauseButton").addEventListener("click", function() {
         game.gameState.isPaused = false;
         pauseScreen.classList.add("hide");

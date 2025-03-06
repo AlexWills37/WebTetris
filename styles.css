@@ -126,59 +126,46 @@ div.hide {
 }
 
 /* Game GUI elements */
-#scoreOverlay {
-    position: absolute;
-    right: 67%;
-    width: 29%;
-    top: 63.5%;
-    height: 28%;
+.guiInfoBox {
+    width: max-content;
+    height: min-content;
     font-size: 1em;
-    border-style:solid;
-    border-width:2px;
-    padding-left:1%;
-    border-radius: 2px;
-    border-color: #6C7294;
-    background-color: #BBFFDB;
-    
-}
-
-#controlsGuide {
-    position:absolute;
-    right: 67%;
-    width: 29%;
-    top: 33%;
-    height: 26%;
-    font-size: 0.71em;
     padding-left:1%;
     border-style:solid;
     border-width:2px;
-    padding-left:1%;
     border-radius: 2px;
     border-color: #6C7294;
     background-color: #BBFFDB;
 }
 
-#heldPieceOverlay {
-    position: absolute;
-    left: 26.125%;
-    top: 8.333%;
-    width: 7.5%;
-    height: 13%;
+#heldPiece {
+    position: static;
+    width:17.5%;
+    height: 14%;
+}
+#heldPieceText {
+    position: static;   
+    width: 17.5%;
+    height: min-content;
     font-size: 0.6em;
     border-style:none;
-    transition: background-color 0.5s;
-}
-
-#holdText {
-    position: absolute;
-    bottom: 0%;
-    width:100%;
     text-align: center;
+    margin-bottom: 1%;
+}
+#underHoldSpace {
+    position: relative;
+    right: 82%;
+    min-width: 17%;
+    width: auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 5px;
 }
 
-#heldPieceOverlay:hover{
-    background-color: rgba(125, 229, 255, 0.5);
-}
+
 
 #gameBoardOutline {
     border-width: 0.35em;
