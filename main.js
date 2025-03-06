@@ -50,10 +50,11 @@ function createProgram(gl, vertexShader, fragmentShader) {
 function main() {
     let debugLog = document.createTextNode('');
     document.querySelector("#debug").appendChild(debugLog);
-
+    debugLog.textContent = "Starting Program";
     const startButton = document.querySelector("#startButton");
     
-
+    
+    debugLog.textContent = "Creating keyboard input module";
     // Create input module
     let inputMod = new Input();
     RebindMod.loadInputSettings(inputMod);
@@ -63,69 +64,75 @@ function main() {
     document.addEventListener('keyup', function(event) {
         inputMod.setInputState(event.key, false);
     });
-
     
+    
+    debugLog.textContent = "Creating touch input module";
     let touchInput = new TouchInput(document.querySelector("#gameGUI"));
+    debugLog.textContent = "Creating GUI input module";
     let guiInput = new GUIButtonInput(document.querySelector("#tib_Hold"),
-        document.querySelector("#tib_MoveLeft"),
-        document.querySelector("#tib_MoveRight"),
-        document.querySelector("#tib_SoftDrop"),
-        document.querySelector("#tib_HardDrop"),
-        document.querySelector("#tib_RotateClockwise"),
-        document.querySelector("#tib_RotateAnticlockwise")
-    );
-
+    document.querySelector("#tib_MoveLeft"),
+    document.querySelector("#tib_MoveRight"),
+    document.querySelector("#tib_SoftDrop"),
+    document.querySelector("#tib_HardDrop"),
+    document.querySelector("#tib_RotateClockwise"),
+    document.querySelector("#tib_RotateAnticlockwise"));
     
-
+    
+    
     // Create game and renderer
+    debugLog.textContent = "Creating game module";
     let game = new QuadtrisGame();
+    debugLog.textContent = "Creating rendering module";
     let renderer = new QuadtrisRenderer();
-
+    
+    debugLog.textContent = "Selecting screens";
     const titleScreen = document.querySelector("#titleScreen");
     const pauseScreen = document.querySelector("#pauseScreen");
     const gameOverScreen = document.querySelector("#gameOverScreen");
     const settingsScreen = document.querySelector("#settingsScreen");
     let onTitleScreen = true;
     let onSettings = false;
-
+    
+    debugLog.textContent = "Adding final score nodes";
     const finalScoreNode = document.createTextNode('0');
     const finalLinesNode = document.createTextNode('0');
     document.querySelector("#finalScore").appendChild(finalScoreNode);
     document.querySelector("#finalLines").append(finalLinesNode);
-
-
     
-
+    
+    
+    
     // Create the engine loop
+    debugLog.textContent = "Creating game loop";
     let timeSinceGameTick = 0;
     let lastFrameTime = 0;
     function runGameFrame(time) {
         let deltaTime = (time - lastFrameTime) * 0.001;
         lastFrameTime = time;
         timeSinceGameTick += deltaTime;
-
+        
         // If settings screen is open, only process escape key
         if (!settingsScreen.classList.contains("hide")) {
             inputMod.updateCounters();
             if (inputMod.getCounter("Pause") == 1) {
                 settingsScreen.classList.add("hide");
             }
-        
-
-        // If the game is running, update the game:
+            
+            
+            // If the game is running, update the game:
         } else if (!game.gameState.gameOver) {
-
+            
             // Run game ticks at a fixed interval
             if (timeSinceGameTick >= game.gameTickTime) {
                 timeSinceGameTick = Math.min(timeSinceGameTick - game.gameTickTime, game.gameTickTime);
                 
-
-
+                
+                
                 inputMod.updateCounters();
                 updateInputs(game, inputMod, touchInput, guiInput);
                 game.runTick();
-
-
+                
+                
                 // Handle pause/unpause
                 if (inputMod.getCounter("Pause") == 1) {
                     if (!game.gameState.isPaused) {
@@ -139,7 +146,7 @@ function main() {
                     }
                 } // End of pause/unpause logic
             }
-    
+            
             // Update buffers if the game state changes
             if (game.isStateChanged) {
                 renderer.updateData(game.gameState);
@@ -153,16 +160,16 @@ function main() {
                 finalLinesNode.textContent = game.gameState.linesCleared;
             }
         } else {    // Game is "over" and not started (on the title screen)
-
+            
         }
-
+        
         // Render frame
         renderer.renderGame();
-
+        
         // Queue up next frame
         requestAnimationFrame(runGameFrame);
     }
-
+    
     function startGame() {
         game.startNewGame();
         renderer.updateData(game.gameState);
@@ -173,6 +180,7 @@ function main() {
         onTitleScreen = false;
     }
     
+    debugLog.textContent = "Connecting buttons";
     startButton.addEventListener("click", startGame);
     // startButton.addEventListener("touchstart", startGame);
     document.querySelector("#heldPieceOverlay").addEventListener("click", function() {
@@ -188,29 +196,32 @@ function main() {
         renderer.renderGame();
         gameOverScreen.classList.add("hide");
     });
-
+    
     document.querySelector("#returnToTitleButton").addEventListener("click", function() {
         titleScreen.classList.remove("hide");
         gameOverScreen.classList.add("hide");
         onTitleScreen = true;
     });
-
+    
+    debugLog.textContent = "Starting game";
     requestAnimationFrame(runGameFrame);
-
+    
     // Setup settings page
+    debugLog.textContent = "Setting up settings";
     let settingsDebugMessage = document.createTextNode('');
     document.querySelector("#settingsConsoleText").appendChild(settingsDebugMessage);
     RebindMod.connectHTMLElements(".controlRebind", inputMod, settingsDebugMessage, settingsScreen);
     
     
-
+    
     document.querySelector("#exitSettingsButton").addEventListener("click", function(){
         settingsScreen.classList.add("hide");
     });
-
+    
     document.querySelectorAll(".settingsButton").forEach(function(button, key, parent) {
         button.addEventListener("click", function() {settingsScreen.classList.remove("hide")});
     });
+    debugLog.textContent = "Initialization complete";
 }
 
 /**
