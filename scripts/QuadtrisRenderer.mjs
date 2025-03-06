@@ -5,7 +5,6 @@
  */
 import * as twgl from 'twgl.js/dist/5.x/twgl-full.js';
 import {QuadPiece} from './QuadtrisGame.mjs'
-import { OverlayNode } from 'three/examples/jsm/nodes/display/BlendModeNode.js';
 
 export class QuadtrisRenderer {
     
@@ -79,17 +78,6 @@ export class QuadtrisRenderer {
         document.querySelector("#speedLevel").appendChild(this.#speedLevelNode);
         document.querySelector("#score").appendChild(this.#scoreNode);
 
-        // Save the style rules from the main css file
-        const styleSheets = document.styleSheets;
-        let foundSheet = false;
-        for (let i = 0; i < styleSheets.length && !foundSheet; i++) {
-            if (styleSheets[i].href.includes("WebTetris")) {
-                this.#cssStyleRules = styleSheets[i].cssRules;
-                foundSheet = true;
-            }
-        }
-
-
         // Create color map
         this.#colorMap.set(1, [255, 0, 0]);
         this.#colorMap.set(2, [0, 255, 0]);
@@ -137,7 +125,6 @@ export class QuadtrisRenderer {
                 positions.push(...quadFromDimensions(gridLeft + spaceFromBoard + gridWH[0], gridTop + (i * (size + pixelsBetween)), size, size));
                 
             }
-
 
             return positions;
         }
@@ -214,15 +201,7 @@ export class QuadtrisRenderer {
             u_BlockTexture: this.#blockTex,
         };
         twgl.setUniforms(this.#shaderInfo, uniforms);
-
-        
-        
-        this.#registerElementStyle("#gameSpace");
-        this.#buttonFontSize = this.#findCSSRules("button").fontSize;
-        this.#buttonFontSize = Number(this.#buttonFontSize.substring(0, this.#buttonFontSize.length - 2));
-        
-        
-    }
+        }
 
     /**
      * Updates all of the necessary buffers with the data
@@ -258,9 +237,6 @@ export class QuadtrisRenderer {
         // Update HTML scale
         twgl.resizeCanvasToDisplaySize(this.gl.canvas);
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-        this.#rescaleHTML();
-        //this.#scaleHTMLElements();
-       // this.#rescaleHTMLElement(this.#overlayDiv);
 
         // Update dynamic uniforms
         let uniforms = {
@@ -272,7 +248,6 @@ export class QuadtrisRenderer {
 
         twgl.setUniforms(this.#shaderInfo, uniforms);
         twgl.drawBufferInfo(this.gl, this.#vertexBufferInfo);
-
     }
 
     /**
@@ -418,119 +393,7 @@ export class QuadtrisRenderer {
         this.#lineClearNode.nodeValue = gameState.linesCleared;
         this.#speedLevelNode.nodeValue = gameState.speedLevel == 11 ? "MAX" : gameState.speedLevel;
         this.#scoreNode.nodeValue = gameState.score;
-        
     }
 
-    /**
-     * Registers an HTML element (by ID) for rescaling to the 4:3 box.
-     * 
-     * @param {string} elementID 
-     */
-    #registerElementStyle(elementID) {
-        const element = document.querySelector(elementID);
-        const style = this.#findCSSRules(elementID);
-        if (style != null) {
-            this.#elementStyles.set(element, style);
-        }
-    }
-
-    /**
-     * Returns the rule set for a CSS selector.
-     * 
-     * @param {string} elementID 
-     * @returns 
-     */
-    #findCSSRules(elementID) {
-        let rules = null;
-        for (let i = 0; i < this.#cssStyleRules.length && rules == null; i++) {
-            if (this.#cssStyleRules[i].selectorText == elementID) {
-                rules = this.#cssStyleRules[i].style;
-            }
-        }
-        return rules;
-    }
-
-    /**
-     * Rescales every HTML element that has been added to the
-     * elementStyle map with the function {@link QuadtrisRenderer.#registerElementStyle()}.
-     * 
-     * Every element will be restyled to maintain its location in the 4:3 game box.
-     * This system assumes that the position style for the set objects are defined
-     * with vh and vw units where the viewport has a 4:3 aspect ratio. If the viewport is
-     * wider than 4:3, the x values (width, left/right) will be rescaled so that in a 4:3 box
-     * where height takes up the viewport and the width is centered on the screen, 0 maps to the left
-     * side of this boundary and 100 maps to the right side.
-     */
-    #rescaleHTML() {
-        // Get cavnas dimensions
-        const canvasWidth = this.gl.canvas.width;
-        const canvasHeight = this.gl.canvas.height;
-        const tooWide = 3 * canvasWidth > 4 * canvasHeight;
-
-        // Rescale every element in the map
-        this.#elementStyles.forEach(function(value, key, map) {
-            // See which values are defined
-            const left = value.left != "";
-            const top = value.top != "";
-
-            // Get values to modify
-            let x = left ? value.left : value.right;
-            let y = top ? value.top : value.bottom;
-            let fontSize = value.fontSize;
-            let width = value.width;
-            let height = value.height;
-            x = Number(x.substring(0, x.length - 2));
-            y = Number(y.substring(0, y.length - 2));
-            width = Number(width.substring(0, width.length - 2));
-            height = Number(height.substring(0, height.length - 2));
-            if (fontSize != "")
-                fontSize = Number(fontSize.substring(0, fontSize.length - 2));
-            
-            // If too wide, redefine the x axis
-            if (tooWide) {
-                x = ((4 * canvasHeight * (x - 50) + 150 * canvasWidth) / (3 * canvasWidth)) + 'vw';
-                width = (width * 4 * canvasHeight / (3 * canvasWidth)) + 'vw';
-                y = y + 'vh';
-                height = height + 'vh';
-            } else {
-                // Too tall; redefine the y axis
-                y = (y * 3 * canvasWidth / (4 * canvasHeight) + (100 * canvasHeight - 75 * canvasWidth) / (2 * canvasHeight)) + 'vh';
-                height = (height * 3 * canvasWidth / (4 * canvasHeight)) + 'vh';
-                x = x + 'vw';
-                width = width + 'vw';
-
-                // Rescale font too if present
-                if (fontSize != "") {
-                    fontSize = fontSize * 3 * canvasWidth / (4 * canvasHeight);
-                }
-            }
-
-            // Set the element's values
-            if (fontSize != "") {
-                key.style.fontSize = fontSize + 'vh';
-            }
-            if (left) {
-                key.style.left = x;
-            } else {
-                key.style.right = x;
-            }
-            if (top) {
-                key.style.top = y;
-            } else {
-                key.style.bottom = y;
-            }
-            key.style.width = width;
-            key.style.height = height;
-        });
-
-        // Rescale the buttons font sizes
-        const buttonFontSize = (tooWide ? 
-            this.#buttonFontSize
-            : this.#buttonFontSize * 3 * canvasWidth / (4 * canvasHeight));
-
-        for(let i = 0; i < this.#buttons.length; i++) {
-            let button = this.#buttons[i];
-            button.style.fontSize = buttonFontSize + "vh";
-        }
-    }
+   
 }
