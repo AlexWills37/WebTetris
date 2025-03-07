@@ -67,15 +67,16 @@ function main() {
     
     
     debugLog.textContent = "Creating touch input module";
-    let touchInput = new TouchInput(document.querySelector("#gameGUI"));
+    let touchInput = new TouchInput(document.querySelector(".canvasSpace"));
     debugLog.textContent = "Creating GUI input module";
     let guiInput = new GUIButtonInput(document.querySelector("#tib_Hold"),
-    document.querySelector("#tib_MoveLeft"),
-    document.querySelector("#tib_MoveRight"),
-    document.querySelector("#tib_SoftDrop"),
-    document.querySelector("#tib_HardDrop"),
-    document.querySelector("#tib_RotateClockwise"),
-    document.querySelector("#tib_RotateAnticlockwise"));
+        document.querySelector("#tib_MoveLeft"),
+        document.querySelector("#tib_MoveRight"),
+        document.querySelector("#tib_SoftDrop"),
+        document.querySelector("#tib_HardDrop"),
+        document.querySelector("#tib_RotateClockwise"),
+        document.querySelector("#tib_RotateAnticlockwise")
+    );
     
     
     
@@ -175,7 +176,6 @@ function main() {
         renderer.updateData(game.gameState);
         renderer.renderGame();
         document.querySelector("#titleScreen").classList.add("hide");
-        document.querySelector("#gameGUI").classList.remove("hide");
         requestAnimationFrame(runGameFrame);
         onTitleScreen = false;
     }

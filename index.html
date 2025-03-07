@@ -40,123 +40,134 @@
                 </div>
                 
             </div>
+            <div class="controller">
+                <div class="small-grid left-item">
+                    <button id="tib_MoveLeft" class="controlButton blockGestures west">
+
+                    </button>
+                    <button id="tib_MoveRight" class="controlButton blockGestures east">
+
+                    </button>
+                    <button id="tib_HardDrop" class="controlButton blockGestures north">
+
+                    </button>
+                    <button id="tib_SoftDrop" class="controlButton blockGestures south">
+
+                    </button>
+                </div>
+                <div class="small-grid right-item">
+                    <button id="tib_Hold" class="controlButton blockGestures southeast">
+                        
+                    </button>
+                    <button id="tib_RotateClockwise" class="controlButton blockGestures east">
+
+                    </button>
+                    <button id="tib_RotateAnticlockwise" class="controlButton blockGestures south">
+                        
+                    </button>
+                </div>
+            </div>
             
-            <div id="gameSpace">
-                
-                
-                
-                <div class="fill" id="gameGUI">
+            
 
-                    <div class="controller">
-                        <button id="tib_MoveLeft" class="controlButton blockGestures moveLeft">Hi! </button>
-                        <button id="tib_MoveRight" class="controlButton blockGestures moveRight">Hi! </button>
-                        <button id="tib_HardDrop" class="controlButton blockGestures hardDrop">Hi! </button>
-                        <button id="tib_SoftDrop" class="controlButton blockGestures softDrop">Hi! </button>
-                        <button id="tib_Hold" class="controlButton blockGestures hold">Hi! </button>
-                        <button id="tib_RotateClockwise" class="controlButton blockGestures rotateClockwise">Hi! </button>
-                        <button id="tib_RotateAnticlockwise" class="controlButton blockGestures rotateAnticlockwise">Hi! </button>
+            <div class="fill hide" id="pauseScreen">
+                <br>
+                <h1><i>Game Paused</i></h1>
+                Controls:
+                <div class="leftAlign middleBox">
+                    <br> Pause - Escape
+                    <br> Move Left/Right - <span class="cd_MoveLeft"></span> / <span class="cd_MoveRight"></span>
+                    <br> Rotate Left/Right - <span class="cd_RotateAntiClockwise"></span> / <span class="cd_RotateClockwise"></span>
+                    <br> Hold piece - <span class="cd_Hold"></span>
+                    <br> Hard drop - <span class="cd_HardDrop"></span>
+                    <br> Soft drop - <span class="cd_SoftDrop"></span>
+                </div>
+                <br><button id="unpauseButton">Continue Game
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+                <br><button class="settingsButton">Settings
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+            </div>
+
+            
+            <div class="fill" id="titleScreen">
+                <h1>Quadtris</h1>
+                A JavaScript + WebGL implementation of the popular block-falling game 
+                <br>(<i>it rhymes with "Fortress"!</i>)
+                <br>
+                <br> <span id="debug"></span>
+                <br>
+                <br><button id="startButton">Start Game
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+                <br>
+                <br>
+                <br><button class="settingsButton">Settings 
+                    <!-- <br>    (under construction) -->
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+                <br>
+                <br><span id="GitHub">View the code on <a href="https://github.com/AlexWills37/WebTetris" target="_blank">GitHub</a>!</span>
+            </div>
+
+            <div class="fill hide" id="gameOverScreen">
+                <h1>Game Over!</h1>
+                <p>Final score: <span id="finalScore"></span></p>
+                <p>Lines cleared: <span id="finalLines"></span></p>
+                <p></p>
+                <p></p>
+                <br><button id="replayButton">Play Again
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+                <br><button id="returnToTitleButton">Return to Title
+                        <div class="buttonBackground"></div>
+                        <div class="buttonFadeIn"></div>
+                    </button>
+                
+
+            </div>
+            
+            <div class="fill hide" id="settingsScreen">
+                <h1>Settings</h1>
+                To change a control, click on it's blue box, 
+                <br>then press the key you want to change it to.
+                <br>
+                <br><i><span id="settingsConsoleText"></span></i>
+                <div id="controlMapArea">
+                    <div class="leftHalf">
+                        ← Move Left <span class="controlRebind" id="c_MoveLeft"> A </span>
+                        <br>
+                        <br> → Move Right <span class="controlRebind" id="c_MoveRight"> D </span>
+                        <br>
+                        <br> ↺ Rotate Left <span class="controlRebind" id="c_RotateAntiClockwise"> J </span>
+                        <br>
+                        <br> ↻ Rotate Right <span class="controlRebind" id="c_RotateClockwise"> L </span>
+
                     </div>
-                    <!-- <div id="gameBoardOutline"></div> -->
+                    <div class="rightHalf">
+                        Hold Piece <span class="controlRebind" id="c_Hold"> E </span>
+                        <br>
+                        <br> Soft Drop <span class="controlRebind" id="c_SoftDrop"> S </span>
+                        <br>
+                        <br> Hard Drop <span class="controlRebind" id="c_HardDrop"> W </span>
+                    </div>
                 </div>
 
-                <div class="fill hide" id="pauseScreen">
-                    <br>
-                    <h1><i>Game Paused</i></h1>
-                    Controls:
-                    <div class="leftAlign middleBox">
-                        <br> Pause - Escape
-                        <br> Move Left/Right - <span class="cd_MoveLeft"></span> / <span class="cd_MoveRight"></span>
-                        <br> Rotate Left/Right - <span class="cd_RotateAntiClockwise"></span> / <span class="cd_RotateClockwise"></span>
-                        <br> Hold piece - <span class="cd_Hold"></span>
-                        <br> Hard drop - <span class="cd_HardDrop"></span>
-                        <br> Soft drop - <span class="cd_SoftDrop"></span>
-                    </div>
-                    <br><button id="unpauseButton">Continue Game
-                        <div class="buttonBackground"></div>
-                        <div class="buttonFadeIn"></div>
-                    </button>
-                    <br><button class="settingsButton">Settings
-                        <div class="buttonBackground"></div>
-                        <div class="buttonFadeIn"></div>
-                    </button>
-                </div>
+                <button id="exitSettingsButton">Exit Settings
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+                
+
+
 
                 
-                <div class="fill" id="titleScreen">
-                    <h1>Quadtris</h1>
-                    A JavaScript + WebGL implementation of the popular block-falling game 
-                    <br>(<i>it rhymes with "Fortress"!</i>)
-                    <br>
-                    <br> <span id="debug"></span>
-                    <br>
-                    <br><button id="startButton">Start Game
-                        <div class="buttonBackground"></div>
-                        <div class="buttonFadeIn"></div>
-                    </button>
-                    <br>
-                    <br>
-                    <br><button class="settingsButton">Settings 
-                        <!-- <br>    (under construction) -->
-                        <div class="buttonBackground"></div>
-                        <div class="buttonFadeIn"></div>
-                    </button>
-                    <br>
-                    <br><span id="GitHub">View the code on <a href="https://github.com/AlexWills37/WebTetris" target="_blank">GitHub</a>!</span>
-                </div>
-
-                <div class="fill hide" id="gameOverScreen">
-                    <h1>Game Over!</h1>
-                    <p>Final score: <span id="finalScore"></span></p>
-                    <p>Lines cleared: <span id="finalLines"></span></p>
-                    <p></p>
-                    <p></p>
-                    <br><button id="replayButton">Play Again
-                        <div class="buttonBackground"></div>
-                        <div class="buttonFadeIn"></div>
-                    </button>
-                    <br><button id="returnToTitleButton">Return to Title
-                            <div class="buttonBackground"></div>
-                            <div class="buttonFadeIn"></div>
-                        </button>
-                    
-
-                </div>
-                
-                <div class="fill hide" id="settingsScreen">
-                    <h1>Settings</h1>
-                    To change a control, click on it's blue box, 
-                    <br>then press the key you want to change it to.
-                    <br>
-                    <br><i><span id="settingsConsoleText"></span></i>
-                    <div id="controlMapArea">
-                        <div class="leftHalf">
-                           ← Move Left <span class="controlRebind" id="c_MoveLeft"> A </span>
-                           <br>
-                           <br> → Move Right <span class="controlRebind" id="c_MoveRight"> D </span>
-                           <br>
-                           <br> ↺ Rotate Left <span class="controlRebind" id="c_RotateAntiClockwise"> J </span>
-                           <br>
-                           <br> ↻ Rotate Right <span class="controlRebind" id="c_RotateClockwise"> L </span>
-
-                        </div>
-                        <div class="rightHalf">
-                            Hold Piece <span class="controlRebind" id="c_Hold"> E </span>
-                           <br>
-                           <br> Soft Drop <span class="controlRebind" id="c_SoftDrop"> S </span>
-                           <br>
-                           <br> Hard Drop <span class="controlRebind" id="c_HardDrop"> W </span>
-                        </div>
-                    </div>
-
-                    <button id="exitSettingsButton">Exit Settings
-                        <div class="buttonBackground"></div>
-                        <div class="buttonFadeIn"></div>
-                    </button>
-                    
-
-
-
-                </div>
                 
             </div>
 
