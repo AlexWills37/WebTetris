@@ -47,13 +47,14 @@ export class TouchInput {
         parentHtml.addEventListener("touchcancel", (event) => {this.touchEnd(event)});
         this.#parent = parentHtml;
 
-        document.addEventListener(
-        "dblclick",
-        function (event) {
-            event.preventDefault();
-        },
-        { passive: false }
-        );
+        // parentHtml.addEventListener(
+        // "dblclick",
+        // function (event) {
+        //     console.log("double click found");  
+        //     event.preventDefault();
+        // },
+        // { passive: false },
+        // );
     }
 
     /**
