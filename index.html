@@ -8,8 +8,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-bnDbL-6L.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-RdpvDvsO.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-DMY9SjN0.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-DXjWTaJq.css">
 	</head>
 	<body>
         <div class="container">
@@ -42,8 +42,17 @@
                 
             </div>
             <div class="controller">
-                <span class="left-item">Left side</span>
-                <span class="right-item">Right side</span>
+                <div class="small-grid left-item">
+                    <button id="tib_MoveLeft" class="controlButton blockGestures west">Hi! </button>
+                    <button id="tib_MoveRight" class="controlButton blockGestures east">Hi! </button>
+                    <button id="tib_HardDrop" class="controlButton blockGestures north">Hi! </button>
+                    <button id="tib_SoftDrop" class="controlButton blockGestures south">Hi! </button>
+                </div>
+                <div class="small-grid right-item">
+                    <button id="tib_Hold" class="controlButton blockGestures southeast">Hi! </button>
+                    <button id="tib_RotateClockwise" class="controlButton blockGestures east">Hi! </button>
+                    <button id="tib_RotateAnticlockwise" class="controlButton blockGestures south">Hi! </button>
+                </div>
             </div>
             
             <div id="gameSpace">
@@ -53,13 +62,6 @@
                 <div class="fill" id="gameGUI">
 
                     <div class="controller hide">
-                        <button id="tib_MoveLeft" class="controlButton blockGestures moveLeft">Hi! </button>
-                        <button id="tib_MoveRight" class="controlButton blockGestures moveRight">Hi! </button>
-                        <button id="tib_HardDrop" class="controlButton blockGestures hardDrop">Hi! </button>
-                        <button id="tib_SoftDrop" class="controlButton blockGestures softDrop">Hi! </button>
-                        <button id="tib_Hold" class="controlButton blockGestures hold">Hi! </button>
-                        <button id="tib_RotateClockwise" class="controlButton blockGestures rotateClockwise">Hi! </button>
-                        <button id="tib_RotateAnticlockwise" class="controlButton blockGestures rotateAnticlockwise">Hi! </button>
                     </div>
                     <!-- <div id="gameBoardOutline"></div> -->
                 </div>
