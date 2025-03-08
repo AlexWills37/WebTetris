@@ -51,6 +51,16 @@ export class GUIButtonInput {
     }
 
     /**
+     * 
+     * @param {HTMLButtonElement} button 
+     */
+    addCommonListeners(button) {
+        button.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+        });
+    }
+
+    /**
      * Adds the callbacks to raise an input flag when the button is pressed, either on pointerdown or click (but not both).
      * These inputs do not repeat actions, as the input flags are cleared by this.resetFlags().
      * @param {HTMLButtonElement} button the button to be clicked.
@@ -71,8 +81,11 @@ export class GUIButtonInput {
             
             this.inputStates.set(inputBind, true);
         });
-    }
 
+        this.addCommonListeners(button);
+    }
+    
+    
     /**
      * Adds the callbacks specifically for moveLeft and moveRight.
      * These inputs can be held down for repeated action, based on how many frames they are held.
@@ -81,15 +94,15 @@ export class GUIButtonInput {
      * and incrementing a frame counter. The frame counter can then be used to evaluate these inputs. 
      * @param {HTMLButtonElement} button the button to be clicked.
      * @param {String} inputBind the name of the input state to change.
-     */
-    addReleasableListeners(button, inputBind) {
-        button.addEventListener("pointerdown", (event) => {
-            this.inputStates.set(inputBind, true);
+    */
+   addReleasableListeners(button, inputBind) {
+       button.addEventListener("pointerdown", (event) => {
+           this.inputStates.set(inputBind, true);
         });
         button.addEventListener("pointerup", (event) => {
             this.inputStates.set(inputBind, false);
         });
-
+        
         button.addEventListener("click", (event) => {
             // If there IS a pointer type, the input will be handled by the pointerDown listener.
             if (event.pointerType !== "") {
@@ -106,13 +119,14 @@ export class GUIButtonInput {
                 this.frameCounter.softDrop++;
             }   // Note: the frame counter will be reset back to 0 when resetFlags() is called, because we are not "holding" the button down.
         });
+        this.addCommonListeners(button);
     }
-
+    
     /**
      * Captures the state of moveLeft and moveRight to handle repeatable action. On the first frame held, the action
      * will fire, and then for a few frames the action will not fire, and then the action will fire on every frame after.
-     */
-    countFrame() {
+    */
+   countFrame() {
         if (this.inputStates.get("moveLeft")) {
             this.frameCounter.moveLeft++;
         } 

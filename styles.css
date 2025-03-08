@@ -304,6 +304,7 @@ div.hide {
     height: 20%;*/
     /* background-color: rgba(0, 0, 0, 0.108); */
     /* border-style: solid; */
+
 }
 
 .small-grid {
@@ -370,6 +371,7 @@ div.hide {
     padding: 0;
     margin: 0;
     /* z-index: auto; */
+    user-select: none;
 }
 
 .controlButton > img {
