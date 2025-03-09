@@ -67,7 +67,7 @@ function main() {
     
     
     debugLog.textContent = "Creating touch input module";
-    let touchInput = new TouchInput(document.querySelector(".canvasSpace"));
+    let touchInput = new TouchInput(document.querySelector(".container"));
     debugLog.textContent = "Creating GUI input module";
     let guiInput = new GUIButtonInput(document.querySelector("#tib_Hold"),
         document.querySelector("#tib_MoveLeft"),
