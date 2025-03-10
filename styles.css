@@ -374,6 +374,10 @@ div.hide {
     user-select: none;
 }
 
+.controlButton.pressed {
+    background-image: url("../textures/pressed-block.png");
+}
+
 .controlButton > img {
     width: 50%;
     height: 50%;

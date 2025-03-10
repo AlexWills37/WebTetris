@@ -40,21 +40,34 @@ export class GUIButtonInput {
         
         // Adds the listeners to the buttons.
         console.log("adding listeners");
-        this.addReleasableListeners(moveLeft, "moveLeft");
-        this.addReleasableListeners(moveRight, "moveRight");
-        this.addReleasableListeners(softDrop, "softDrop");
-        this.addListeners(hardDrop, "hardDrop");
-        this.addListeners(rotateClockwise, "rotateClockwise");
-        this.addListeners(rotateAnticlockwise, "rotateAnticlockwise");
-        this.addListeners(hold, "hold");
+        this.addStateListeners(moveLeft, "moveLeft");
+        this.addStateListeners(moveRight, "moveRight");
+        this.addStateListeners(softDrop, "softDrop");
+        this.addFlagListners(hardDrop, "hardDrop");
+        this.addFlagListners(rotateClockwise, "rotateClockwise");
+        this.addFlagListners(rotateAnticlockwise, "rotateAnticlockwise");
+        this.addFlagListners(hold, "hold");
         console.log("listeners added");
     }
 
     /**
-     * 
-     * @param {HTMLButtonElement} button 
+     * Adds the common events for all GUI buttons (touch => state change, touchstart => prevent default).
+     * @param {HTMLButtonElement} button the button ot add events for.
+     * @param {String} inputBind the name of the input key to change.
      */
-    addCommonListeners(button) {
+    addCommonListeners(button, inputBind) {
+        // In both types of inputs, touching the button should immediately update the state.
+        button.addEventListener("pointerdown", (event) => {
+            this.inputStates.set(inputBind, true);
+            button.classList.add("pressed");
+        });
+
+        button.addEventListener("pointerleave", (e) => {
+            button.classList.remove("pressed");
+        });
+        
+        // Blocks touch-hold events that would bring up the context menu to save button icons as images
+        // This is to allow the user to hold down the controls like a controller, not to block image saving, although that is a side effect.
         button.addEventListener("touchstart", (e) => {
             e.preventDefault();
         });
@@ -66,28 +79,22 @@ export class GUIButtonInput {
      * @param {HTMLButtonElement} button the button to be clicked.
      * @param {String} inputBind the name of the input flag to raise.
      */
-    addListeners(button, inputBind) {
-        button.addEventListener("pointerdown", (event) => {
-            this.inputStates.set(inputBind, true);
-        });
-        
-
+    addFlagListners(button, inputBind) {
         button.addEventListener("click", (event) => {
             // If there IS a pointer type, the input will be handled by the pointerDown listener.
             if (event.pointerType !== "") {
                 return; 
             }
             // Otherwise (like when hitting the button with keyboard controls), we can process the input here
-            
             this.inputStates.set(inputBind, true);
         });
 
-        this.addCommonListeners(button);
+        this.addCommonListeners(button, inputBind);
     }
     
     
     /**
-     * Adds the callbacks specifically for moveLeft and moveRight.
+     * Adds the callbacks specifically for moveLeft, moveRight, and softDrop.
      * These inputs can be held down for repeated action, based on how many frames they are held.
      * Instead of raising a flag that gets cleared by this.resetFlags(), these inputs will represent the precise state
      * of the button. this.countFrame() can be used to capture the state of these inputs by querying the precise state
@@ -95,12 +102,11 @@ export class GUIButtonInput {
      * @param {HTMLButtonElement} button the button to be clicked.
      * @param {String} inputBind the name of the input state to change.
     */
-   addReleasableListeners(button, inputBind) {
-       button.addEventListener("pointerdown", (event) => {
-           this.inputStates.set(inputBind, true);
-        });
-        button.addEventListener("pointerup", (event) => {
+   addStateListeners(button, inputBind) {
+        
+        button.addEventListener("pointerleave", (event) => {
             this.inputStates.set(inputBind, false);
+            button.classList.remove("pressed");
         });
         
         button.addEventListener("click", (event) => {
@@ -119,7 +125,8 @@ export class GUIButtonInput {
                 this.frameCounter.softDrop++;
             }   // Note: the frame counter will be reset back to 0 when resetFlags() is called, because we are not "holding" the button down.
         });
-        this.addCommonListeners(button);
+
+        this.addCommonListeners(button, inputBind);
     }
     
     /**
