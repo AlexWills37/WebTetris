@@ -8,8 +8,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-BN1c72YI.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-DCa0GpGX.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-BNCb-y3K.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-DEeZ3joA.css">
 	</head>
 	<body>
         <div class="container">
@@ -32,38 +32,38 @@
                     <div class="guiInfoBox">
                         Controls:
                         <br> Pause - Escape
-                        <br> Move - <span class="cd_MoveLeft"></span> / <span class="cd_MoveRight"></span>
-                        <br> Rotate - <span class="cd_RotateAntiClockwise"></span> / <span class="cd_RotateClockwise"></span>
-                        <br> Hold piece - <span class="cd_Hold"></span>
-                        <br> Hard drop - <span class="cd_HardDrop"></span>
-                        <br> Soft drop - <span class="cd_SoftDrop"></span>
+                        <br> Move - <span class="cd_moveLeft"></span> / <span class="cd_moveRight"></span>
+                        <br> Rotate - <span class="cd_rotateAnticlockwise"></span> / <span class="cd_rotateClockwise"></span>
+                        <br> Hold piece - <span class="cd_hold"></span>
+                        <br> Hard drop - <span class="cd_hardDrop"></span>
+                        <br> Soft drop - <span class="cd_softDrop"></span>
                     </div>
                 </div>
                 
             </div>
             <div class="controller">
                 <div class="small-grid left-item">
-                    <button id="tib_MoveLeft" class="controlButton blockGestures west">
+                    <button id="tib_moveLeft" class="controlButton blockGestures west">
                         <img src="textures/right-arrow.png">
                     </button>
-                    <button id="tib_MoveRight" class="controlButton blockGestures east">
+                    <button id="tib_moveRight" class="controlButton blockGestures east">
                         <img src="textures/right-arrow.png">
                     </button>
-                    <button id="tib_HardDrop" class="controlButton blockGestures north">
+                    <button id="tib_hardDrop" class="controlButton blockGestures north">
                         <img src="textures/hard-drop.png">
                     </button>
-                    <button id="tib_SoftDrop" class="controlButton blockGestures south">
+                    <button id="tib_softDrop" class="controlButton blockGestures south">
                         <img src="textures/down-arrow.png">
                     </button>
                 </div>
                 <div class="small-grid right-item">
-                    <button id="tib_Hold" class="controlButton blockGestures southeast">
+                    <button id="tib_hold" class="controlButton blockGestures southeast">
                         <img src="textures/hold.png">
                     </button>
-                    <button id="tib_RotateClockwise" class="controlButton blockGestures east">
+                    <button id="tib_rotateClockwise" class="controlButton blockGestures east">
                         <img src="textures/anti-rotate.png">
                     </button>
-                    <button id="tib_RotateAnticlockwise" class="controlButton blockGestures south">
+                    <button id="tib_rotateAnticlockwise" class="controlButton blockGestures south">
                         <img src="textures/anti-rotate.png">
                     </button>
                 </div>
@@ -77,11 +77,11 @@
                 Controls:
                 <div class="leftAlign middleBox">
                     <br> Pause - Escape
-                    <br> Move Left/Right - <span class="cd_MoveLeft"></span> / <span class="cd_MoveRight"></span>
-                    <br> Rotate Left/Right - <span class="cd_RotateAntiClockwise"></span> / <span class="cd_RotateClockwise"></span>
-                    <br> Hold piece - <span class="cd_Hold"></span>
-                    <br> Hard drop - <span class="cd_HardDrop"></span>
-                    <br> Soft drop - <span class="cd_SoftDrop"></span>
+                    <br> Move Left/Right - <span class="cd_moveLeft"></span> / <span class="cd_moveRight"></span>
+                    <br> Rotate Left/Right - <span class="cd_rotateAnticlockwise"></span> / <span class="cd_rotateClockwise"></span>
+                    <br> Hold piece - <span class="cd_hold"></span>
+                    <br> Hard drop - <span class="cd_hardDrop"></span>
+                    <br> Soft drop - <span class="cd_softDrop"></span>
                 </div>
                 <br><button id="unpauseButton">Continue Game
                     <div class="buttonBackground"></div>
@@ -142,21 +142,21 @@
                 <br><i><span id="settingsConsoleText"></span></i>
                 <div id="controlMapArea">
                     <div class="leftHalf">
-                        ← Move Left <span class="controlRebind" id="c_MoveLeft"> A </span>
+                        ← Move Left <span class="controlRebind" id="c_moveLeft"> A </span>
                         <br>
-                        <br> → Move Right <span class="controlRebind" id="c_MoveRight"> D </span>
+                        <br> → Move Right <span class="controlRebind" id="c_moveRight"> D </span>
                         <br>
-                        <br> ↺ Rotate Left <span class="controlRebind" id="c_RotateAntiClockwise"> J </span>
+                        <br> ↺ Rotate Left <span class="controlRebind" id="c_rotateAnticlockwise"> J </span>
                         <br>
-                        <br> ↻ Rotate Right <span class="controlRebind" id="c_RotateClockwise"> L </span>
+                        <br> ↻ Rotate Right <span class="controlRebind" id="c_rotateClockwise"> L </span>
 
                     </div>
                     <div class="rightHalf">
-                        Hold Piece <span class="controlRebind" id="c_Hold"> E </span>
+                        Hold Piece <span class="controlRebind" id="c_hold"> E </span>
                         <br>
-                        <br> Soft Drop <span class="controlRebind" id="c_SoftDrop"> S </span>
+                        <br> Soft Drop <span class="controlRebind" id="c_softDrop"> S </span>
                         <br>
-                        <br> Hard Drop <span class="controlRebind" id="c_HardDrop"> W </span>
+                        <br> Hard Drop <span class="controlRebind" id="c_hardDrop"> W </span>
                     </div>
                 </div>
 
