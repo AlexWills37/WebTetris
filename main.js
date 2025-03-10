@@ -44,9 +44,6 @@ function createProgram(gl, vertexShader, fragmentShader) {
     gl.deleteProgram(program);
 }
 
-
-
-
 function main() {
     let debugLog = document.createTextNode('');
     document.querySelector("#debug").appendChild(debugLog);
@@ -69,16 +66,14 @@ function main() {
     debugLog.textContent = "Creating touch input module";
     let touchInput = new TouchInput(document.querySelector(".container"));
     debugLog.textContent = "Creating GUI input module";
-    let guiInput = new GUIButtonInput(document.querySelector("#tib_Hold"),
-        document.querySelector("#tib_MoveLeft"),
-        document.querySelector("#tib_MoveRight"),
-        document.querySelector("#tib_SoftDrop"),
-        document.querySelector("#tib_HardDrop"),
-        document.querySelector("#tib_RotateClockwise"),
-        document.querySelector("#tib_RotateAnticlockwise")
+    let guiInput = new GUIButtonInput(document.querySelector("#tib_hold"),
+        document.querySelector("#tib_moveLeft"),
+        document.querySelector("#tib_moveRight"),
+        document.querySelector("#tib_softDrop"),
+        document.querySelector("#tib_hardDrop"),
+        document.querySelector("#tib_rotateClockwise"),
+        document.querySelector("#tib_rotateAnticlockwise")
     );
-    
-    
     
     // Create game and renderer
     debugLog.textContent = "Creating game module";
@@ -100,9 +95,6 @@ function main() {
     document.querySelector("#finalScore").appendChild(finalScoreNode);
     document.querySelector("#finalLines").append(finalLinesNode);
     
-    
-    
-    
     // Create the engine loop
     debugLog.textContent = "Creating game loop";
     let timeSinceGameTick = 0;
@@ -115,10 +107,9 @@ function main() {
         // If settings screen is open, only process escape key
         if (!settingsScreen.classList.contains("hide")) {
             inputMod.updateCounters();
-            if (inputMod.getCounter("Pause") == 1) {
+            if (inputMod.getCounter("pause") == 1) {
                 settingsScreen.classList.add("hide");
             }
-            
             
             // If the game is running, update the game:
         } else if (!game.gameState.gameOver) {
@@ -127,15 +118,12 @@ function main() {
             if (timeSinceGameTick >= game.gameTickTime) {
                 timeSinceGameTick = Math.min(timeSinceGameTick - game.gameTickTime, game.gameTickTime);
                 
-                
-                
                 inputMod.updateCounters();
                 updateInputs(game, inputMod, touchInput, guiInput);
                 game.runTick();
                 
-                
                 // Handle pause/unpause
-                if (inputMod.getCounter("Pause") == 1) {
+                if (inputMod.getCounter("pause") == 1) {
                     if (!game.gameState.isPaused) {
                         // Pause game
                         game.pauseGame(true);
@@ -161,7 +149,6 @@ function main() {
                 finalLinesNode.textContent = game.gameState.linesCleared;
             }
         } else {    // Game is "over" and not started (on the title screen)
-            
         }
         
         // Render frame
@@ -182,7 +169,6 @@ function main() {
     
     debugLog.textContent = "Connecting buttons";
     startButton.addEventListener("click", startGame);
-    // startButton.addEventListener("touchstart", startGame);
     // document.querySelector("#heldPieceOverlay").addEventListener("click", function() {
     //     game.holdPiece();
     // });
@@ -212,8 +198,6 @@ function main() {
     document.querySelector("#settingsConsoleText").appendChild(settingsDebugMessage);
     RebindMod.connectHTMLElements(".controlRebind", inputMod, settingsDebugMessage, settingsScreen);
     
-    
-    
     document.querySelector("#exitSettingsButton").addEventListener("click", function(){
         settingsScreen.classList.add("hide");
     });
@@ -235,27 +219,27 @@ function updateInputs(game, inputMod, touchInput, guiInput) {
     let repeatDelay = 5;    // The number of frames before moving left/right repeats if held down.
     
     // Single inputs (holding input does not activate multiple actions)
-    if (inputMod.getCounter("HardDrop") == 1) {
+    if (inputMod.getCounter("hardDrop") == 1) {
         game.input.hardDrop = true;
     }
-    if (inputMod.getCounter("Hold") == 1) {
+    if (inputMod.getCounter("hold") == 1) {
         game.input.hold = true;
     }
-    if (inputMod.getCounter("RotateClockwise") == 1) {
-        game.input.rotClockwise = true;
+    if (inputMod.getCounter("rotateClockwise") == 1) {
+        game.input.rotateClockwise = true;
     }
-    if (inputMod.getCounter("RotateAntiClockwise") == 1) {
-        game.input.rotAntiClockwise= true;
+    if (inputMod.getCounter("rotateAnticlockwise") == 1) {
+        game.input.rotateAnticlockwise= true;
     }
     
     // Continuous inputs (holding input activates repeatedly)
-    if (inputMod.getInputState("SoftDrop")) {
+    if (inputMod.getInputState("softDrop")) {
         game.input.softDrop = true;
     }
-    if (inputMod.getCounter("MoveLeft") == 1 || inputMod.getCounter("MoveLeft") > repeatDelay) {
+    if (inputMod.getCounter("moveLeft") == 1 || inputMod.getCounter("moveLeft") > repeatDelay) {
         game.input.moveLeft = true;
     }
-    if (inputMod.getCounter("MoveRight") == 1 || inputMod.getCounter("MoveRight") > repeatDelay) {
+    if (inputMod.getCounter("moveRight") == 1 || inputMod.getCounter("moveRight") > repeatDelay) {
         game.input.moveRight = true;
     }
 
@@ -274,9 +258,9 @@ function updateInputs(game, inputMod, touchInput, guiInput) {
     }
 
     if (touchInput.rotate.left) {
-        game.input.rotAntiClockwise = true;
+        game.input.rotateAnticlockwise = true;
     } else if (touchInput.rotate.right) {
-        game.input.rotClockwise = true;
+        game.input.rotateClockwise = true;
     }
     touchInput.rotate = {left: false, right: false};
 
@@ -300,18 +284,16 @@ function updateInputs(game, inputMod, touchInput, guiInput) {
         game.input.hold = true;   
     }
     if (guiInput.getInput("rotateClockwise")) {
-        game.input.rotClockwise = true;
+        game.input.rotateClockwise = true;
     }
     if (guiInput.getInput("rotateAnticlockwise")) {
-        game.input.rotAntiClockwise = true;   
+        game.input.rotateAnticlockwise = true;   
     }
     if (guiInput.getInput("hardDrop")) {
         game.input.hardDrop = true;
     }
 
     guiInput.resetFlags();
-    
 }
-
 
 main();

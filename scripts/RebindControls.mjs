@@ -1,5 +1,9 @@
+/**
+ * @fileoverview Contains the logic for connecting the input module to custom settings saved in Local Storage.
+ * 
+ * @author ALex Wills
+ */
 import {QuadtrisInput} from "./QuadtrisInput.mjs"
-
 
 /** @type {Text | null} */
 let outputText = null;
@@ -92,7 +96,6 @@ function connectAllRebindButtons(selectorText, inputMod){
         rebindButton.innerText = inputMod.actionToKey(rebindButton.id.substring(2));
         if (rebindButton.innerText == " ")
             rebindButton.innerText = "Space";
-
     }
 
     // Keypress event functions
@@ -152,11 +155,8 @@ function connectAllRebindButtons(selectorText, inputMod){
             inputMod.selectedSpan.classList.add("ready");
             inputMod.selectedSpan = null;
         }
-        
     }
 }
-
-
 
 /**
  * 

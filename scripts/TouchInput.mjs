@@ -46,15 +46,6 @@ export class TouchInput {
         parentHtml.addEventListener("touchend", (event) => {this.touchEnd(event)});
         parentHtml.addEventListener("touchcancel", (event) => {this.touchEnd(event)});
         this.#parent = parentHtml;
-
-        // parentHtml.addEventListener(
-        // "dblclick",
-        // function (event) {
-        //     console.log("double click found");  
-        //     event.preventDefault();
-        // },
-        // { passive: false },
-        // );
     }
 
     /**
@@ -80,7 +71,6 @@ export class TouchInput {
                 endY: mainTouch.pageY
             };
         }
-        
     }
 
     /**
@@ -120,7 +110,6 @@ export class TouchInput {
             this.moveDown = false;
         }      
     }
-
 
     /**
      * Detects the user's swipes and updates tracking values for other gestures.

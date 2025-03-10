@@ -385,7 +385,7 @@ div.hide {
     /* background-color: black; */
 }
 
-#tib_MoveLeft, #tib_RotateClockwise > img {
+#tib_moveLeft, #tib_rotateClockwise > img {
     transform: scaleX(-1);
 }
 

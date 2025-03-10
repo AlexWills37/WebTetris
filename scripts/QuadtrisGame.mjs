@@ -42,8 +42,8 @@ export class QuadtrisGame {
         hardDrop: false,
         softDrop: false,
         hold: false,
-        rotClockwise: false,
-        rotAntiClockwise: false
+        rotateClockwise: false,
+        rotateAnticlockwise: false
     }
 
     /**
@@ -321,9 +321,9 @@ export class QuadtrisGame {
 
             // Next, process rotation
             let rotation = 0;
-            if (this.input.rotClockwise)
+            if (this.input.rotateClockwise)
                 rotation += 1;
-            if (this.input.rotAntiClockwise)
+            if (this.input.rotateAnticlockwise)
                 rotation -= 1;
             if (rotation != 0)
                 pieceMoved = this.tryRotatePiece(rotation == 1) || pieceMoved;
@@ -381,8 +381,8 @@ export class QuadtrisGame {
             hardDrop: false,
             softDrop: false,
             hold: false,
-            rotClockwise: false,
-            rotAntiClockwise: false
+            rotateClockwise: false,
+            rotateAnticlockwise: false
         };
     }    
 

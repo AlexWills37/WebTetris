@@ -50,14 +50,14 @@ export class QuadtrisInput {
          * @type {Map<string, boolean}
          */
         this.actionStates = new Map();
-        this.actionStates.set("HardDrop", false);
-        this.actionStates.set("SoftDrop", false);
-        this.actionStates.set("MoveLeft", false);
-        this.actionStates.set("MoveRight", false);
-        this.actionStates.set("Hold", false);
-        this.actionStates.set("RotateClockwise", false);
-        this.actionStates.set("RotateAntiClockwise", false);
-        this.actionStates.set("Pause", false);
+        this.actionStates.set("hardDrop", false);
+        this.actionStates.set("softDrop", false);
+        this.actionStates.set("moveLeft", false);
+        this.actionStates.set("moveRight", false);
+        this.actionStates.set("hold", false);
+        this.actionStates.set("rotateClockwise", false);
+        this.actionStates.set("rotateAnticlockwise", false);
+        this.actionStates.set("pause", false);
 
         /**
          * Key bindings from key representations to action states.
@@ -68,14 +68,14 @@ export class QuadtrisInput {
          * @type {Map<string, string>}
          */
         this.inputKeys = new Map();
-        this.inputKeys.set("A", "MoveLeft");
-        this.inputKeys.set("D", "MoveRight");
-        this.inputKeys.set("W", "HardDrop");
-        this.inputKeys.set("S", "SoftDrop");
-        this.inputKeys.set("E", "Hold");
-        this.inputKeys.set("ArrowLeft", "RotateAntiClockwise");
-        this.inputKeys.set("ArrowRight", "RotateClockwise");
-        this.inputKeys.set("Escape", "Pause");
+        this.inputKeys.set("A", "moveLeft");
+        this.inputKeys.set("D", "moveRight");
+        this.inputKeys.set("W", "hardDrop");
+        this.inputKeys.set("S", "softDrop");
+        this.inputKeys.set("E", "hold");
+        this.inputKeys.set("ArrowLeft", "rotateAnticlockwise");
+        this.inputKeys.set("ArrowRight", "rotateClockwise");
+        this.inputKeys.set("Escape", "pause");
         
         /**
          * Counters for connecting action states to tick counts.
@@ -88,19 +88,19 @@ export class QuadtrisInput {
          * // Every tick, update the counters
          * inputMod.updateCounters();
          * // Check if this is the first tick the player is pressing the hold button
-         * if (inputMod.getCounter("Hold") == 1)
-         *      // Hold the piece
+         * if (inputMod.getCounter("hold") == 1)
+         *      // hold the piece
          * 
          * @type {Map<string, number>}
          */
         this.counters = new Map();
-        this.counters.set("MoveLeft", 0);
-        this.counters.set("MoveRight", 0);
-        this.counters.set("RotateClockwise", 0);
-        this.counters.set("RotateAntiClockwise", 0);
-        this.counters.set("HardDrop", 0);
-        this.counters.set("Hold", 0);
-        this.counters.set("Pause", 0);
+        this.counters.set("moveLeft", 0);
+        this.counters.set("moveRight", 0);
+        this.counters.set("rotateClockwise", 0);
+        this.counters.set("rotateAnticlockwise", 0);
+        this.counters.set("hardDrop", 0);
+        this.counters.set("hold", 0);
+        this.counters.set("pause", 0);
     }
 
     /**

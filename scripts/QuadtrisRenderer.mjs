@@ -14,8 +14,6 @@ export class QuadtrisRenderer {
     /** WebGL context. @type {WebGLRenderingContext} */
     gl;
 
-
-
     /** Map between block type (1-7) and block color. @type {Map<number, number[]>} */
     #colorMap = new Map();
 
@@ -55,22 +53,7 @@ export class QuadtrisRenderer {
     #lineClearNode = document.createTextNode('0');
 
     #speedLevelNode = document.createTextNode('1');
-    #scoreNode = document.createTextNode("0");
-
-    #previousWidth = 0;
-    #previousHeight = 0;
-
-
-    /** @type {Map<HTMLElement, CSS2Properties>} */
-    #elementStyles = new Map();
-
-    #cssStyleRules;
-
-    
-    #buttonFontSize;
-    #buttons = document.querySelectorAll("button");
-
-    
+    #scoreNode = document.createTextNode("0");  
 
     constructor() {
         // Attach the line clear count to the HTML
@@ -129,24 +112,9 @@ export class QuadtrisRenderer {
             return positions;
         }
 
-        
-
-
         // Create base vertex data
-        //positions.push(...[-1, -1, 1, -1, 1, 1, -1, 1]);
-
         const vertexArrays = {
-            a_Position: {numComponents: 2, data: createGameQuads(500, 5, 0, 70)
-                
-            //     [
-            //     138, 274, 262, 274, 262, 26, 138, 26,
-            //     109, 51, 134, 51, 134, 26, 109, 26,
-            //     266, 51, 291, 51, 291, 26, 266, 26,
-                
-            //     266, 82, 291, 82, 291, 57, 266, 57,
-            //     266, 113, 291, 113, 291, 88, 266, 88
-            // ]
-        },
+            a_Position: {numComponents: 2, data: createGameQuads(500, 5, 0, 70)},
             a_GridPos: {numComponents: 2, data: [0, 0, 10, 0, 10, 20, 0, 20, 
                 0, 0, 4, 0, 4, 4, 0, 4, 
                 0, 0, 4, 0, 4, 4, 0, 4,
@@ -378,7 +346,6 @@ export class QuadtrisRenderer {
         } else if (piece == 'I') { // Encode the top right pixel to indicate an I piece (we will want to move it up to center it)
             this.#queueRGBData[startingIndex + 21 + 1] = 255;
         }
-
     }
 
     /**
@@ -394,6 +361,4 @@ export class QuadtrisRenderer {
         this.#speedLevelNode.nodeValue = gameState.speedLevel == 11 ? "MAX" : gameState.speedLevel;
         this.#scoreNode.nodeValue = gameState.score;
     }
-
-   
 }

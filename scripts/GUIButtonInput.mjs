@@ -5,8 +5,11 @@
  */
 export class GUIButtonInput {
 
+    /**
+     * Map between input names and their boolean value.
+     * @type {Map<string, boolean>}
+     */
     inputStates = new Map();
-
 
     frameCounter = {
         moveLeft: 0,
@@ -52,6 +55,7 @@ export class GUIButtonInput {
 
     /**
      * Adds the common events for all GUI buttons (touch => state change, touchstart => prevent default).
+     * 
      * @param {HTMLButtonElement} button the button ot add events for.
      * @param {String} inputBind the name of the input key to change.
      */
@@ -76,6 +80,7 @@ export class GUIButtonInput {
     /**
      * Adds the callbacks to raise an input flag when the button is pressed, either on pointerdown or click (but not both).
      * These inputs do not repeat actions, as the input flags are cleared by this.resetFlags().
+     * 
      * @param {HTMLButtonElement} button the button to be clicked.
      * @param {String} inputBind the name of the input flag to raise.
      */
@@ -99,10 +104,11 @@ export class GUIButtonInput {
      * Instead of raising a flag that gets cleared by this.resetFlags(), these inputs will represent the precise state
      * of the button. this.countFrame() can be used to capture the state of these inputs by querying the precise state
      * and incrementing a frame counter. The frame counter can then be used to evaluate these inputs. 
+     * 
      * @param {HTMLButtonElement} button the button to be clicked.
      * @param {String} inputBind the name of the input state to change.
     */
-   addStateListeners(button, inputBind) {
+    addStateListeners(button, inputBind) {
         
         button.addEventListener("pointerleave", (event) => {
             this.inputStates.set(inputBind, false);
@@ -133,7 +139,7 @@ export class GUIButtonInput {
      * Captures the state of moveLeft and moveRight to handle repeatable action. On the first frame held, the action
      * will fire, and then for a few frames the action will not fire, and then the action will fire on every frame after.
     */
-   countFrame() {
+    countFrame() {
         if (this.inputStates.get("moveLeft")) {
             this.frameCounter.moveLeft++;
         } 
