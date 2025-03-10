@@ -366,6 +366,31 @@ div.hide {
     height: 50%;
 }
 
+#pauseButton {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    aspect-ratio: 1;
+    height: 8%;
+    width: auto;
+
+    margin: 0;
+    border-style: none;
+    padding: 0;
+}
+
+@media (orientation: portrait) {
+    #pauseButton {
+        width: 8%;
+        height: auto;
+    }
+}
+
+#pauseButton > img {
+    width: 100%;
+    height: 100%;
+}
+
 #tib_moveLeft, #tib_rotateClockwise > img {
     transform: scaleX(-1);
 }

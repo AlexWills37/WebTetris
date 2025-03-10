@@ -191,6 +191,12 @@ function main() {
     
     debugLog.textContent = "Starting game";
     requestAnimationFrame(runGameFrame);
+
+    // Pause button
+    document.querySelector("#pauseButton").addEventListener("click", (e) => {
+        game.pauseGame(true);
+        pauseScreen.classList.remove("hide");
+    });
     
     // Setup settings page
     debugLog.textContent = "Setting up settings";
