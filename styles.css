@@ -191,8 +191,6 @@ div.hide {
     
     background-color: rgb(191, 252, 254);;
     text-align: center;
-    /* display:none; */
-
 }
 
 
@@ -228,7 +226,6 @@ div.hide {
 #controlMapArea {
     text-align: left;
     position:relative;
-    /* background-color: rgba(187, 255, 219, 0.2); */
     left:12.5%;
     top: 5%;
     width:75%;
@@ -291,20 +288,6 @@ div.hide {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 100%;
-
-    /* display: grid;
-    grid-template-areas: 
-        "peepee hardDrop . . . ."
-        "moveLeft . moveRight . . rotateClockwise"
-        ". softDrop . . rotateAnticlockwise hold";
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 50%;
-    height: 20%;*/
-    /* background-color: rgba(0, 0, 0, 0.108); */
-    /* border-style: solid; */
-
 }
 
 .small-grid {
@@ -381,8 +364,6 @@ div.hide {
 .controlButton > img {
     width: 50%;
     height: 50%;
-    /* aspect-ratio: 1; */
-    /* background-color: black; */
 }
 
 #tib_moveLeft, #tib_rotateClockwise > img {
