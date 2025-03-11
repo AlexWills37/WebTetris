@@ -113,6 +113,19 @@ export class GUIButtonInput {
         button.addEventListener("pointerleave", (event) => {
             this.inputStates.set(inputBind, false);
             button.classList.remove("pressed");
+            switch (inputBind) {
+                case "moveLeft":
+                    this.frameCounter.moveLeft = 0;
+                    break;
+                case "moveRight":
+                    this.frameCounter.moveRight = 0;
+                    break;
+                case "softDrop":
+                    this.frameCounter.softDrop = 0;
+                    break;
+                default:
+                    break;
+            }
         });
         
         button.addEventListener("click", (event) => {
@@ -155,25 +168,12 @@ export class GUIButtonInput {
 
     /**
      * Clears the input flags to allow buttons to be pressed again.
-     * The moveLeft and moveRight frame counters will be reset to 0 if their
-     * buttons are not being held down.
      */
     resetFlags() {
         this.inputStates.set("hold", false);
         this.inputStates.set("hardDrop", false);
         this.inputStates.set("rotateClockwise", false);
         this.inputStates.set("rotateAnticlockwise", false);
-
-        // Reset the counters if the input is released
-        if (!this.inputStates.get("moveLeft")) {
-            this.frameCounter.moveLeft = 0;
-        }
-        if (!this.inputStates.get("moveRight")) {
-            this.frameCounter.moveRight = 0;
-        }
-        if (!this.inputStates.get("softDrop")) {
-            this.frameCounter.softDrop = 0;
-        }
     }
 
     /**
