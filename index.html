@@ -73,28 +73,7 @@
             </button>
             
 
-            <div class="fill hide" id="pauseScreen">
-                <br>
-                <h1><i>Game Paused</i></h1>
-                Controls:
-                <div class="leftAlign middleBox">
-                    <br> Pause - Escape
-                    <br> Move Left/Right - <span class="cd_moveLeft"></span> / <span class="cd_moveRight"></span>
-                    <br> Rotate Left/Right - <span class="cd_rotateAnticlockwise"></span> / <span class="cd_rotateClockwise"></span>
-                    <br> Hold piece - <span class="cd_hold"></span>
-                    <br> Hard drop - <span class="cd_hardDrop"></span>
-                    <br> Soft drop - <span class="cd_softDrop"></span>
-                </div>
-                <br><button id="unpauseButton">Continue Game
-                    <div class="buttonBackground"></div>
-                    <div class="buttonFadeIn"></div>
-                </button>
-                <br><button class="settingsButton">Settings
-                    <div class="buttonBackground"></div>
-                    <div class="buttonFadeIn"></div>
-                </button>
-            </div>
-
+            
             
             
 
@@ -151,6 +130,33 @@
 
         </div>
 
+        <!-- ==================== Pause Screen ==================== -->
+        <div class="screen hide" id="pauseScreen">
+            <h1><i>Game Paused</i></h1>
+            <button id="unpauseButton">Continue Game
+                <div class="buttonBackground"></div>
+                <div class="buttonFadeIn"></div>
+            </button>
+            <br>
+            <br>
+            <button class="settingsButton">Settings
+                <div class="buttonBackground"></div>
+                <div class="buttonFadeIn"></div>
+            </button>
+            <br>
+            <br>
+            Controls:
+            <div class="leftAlign middleBox">
+                <br> Pause - Escape
+                <br> Move Left/Right - <span class="cd_moveLeft"></span> / <span class="cd_moveRight"></span>
+                <br> Rotate Left/Right - <span class="cd_rotateAnticlockwise"></span> / <span class="cd_rotateClockwise"></span>
+                <br> Hold piece - <span class="cd_hold"></span>
+                <br> Hard drop - <span class="cd_hardDrop"></span>
+                <br> Soft drop - <span class="cd_softDrop"></span>
+            </div>
+        </div>
+
+        <!-- ==================== Title Screen ==================== -->
         <div class="screen" id="titleScreen">
             <h1>Quadtris</h1>
             A JavaScript + WebGL implementation of the popular block-falling game 
