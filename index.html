@@ -8,8 +8,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-Hr0OeF99.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-DUhENnCH.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-zgfn3kAD.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-11UHzaFP.css">
 	</head>
 	<body>
 
@@ -74,39 +74,6 @@
             <button id="pauseButton">
                 <img src="textures/pause.png">
             </button>
-            
-            <div class="fill hide" id="settingsScreen">
-                <h1>Settings</h1>
-                To change a control, click on it's blue box, 
-                <br>then press the key you want to change it to.
-                <br>
-                <br><i><span id="settingsConsoleText"></span></i>
-                <div id="controlMapArea">
-                    <div class="leftHalf">
-                        ← Move Left <span class="controlRebind" id="c_moveLeft"> A </span>
-                        <br>
-                        <br> → Move Right <span class="controlRebind" id="c_moveRight"> D </span>
-                        <br>
-                        <br> ↺ Rotate Left <span class="controlRebind" id="c_rotateAnticlockwise"> J </span>
-                        <br>
-                        <br> ↻ Rotate Right <span class="controlRebind" id="c_rotateClockwise"> L </span>
-
-                    </div>
-                    <div class="rightHalf">
-                        Hold Piece <span class="controlRebind" id="c_hold"> E </span>
-                        <br>
-                        <br> Soft Drop <span class="controlRebind" id="c_softDrop"> S </span>
-                        <br>
-                        <br> Hard Drop <span class="controlRebind" id="c_hardDrop"> W </span>
-                    </div>
-                </div>
-
-                <button id="exitSettingsButton">Exit Settings
-                    <div class="buttonBackground"></div>
-                    <div class="buttonFadeIn"></div>
-                </button>
-
-            </div>
 
         </div>
 
@@ -176,6 +143,103 @@
             </button>
             <br>
             <br>
+        </div>
+
+        <!-- ==================== Settings Screen ==================== -->
+        <div class="screen " id="settingsScreen">
+            <h1>Settings</h1>
+            To change a control, click on it's blue box, 
+            <br>then press the key you want to change it to.
+            <br>
+
+            <!-- Control settings -->
+            <div class="columnContainer">
+                <!-- Keyboard settings -->
+                <button class="keyboardSettings">Keyboard Settings
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+                <div class="keyboardSettings menu">
+                    <!-- Rebind controls -->
+                    <p>
+                        Rebind Controls
+                        <div id="controlMapArea">
+                            <div>← Move Left <span class="controlRebind" id="c_moveLeft"> A </span></div>
+                            <div>→ Move Right <span class="controlRebind" id="c_moveRight"> D </span></div>
+                            <div>↺ Rotate Left <span class="controlRebind" id="c_rotateAnticlockwise"> J </span></div>
+                            <div>↻ Rotate Right <span class="controlRebind" id="c_rotateClockwise"> L </span></div>
+                            <div>Hold Piece <span class="controlRebind" id="c_hold"> E </span></div>
+                            <div>Soft Drop <span class="controlRebind" id="c_softDrop"> S </span></div>
+                            <div>Hard Drop <span class="controlRebind" id="c_hardDrop"> W </span></div>
+                        </div>
+                    </p>
+                    
+                    <!-- Repeat delay (0 - 20 frames, default 5) -->
+                    <p>
+                        Repeat Delay
+                        <input type="range" min="0" max="20" value="5" step="1">
+                    </p>
+                    
+                </div> 
+                <br>
+                
+                <!-- Touch Gesture settings -->
+                <button class="gestureSettings">Touch (Swipe) Settings
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+                <div class="gestureSettings menu">
+                    <!-- Left/Right/Down sensitivity (10 - 100 pixels, default 40) -->
+                    
+                    <!-- Turn-around sensitivity (0 - 80%, default 0) -->
+                    
+                    <!-- Slam (hard drop) sensitivity (100 - 400 pixels, default 150) -->
+                    
+                    <!-- Slam (hard drop) timing sensitivity (100 - 600 ms, default 400) -->
+                    
+                </div>
+                <br>
+                
+                <!-- Touch Button settings -->
+                <button class="buttonSettings">Touch (Button) Settings
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+                <div class="buttonSettings menu">
+                    <!-- Size override -->
+                    
+                    <!-- Repeat delay (0 - 20 frames, default 5) -->
+    
+                </div>
+            </div>
+
+
+            <br><i><span id="settingsConsoleText"></span></i>
+            <!-- <div id="acontrolMapArea">
+                <div class="leftHalf">
+                    ← Move Left <span class="controlRebind" id="c_moveLeft"> A </span>
+                    <br>
+                    <br> → Move Right <span class="controlRebind" id="c_moveRight"> D </span>
+                    <br>
+                    <br> ↺ Rotate Left <span class="controlRebind" id="c_rotateAnticlockwise"> J </span>
+                    <br>
+                    <br> ↻ Rotate Right <span class="controlRebind" id="c_rotateClockwise"> L </span>
+
+                </div>
+                <div class="rightHalf">
+                    Hold Piece <span class="controlRebind" id="c_hold"> E </span>
+                    <br>
+                    <br> Soft Drop <span class="controlRebind" id="c_softDrop"> S </span>
+                    <br>
+                    <br> Hard Drop <span class="controlRebind" id="c_hardDrop"> W </span>
+                </div>
+            </div> -->
+
+            <button id="exitSettingsButton">Exit Settings
+                <div class="buttonBackground"></div>
+                <div class="buttonFadeIn"></div>
+            </button>
+
         </div>
 
         <script id="vertex-shader-2d" type="notjs">
