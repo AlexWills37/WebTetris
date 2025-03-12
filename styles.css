@@ -3,6 +3,7 @@ body {
     font-family: "Quicksand";
     background-color: #BFFCFF;
     position: relative;
+    font-size: 2em;
 }
 canvas {
     position: absolute;
@@ -24,13 +25,13 @@ canvas {
 }
 
 body, html {
-    overflow: hidden;
-    touch-action: none;
+    /* overflow: hidden; */
 }
 
 .container {
     position:relative;
     height: 100vh;
+    touch-action: none;
 }
 
 .fill {
@@ -67,13 +68,10 @@ button {
     font-family: "Quicksand";
     color: black;
     position:relative;
-    top:0%;
-    left:0%;
-    width:27%;
+    width:max-content;
     height:12%;
-    margin-top: 1%;
-    margin-bottom: 1%;
-    font-size: 3.4vh;
+
+    font-size: 2rem;
 
     background-color: rgba(13, 227, 223, 0);
     border-radius: 10px;
@@ -82,6 +80,7 @@ button {
     border-color: #6C7294;
     z-index:0;
     transition:border-color 0.3s;
+    padding: 3vmin;
     
 }
 
@@ -132,7 +131,7 @@ div.hide {
 .guiInfoBox {
     width: max-content;
     height: min-content;
-    font-size: 1em;
+    font-size: 1rem;
     padding-left:1%;
     border-style:solid;
     border-width:2px;
@@ -150,7 +149,7 @@ div.hide {
     position: static;   
     width: 17.5%;
     height: min-content;
-    font-size: 0.6em;
+    font-size: 0.6rem;
     border-style:none;
     text-align: center;
     margin-bottom: 1%;
@@ -170,19 +169,6 @@ div.hide {
 
 .hide {
     display: none;
-}
-
-#gameBoardOutline {
-    border-width: 0.35em;
-    border-style:solid;
-    position:absolute;
-    top: calc(8.667% - 0.3em);
-    left: calc(34.5% - 0.3em);
-    width:31%;
-    height:82.667%;
-
-    border-radius:0.3em;
-    border-color: #6C7294;
 }
 
 
@@ -406,4 +392,15 @@ div.hide {
         height: 20%;
     }
 
+}
+
+
+
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    touch-action:pan-y;
 }
