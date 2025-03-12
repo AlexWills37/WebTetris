@@ -141,7 +141,7 @@ div.hide {
 }
 
 #heldPiece {
-    position: static;
+    position: relative;
     width:17.5%;
     height: 14%;
 }

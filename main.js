@@ -64,7 +64,7 @@ function main() {
     
     
     debugLog.textContent = "Creating touch input module";
-    let touchInput = new TouchInput(document.querySelector(".container"));
+    let touchInput = new TouchInput(document.querySelector(".container"), document.querySelector("#heldPiece"));
     debugLog.textContent = "Creating GUI input module";
     let guiInput = new GUIButtonInput(document.querySelector("#tib_hold"),
         document.querySelector("#tib_moveLeft"),
@@ -273,6 +273,10 @@ function updateInputs(game, inputMod, touchInput, guiInput) {
     if (touchInput.hardDrop) {
         game.input.hardDrop = true;
         touchInput.hardDrop = false;
+    }
+    if (touchInput.hold) {
+        game.input.hold = true;
+        touchInput.hold = false;
     }
 
     // GUI controls

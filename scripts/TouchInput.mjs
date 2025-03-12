@@ -15,6 +15,7 @@ export class TouchInput {
         right: false
     }
     hardDrop = false;   // True if the user has flicked down (hard drop) and released (does not reset! reset manually after processing)
+    hold = false;       // True if the user has tapped the area to hold a piece.
     
     /********* Sensitivity settings (change these to adjust the feel of the controls) *********/
     dragSensitivity = 40;   // How many pixels (page coords) to move before a direction is registered
@@ -39,13 +40,16 @@ export class TouchInput {
      * Creates and sets up an object to manage touch inputs.
      * 
      * @param {HTMLElement} parentHtml The HTML Element to add touch and drag event listeners.
+     * @param {HTMLElement} holdSpace  The area over the visually held piece to tap for a hold command.
      */
-    constructor(parentHtml) {
+    constructor(parentHtml, holdSpace) {
         parentHtml.addEventListener("touchmove", (event) => {this.dragEvent(event)});
         parentHtml.addEventListener("touchstart", (event) => {this.touchStart(event)});
         parentHtml.addEventListener("touchend", (event) => {this.touchEnd(event)});
         parentHtml.addEventListener("touchcancel", (event) => {this.touchEnd(event)});
         this.#parent = parentHtml;
+
+        holdSpace.addEventListener("click", (e) => {this.hold = true;});
     }
 
     /**
