@@ -8,10 +8,12 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-PQxj2tWO.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-D5FHpgAu.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-Hr0OeF99.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-DUhENnCH.css">
 	</head>
 	<body>
+
+        <!-- ==================== Game Screen (Interactable) ========================= -->
         <div class="container">
             <div class="canvasSpace">
                 <canvas id="canvas"> The tetris game board! If you see this text, the canvas displaying the game could not load. If you'd like to try, maybe a different browser would work. </canvas>
@@ -158,7 +160,7 @@
         </div>
 
         <!-- ==================== Game Over Screen ==================== -->
-        <div class="fill hide" id="gameOverScreen">
+        <div class="screen " id="gameOverScreen">
             <h1>Game Over!</h1>
             <p>Final score: <span id="finalScore"></span></p>
             <p>Lines cleared: <span id="finalLines"></span></p>
@@ -172,6 +174,8 @@
                     <div class="buttonBackground"></div>
                     <div class="buttonFadeIn"></div>
             </button>
+            <br>
+            <br>
         </div>
 
         <script id="vertex-shader-2d" type="notjs">
