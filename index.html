@@ -73,29 +73,6 @@
                 <img src="textures/pause.png">
             </button>
             
-
-            
-            
-            
-
-            <div class="fill hide" id="gameOverScreen">
-                <h1>Game Over!</h1>
-                <p>Final score: <span id="finalScore"></span></p>
-                <p>Lines cleared: <span id="finalLines"></span></p>
-                <p></p>
-                <p></p>
-                <br><button id="replayButton">Play Again
-                    <div class="buttonBackground"></div>
-                    <div class="buttonFadeIn"></div>
-                </button>
-                <br><button id="returnToTitleButton">Return to Title
-                        <div class="buttonBackground"></div>
-                        <div class="buttonFadeIn"></div>
-                    </button>
-                
-
-            </div>
-            
             <div class="fill hide" id="settingsScreen">
                 <h1>Settings</h1>
                 To change a control, click on it's blue box, 
@@ -178,6 +155,23 @@
             </button>
             <br>
             <br><span>View the code on <a href="https://github.com/AlexWills37/WebTetris" target="_blank">GitHub</a>!</span>
+        </div>
+
+        <!-- ==================== Game Over Screen ==================== -->
+        <div class="fill hide" id="gameOverScreen">
+            <h1>Game Over!</h1>
+            <p>Final score: <span id="finalScore"></span></p>
+            <p>Lines cleared: <span id="finalLines"></span></p>
+            <button id="replayButton">Play Again
+                <div class="buttonBackground"></div>
+                <div class="buttonFadeIn"></div>
+            </button>
+            <br>
+            <br>
+            <button id="returnToTitleButton">Return to Title
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+            </button>
         </div>
 
         <script id="vertex-shader-2d" type="notjs">
