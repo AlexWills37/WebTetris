@@ -8,8 +8,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-EUZHdXs8.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-g_SdCK2U.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-D8jXvdTP.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-DRn4oSIW.css">
 	</head>
 	<body>
 
@@ -146,38 +146,42 @@
         </div>
 
         <!-- ==================== Settings Screen ==================== -->
-        <div class="screen " id="settingsScreen">
+        <div class="screen hide" id="settingsScreen">
             <h1>Settings</h1>
 
             <!-- Control settings -->
-            <div class="columnContainer">
+            <div class="columnContainer wideButtons">
                 <!-- Keyboard settings -->
                 <button class="keyboardSettings">Keyboard Settings
                     <div class="buttonBackground"></div>
                     <div class="buttonFadeIn"></div>
                 </button>
-                <div class="keyboardSettings menu ">
+                <div class="keyboardSettings menu hide">
                     <!-- Rebind controls -->
-                    Rebind Controls
-                    <div class="message">To change a control, click on its blue box, then press the key you want to change it to.</div>
-                    <i><span id="settingsConsoleText"></span></i>
-                    <br>
-                    <br>
-                    <div id="controlMapArea">
-                        <div>← Move Left <span class="controlRebind" id="c_moveLeft"> A </span></div>
-                        <div>→ Move Right <span class="controlRebind" id="c_moveRight"> D </span></div>
-                        <div>↺ Rotate Left <span class="controlRebind" id="c_rotateAnticlockwise"> J </span></div>
-                        <div>↻ Rotate Right <span class="controlRebind" id="c_rotateClockwise"> L </span></div>
-                        <div>Hold Piece <span class="controlRebind" id="c_hold"> E </span></div>
-                        <div>Soft Drop <span class="controlRebind" id="c_softDrop"> S </span></div>
-                        <div>Hard Drop <span class="controlRebind" id="c_hardDrop"> W </span></div>
+                    <div class="menuItem">
+                        Rebind controls<br>
+                        <span class="message">
+                            To change a control, click on its blue box, then press the new key you want to use for it.<br>
+                            <i><span id="settingsConsoleText"></span></i><br>
+                        </span>
+
+                        <div id="controlMapArea">
+                            <div>← Move Left <span class="controlRebind" id="c_moveLeft"> A </span></div>
+                            <div>→ Move Right <span class="controlRebind" id="c_moveRight"> D </span></div>
+                            <div>↺ Rotate Left <span class="controlRebind" id="c_rotateAnticlockwise"> J </span></div>
+                            <div>↻ Rotate Right <span class="controlRebind" id="c_rotateClockwise"> L </span></div>
+                            <div>Hold Piece <span class="controlRebind" id="c_hold"> E </span></div>
+                            <div>Soft Drop <span class="controlRebind" id="c_softDrop"> S </span></div>
+                            <div>Hard Drop <span class="controlRebind" id="c_hardDrop"> W </span></div>
+                        </div>
                     </div>
                     
                     <!-- Repeat delay (0 - 20 frames, default 5) -->
                     <div class="menuItem">
                         Repeat Delay [<span class="keyboardRepeatDelay">5</span> frames]
-                        <input class="slider" type="range" min="0" max="20" value="5">                  
+                        <input class="slider keyboardRepeatDelay" type="range" min="0" max="20" value="5">                  
                     </div>
+                    
                 </div> 
                 <br>
                 
@@ -187,29 +191,34 @@
                     <div class="buttonFadeIn"></div>
                 </button>
                 <div class="gestureSettings menu hide">
+                    <!-- <div class="menuItem">
+                    	Enable Swipe Controls
+                    	<input class="checkbox gestureEnable" type="checkbox" value="true">                  
+                    </div> -->
+
                     <!-- Left/Right/Down sensitivity (10 - 100 pixels, default 40) -->
-                    Left/Right/Down Sensitivity [<span id="">40</span> pixels]
-                    <br>
-                    <input type="range" min="10" max="100" value="40">                  
-                    <br>
+                    <div class="menuItem">
+                    	Left/Right/Down Sensitivity [<span class="gestureGridIncrement">40</span> pixels]
+                    	<input class="slider gestureGridIncrement" type="range" min="10" max="100" value="40">                  
+                    </div>
                     
                     <!-- Turn-around sensitivity (0 - 80%, default 0) -->
-                    Changing Direction Sensitivity [<span id="">0</span>%]
-                    <br>
-                    <input type="range" min="0" max="80" value="0">                  
-                    <br>
+                    <div class="menuItem">
+                    	Changing Direction Sensitivity [<span class="gestureDirectionSwapAssist">0</span>%]
+                    	<input class="slider gestureDirectionSwapAssist" type="range" min="0" max="80" value="0">                  
+                    </div>
                     
                     <!-- Slam (hard drop) sensitivity (100 - 400 pixels, default 150) -->
-                    Hard Drop Sensitivity [<span id="">150</span> pixels]
-                    <br>
-                    <input type="range" min="100" max="400" value="150">                  
-                    <br>
+                    <div class="menuItem">
+                    	Hard Drop Sensitivity [<span class="gestureHardDropDistance">150</span> pixels]
+                    	<input class="slider gestureHardDropDistance" type="range" min="100" max="400" value="150">                  
+                    </div>
                     
                     <!-- Slam (hard drop) timing sensitivity (100 - 600 ms, default 400) -->
-                    Hard Drop Timing [<span id="">400</span> ms]
-                    <br>
-                    <input type="range" min="100" max="600" value="400">                  
-                    <br>
+                    <div class="menuItem">
+                    	Hard Drop Timing [<span class="gestureHardDropTimer">400</span> ms]
+                    	<input class="slider gestureHardDropTimer" type="range" min="100" max="600" value="400">                  
+                    </div>
                     
                 </div>
                 <br>
@@ -220,9 +229,18 @@
                     <div class="buttonFadeIn"></div>
                 </button>
                 <div class="buttonSettings menu hide">
+                    <!-- <div class="menuItem">
+                    	Enable Touch Button Controls
+                    	<input class="checkbox buttonEnable" type="checkbox" value="true">                  
+                    </div> -->
+
                     <!-- Size override -->
                     
                     <!-- Repeat delay (0 - 20 frames, default 5) -->
+                    <div class="menuItem">
+                        Repeat Delay [<span class="buttonRepeatDelay">5</span> frames]
+                        <input class="slider buttonRepeatDelay" type="range" min="0" max="20" value="5">                  
+                    </div>
     
                 </div>
             </div>
