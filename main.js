@@ -6,6 +6,7 @@ import { TouchInput } from './scripts/TouchInput.mjs'
 import { GUIButtonInput } from './scripts/GUIButtonInput.mjs'
 
 import * as RebindMod from './scripts/RebindControls.mjs'
+import { SettingsModule } from './scripts/SettingsModule.mjs'
 
 /**
  * Game state:
@@ -74,6 +75,10 @@ function main() {
         document.querySelector("#tib_rotateClockwise"),
         document.querySelector("#tib_rotateAnticlockwise")
     );
+
+    // Create settings
+    let settingsMod = new SettingsModule("keyboardSettings", "gestureSettings", "buttonSettings", touchInput);
+
     
     // Create game and renderer
     debugLog.textContent = "Creating game module";
@@ -119,7 +124,7 @@ function main() {
                 timeSinceGameTick = Math.min(timeSinceGameTick - game.gameTickTime, game.gameTickTime);
                 
                 inputMod.updateCounters();
-                updateInputs(game, inputMod, touchInput, guiInput);
+                updateInputs(game, inputMod, touchInput, guiInput, settingsMod.settingsValues);
                 game.runTick();
                 
                 // Handle pause/unpause
@@ -169,9 +174,6 @@ function main() {
     
     debugLog.textContent = "Connecting buttons";
     startButton.addEventListener("click", startGame);
-    // document.querySelector("#heldPieceOverlay").addEventListener("click", function() {
-    //     game.holdPiece();
-    // });
     document.querySelector("#unpauseButton").addEventListener("click", function() {
         game.gameState.isPaused = false;
         pauseScreen.classList.add("hide");
@@ -221,8 +223,9 @@ function main() {
  * @param {TouchInput} touchInput
  * @param {GUIButtonInput} guiInput
  */
-function updateInputs(game, inputMod, touchInput, guiInput) {
-    let repeatDelay = 5;    // The number of frames before moving left/right repeats if held down.
+function updateInputs(game, inputMod, touchInput, guiInput, settings) {
+    let keyboardRepeatDelay = settings.keyboardRepeatDelay;    // The number of frames before moving left/right repeats if held down.
+    let guiRepeatDelay = settings.buttonRepeatDelay;
     
     // Single inputs (holding input does not activate multiple actions)
     if (inputMod.getCounter("hardDrop") == 1) {
@@ -242,10 +245,10 @@ function updateInputs(game, inputMod, touchInput, guiInput) {
     if (inputMod.getInputState("softDrop")) {
         game.input.softDrop = true;
     }
-    if (inputMod.getCounter("moveLeft") == 1 || inputMod.getCounter("moveLeft") > repeatDelay) {
+    if (inputMod.getCounter("moveLeft") == 1 || inputMod.getCounter("moveLeft") > keyboardRepeatDelay) {
         game.input.moveLeft = true;
     }
-    if (inputMod.getCounter("moveRight") == 1 || inputMod.getCounter("moveRight") > repeatDelay) {
+    if (inputMod.getCounter("moveRight") == 1 || inputMod.getCounter("moveRight") > keyboardRepeatDelay) {
         game.input.moveRight = true;
     }
 
@@ -281,10 +284,10 @@ function updateInputs(game, inputMod, touchInput, guiInput) {
 
     // GUI controls
     guiInput.countFrame();  // Count frame for horizontal movement
-    if (guiInput.frameCounter.moveLeft == 1 || guiInput.frameCounter.moveLeft > repeatDelay) {
+    if (guiInput.frameCounter.moveLeft == 1 || guiInput.frameCounter.moveLeft > guiRepeatDelay) {
         game.input.moveLeft = true;
     }
-    if (guiInput.frameCounter.moveRight == 1 || guiInput.frameCounter.moveRight > repeatDelay) {
+    if (guiInput.frameCounter.moveRight == 1 || guiInput.frameCounter.moveRight > guiRepeatDelay) {
         game.input.moveRight = true;
     }
     if (guiInput.frameCounter.softDrop >= 1) {

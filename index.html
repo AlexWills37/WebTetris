@@ -73,39 +73,6 @@
             <button id="pauseButton">
                 <img src="textures/pause.png">
             </button>
-            
-            <div class="fill hide" id="settingsScreen">
-                <h1>Settings</h1>
-                To change a control, click on it's blue box, 
-                <br>then press the key you want to change it to.
-                <br>
-                <br><i><span id="settingsConsoleText"></span></i>
-                <div id="controlMapArea">
-                    <div class="leftHalf">
-                        ← Move Left <span class="controlRebind" id="c_moveLeft"> A </span>
-                        <br>
-                        <br> → Move Right <span class="controlRebind" id="c_moveRight"> D </span>
-                        <br>
-                        <br> ↺ Rotate Left <span class="controlRebind" id="c_rotateAnticlockwise"> J </span>
-                        <br>
-                        <br> ↻ Rotate Right <span class="controlRebind" id="c_rotateClockwise"> L </span>
-
-                    </div>
-                    <div class="rightHalf">
-                        Hold Piece <span class="controlRebind" id="c_hold"> E </span>
-                        <br>
-                        <br> Soft Drop <span class="controlRebind" id="c_softDrop"> S </span>
-                        <br>
-                        <br> Hard Drop <span class="controlRebind" id="c_hardDrop"> W </span>
-                    </div>
-                </div>
-
-                <button id="exitSettingsButton">Exit Settings
-                    <div class="buttonBackground"></div>
-                    <div class="buttonFadeIn"></div>
-                </button>
-
-            </div>
 
         </div>
 
@@ -175,6 +142,116 @@
             </button>
             <br>
             <br>
+        </div>
+
+        <!-- ==================== Settings Screen ==================== -->
+        <div class="screen " id="settingsScreen">
+            <h1>Settings</h1>
+
+            <!-- Control settings -->
+            <div class="columnContainer wideButtons">
+                <!-- Keyboard settings -->
+                <button class="keyboardSettings">Keyboard Settings
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+                <div class="keyboardSettings menu ">
+                    <!-- Rebind controls -->
+                    <div class="menuItem">
+                        Rebind controls<br>
+                        <span class="message">
+                            To change a control, click on its blue box, then press the new key you want to use for it.<br>
+                            <i><span id="settingsConsoleText"></span></i><br>
+                        </span>
+
+                        <div id="controlMapArea">
+                            <div>← Move Left <span class="controlRebind" id="c_moveLeft"> A </span></div>
+                            <div>→ Move Right <span class="controlRebind" id="c_moveRight"> D </span></div>
+                            <div>↺ Rotate Left <span class="controlRebind" id="c_rotateAnticlockwise"> J </span></div>
+                            <div>↻ Rotate Right <span class="controlRebind" id="c_rotateClockwise"> L </span></div>
+                            <div>Hold Piece <span class="controlRebind" id="c_hold"> E </span></div>
+                            <div>Soft Drop <span class="controlRebind" id="c_softDrop"> S </span></div>
+                            <div>Hard Drop <span class="controlRebind" id="c_hardDrop"> W </span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Repeat delay (0 - 20 frames, default 5) -->
+                    <div class="menuItem">
+                        Repeat Delay [<span class="keyboardRepeatDelay">5</span> frames]
+                        <input class="slider keyboardRepeatDelay" type="range" min="0" max="20" value="5">                  
+                    </div>
+                    
+                </div> 
+                <br>
+                
+                <!-- Touch Gesture settings -->
+                <button class="gestureSettings">Touch (Swipe) Settings
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+                <div class="gestureSettings menu hide">
+                    <div class="menuItem">
+                    	Enable Swipe Controls
+                    	<input class="checkbox gestureEnable" type="checkbox" value="true">                  
+                    </div>
+
+                    <!-- Left/Right/Down sensitivity (10 - 100 pixels, default 40) -->
+                    <div class="menuItem">
+                    	Left/Right/Down Sensitivity [<span class="gestureGridIncrement">40</span> pixels]
+                    	<input class="slider gestureGridIncrement" type="range" min="10" max="100" value="40">                  
+                    </div>
+                    
+                    <!-- Turn-around sensitivity (0 - 80%, default 0) -->
+                    <div class="menuItem">
+                    	Changing Direction Sensitivity [<span class="gestureDirectionSwapAssist">0</span>%]
+                    	<input class="slider gestureDirectionSwapAssist" type="range" min="0" max="80" value="0">                  
+                    </div>
+                    
+                    <!-- Slam (hard drop) sensitivity (100 - 400 pixels, default 150) -->
+                    <div class="menuItem">
+                    	Hard Drop Sensitivity [<span class="gestureHardDropDistance">150</span> pixels]
+                    	<input class="slider gestureHardDropDistance" type="range" min="100" max="400" value="150">                  
+                    </div>
+                    
+                    <!-- Slam (hard drop) timing sensitivity (100 - 600 ms, default 400) -->
+                    <div class="menuItem">
+                    	Hard Drop Timing [<span class="gestureHardDropTimer">400</span> ms]
+                    	<input class="slider gestureHardDropTimer" type="range" min="100" max="600" value="400">                  
+                    </div>
+                    
+                </div>
+                <br>
+                
+                <!-- Touch Button settings -->
+                <button class="buttonSettings">Touch (Button) Settings
+                    <div class="buttonBackground"></div>
+                    <div class="buttonFadeIn"></div>
+                </button>
+                <div class="buttonSettings menu hide">
+                    <div class="menuItem">
+                    	Enable Touch Button Controls
+                    	<input class="checkbox buttonEnable" type="checkbox" value="true">                  
+                    </div>
+
+                    <!-- Size override -->
+                    
+                    <!-- Repeat delay (0 - 20 frames, default 5) -->
+                    <div class="menuItem">
+                        Repeat Delay [<span class="buttonRepeatDelay">5</span> frames]
+                        <input class="slider buttonRepeatDelay" type="range" min="0" max="20" value="5">                  
+                    </div>
+    
+                </div>
+            </div>
+
+
+            
+
+            <button id="exitSettingsButton">Exit Settings
+                <div class="buttonBackground"></div>
+                <div class="buttonFadeIn"></div>
+            </button>
+
         </div>
 
         <script id="vertex-shader-2d" type="notjs">

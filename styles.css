@@ -205,11 +205,26 @@ div.hide {
 }
 
 #controlMapArea {
-    text-align: left;
-    position:relative;
-    left:12.5%;
-    top: 5%;
-    width:75%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+    align-items: stretch;
+}
+
+#controlMapArea > div {
+    text-align: start;
+    margin-bottom: 1vmin;
+}
+
+@media (orientation: landscape) {
+    #controlMapArea { 
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    #controlMapArea > div {
+        width: 50%;
+    }
 }
 
 .controlRebind {
@@ -218,9 +233,13 @@ div.hide {
     border-style:solid;
     border-color: white;
     background-color:#0DE3DF;
-    padding: 0.5% 1%;
+    /* padding: 0.5% 1%;
     margin-left: 2%;
-    margin-right: 2%;
+    margin-right: 2%; */
+
+    margin-inline: 5px;
+    padding-inline: 0.5%;
+
     transition: background-color, border-color 0.5s;
     border-radius:2px;
 
@@ -228,19 +247,14 @@ div.hide {
     position:relative;
     right:0%;
     text-align: center;
-    width: 37%;
+    width: auto;
     height: 1.2em;
+    min-width: 5vmax;
 }
 
 .controlRebind:hover, .controlRebind.waiting{
     background-color: #BBFFDB;
     border-color:#88B2B5;
-}
-
-#settingsScreen button {
-    position: absolute;
-    top: 80%;
-    left: 36.5%;
 }
 
 .leftHalf {
@@ -377,6 +391,66 @@ div.hide {
 }
 
 
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* min-height: 100%; */
+    height: 100vh;
+    overflow-y: scroll;
+    touch-action: pan-y pinch-zoom;
+    /* height: max-content; */
+}
+
+.menu {
+    border-style: solid;
+    border-radius: 0;
+    width: 80%;
+}
+
+
+.columnContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.message {
+    font-size: 0.9em;
+}
+
+.menuItem {
+    width: 95%;
+    border-style: none;
+    border-radius: 5px;
+    border-width: 5px;
+    padding: 2vmin 1vmin;
+    text-align: start;
+    background-color: #88B2B5;
+    margin: 1rem auto;
+}
+
+.wideButtons > button {
+    width: 80%;
+}
+
+input.slider {
+    width: 90%;
+    display: block;
+    margin: 2% auto 0;
+}
+input.checkbox {
+    display: inline;
+    zoom: 2.5;
+}
+
+.menu.disabled .menuItem {
+    
+    background-color: #929292;
+    color: #cdcdcd;
+}
+
 @media (max-aspect-ratio: 4 / 5) {
     .canvasSpace {
         height: 60%;
@@ -386,19 +460,10 @@ div.hide {
     .controller {
         height: 20%;
     }
-
-}
-
-
-
-.screen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    /* min-height: 100%; */
-    height: 100vh;
-    overflow-y: scroll;
-    touch-action:pan-y;
-    /* height: max-content; */
+    .menu {
+        width: 95%;
+    }
+    .wideButtons > button {
+        width: 95%;
+    }
 }
