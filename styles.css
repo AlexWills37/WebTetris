@@ -435,6 +435,10 @@ div.hide {
     width: 80%;
 }
 
+#settingsScreen button {
+    margin: 1rem 0;
+}
+
 input.slider {
     width: 90%;
     display: block;

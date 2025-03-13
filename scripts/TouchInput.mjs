@@ -21,6 +21,7 @@ export class TouchInput {
     dragSensitivity = 40;   // How many pixels (page coords) to move before a direction is registered
     slamThreshold = 150;    // How many pixels (page coords) to move before a hard drop is registered
     slamTimeLimit = 400;    // How many milliseconds to allow for a hard drop to register (from tap to release)
+    turnaroundFactor = 0.5;   // How much of an incremental step (0-1) changing directions will shorten the distance needed for the next step
 
     #parent;
     #prevPageX;
@@ -140,7 +141,7 @@ export class TouchInput {
         // Switching directions of left/right updates the anchor for a tighter turn-around and a greater feeling of control.        
         if ((touch.pageX - this.#prevPageX) * (this.#currentlyLeft ? 1 : -1) > 0) {
             this.#currentlyLeft = !this.#currentlyLeft;
-            this.#prevAnchorX = touch.pageX + (this.dragSensitivity * 0.5) * (this.#currentlyLeft ? 1 : -1);
+            this.#prevAnchorX = touch.pageX + (this.dragSensitivity * this.turnaroundFactor) * (this.#currentlyLeft ? 1 : -1);
             this.#prevAnchorY = touch.pageY;
         } 
 
