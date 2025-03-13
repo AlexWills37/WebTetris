@@ -8,8 +8,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-E2ohbWdM.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-CxKa_N8_.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-EUZHdXs8.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-g_SdCK2U.css">
 	</head>
 	<body>
 
@@ -146,7 +146,7 @@
         </div>
 
         <!-- ==================== Settings Screen ==================== -->
-        <div class="screen hide" id="settingsScreen">
+        <div class="screen " id="settingsScreen">
             <h1>Settings</h1>
 
             <!-- Control settings -->
@@ -156,7 +156,7 @@
                     <div class="buttonBackground"></div>
                     <div class="buttonFadeIn"></div>
                 </button>
-                <div class="keyboardSettings menu hide">
+                <div class="keyboardSettings menu ">
                     <!-- Rebind controls -->
                     Rebind Controls
                     <div class="message">To change a control, click on its blue box, then press the key you want to change it to.</div>
@@ -174,10 +174,10 @@
                     </div>
                     
                     <!-- Repeat delay (0 - 20 frames, default 5) -->
-                    <br>
-                    Repeat Delay [<span class="keyboardRepeatDelay">5</span> frames]
-                    <br>
-                    <input type="range" min="0" max="20" value="5">                  
+                    <div class="menuItem">
+                        Repeat Delay [<span class="keyboardRepeatDelay">5</span> frames]
+                        <input class="slider" type="range" min="0" max="20" value="5">                  
+                    </div>
                 </div> 
                 <br>
                 
