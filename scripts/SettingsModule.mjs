@@ -71,8 +71,7 @@ export class SettingsModule {
         this.#gestureModule = gestureModule;
         this.#canvasSpace = document.querySelector(".canvasSpace");
         this.#controller = document.querySelector(".controller");
-        // this.#previousControllerState = !this.#controller.classList.contains("hide");
-        this.#previousControllerState = this.settingsValues.buttonEnable;
+        this.#previousControllerState = !this.#controller.classList.contains("hide");
 
         // Apply initial values
         this.updateValues();
