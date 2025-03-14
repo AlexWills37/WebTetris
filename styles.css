@@ -21,7 +21,8 @@ canvas {
     height: 80%;
     aspect-ratio: 4 / 5;
     margin: 0 auto;
-
+    
+    user-select: none;
     touch-action: none;
 }
 
