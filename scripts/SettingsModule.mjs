@@ -39,6 +39,13 @@ export class SettingsModule {
     // The previous controller state to detect when the button controls are toggled.
     #previousControllerState;
 
+    /**
+     * Initializes the settings module.
+     * @param {string} keyboardClass 
+     * @param {string} gestureClass 
+     * @param {string} buttonClass 
+     * @param {TouchInput} gestureModule 
+     */
     constructor(keyboardClass, gestureClass, buttonClass, gestureModule) {
 
         // Enable touchscreen buttons by default if there is a coarse pointer; disable them otherwise
@@ -66,6 +73,10 @@ export class SettingsModule {
         this.updateValues();
     }
 
+    /**
+     * Links an input element with a display value and its settings value.
+     * @param {string} inputClass The unique class shared by the input element and a span to dispaly the input value.
+     */
     linkInput(inputClass) {
         let inputElement = document.querySelector("input." + inputClass);
         if (inputElement === null) {
