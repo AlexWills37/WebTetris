@@ -26,6 +26,10 @@ export class SettingsModule {
     #previousControllerState;
 
     constructor(keyboardClass, gestureClass, buttonClass, gestureModule) {
+
+        // Enable touchscreen buttons by default if there is a coarse pointer, disable them otherwise
+        this.#defaultSettingsValues.buttonEnable = window.matchMedia('(pointer: coarse)').matches;
+
         this.#keyboardMenu = document.querySelector("div." + keyboardClass);
         this.#gestureMenu = document.querySelector("div." + gestureClass);
         this.#buttonMenu = document.querySelector("div." + buttonClass);
