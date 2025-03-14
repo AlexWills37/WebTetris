@@ -6,12 +6,12 @@ export class SettingsModule {
     #buttonMenu;
     #defaultSettingsValues = {
         gestureEnable: true,
-        buttonEnable: true,
+        buttonEnable: false,
         keyboardRepeatDelay: 5,         // Frames
         gestureGridIncrement: 40,       // Pixels
         gestureDirectionSwapAssist: 0,  // Percent
         gestureHardDropDistance: 150,   // Pixels
-        gestureHardDropTimer: 400,      // Milliseconds
+        gestureHardDropTimer: 200,      // Milliseconds
         buttonRepeatDelay: 5,           // Frames
     }
     settingsValues;
@@ -20,6 +20,10 @@ export class SettingsModule {
      * @type { TouchInput }
      */
     #gestureModule;
+
+    #canvasSpace;
+    #controller;
+    #previousControllerState;
 
     constructor(keyboardClass, gestureClass, buttonClass, gestureModule) {
         this.#keyboardMenu = document.querySelector("div." + keyboardClass);
@@ -35,6 +39,12 @@ export class SettingsModule {
         });
 
         this.#gestureModule = gestureModule;
+        this.#canvasSpace = document.querySelector(".canvasSpace");
+        this.#controller = document.querySelector(".controller");
+        this.#previousControllerState = !this.#controller.classList.contains("hide");
+
+        // Apply initial values
+        this.updateValues();
     }
 
     linkInput(inputClass) {
@@ -50,12 +60,13 @@ export class SettingsModule {
             let menu = inputElement.closest(".menu");            
             
             inputElement.addEventListener("input", (e) => {
-                console.log(inputElement.checked);
+                this.settingsValues[inputClass] = inputElement.checked;
                 if (inputElement.checked) {
                     menu.classList.remove("disabled");
                 } else {
                     menu.classList.add("disabled");
                 }
+                this.updateValues();
             });
 
             inputElement.checked = this.settingsValues[inputClass];
@@ -84,6 +95,18 @@ export class SettingsModule {
         this.#gestureModule.slamThreshold = this.settingsValues.gestureHardDropDistance;
         this.#gestureModule.slamTimeLimit = this.settingsValues.gestureHardDropTimer;
         this.#gestureModule.turnaroundFactor = this.settingsValues.gestureDirectionSwapAssist / 100;
+
+        if (this.#previousControllerState !== this.settingsValues.buttonEnable) {
+            console.log("Changew!");
+            this.#previousControllerState = this.settingsValues.buttonEnable;
+            if (this.settingsValues.buttonEnable) {
+                this.#controller.classList.remove("hide");
+                this.#canvasSpace.classList.add("giveControllerSpace");
+            } else {
+                this.#controller.classList.add("hide");
+                this.#canvasSpace.classList.remove("giveControllerSpace");
+            }
+        }
     }
 }
 

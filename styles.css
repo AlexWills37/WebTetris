@@ -17,6 +17,7 @@ canvas {
     top: 10%;
     left: 0%;
     width: auto;
+    max-width: 100%;
     height: 80%;
     aspect-ratio: 4 / 5;
     margin: 0 auto;
@@ -456,9 +457,9 @@ input.checkbox {
 }
 
 @media (max-aspect-ratio: 4 / 5) {
-    .canvasSpace {
+    .canvasSpace.giveControllerSpace {
         height: 60%;
-        max-width: 100%;
+        
     }
 
     .controller {

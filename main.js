@@ -158,6 +158,7 @@ function main() {
         
         // Render frame
         renderer.renderGame();
+
         
         // Queue up next frame
         requestAnimationFrame(runGameFrame);
@@ -253,60 +254,65 @@ function updateInputs(game, inputMod, touchInput, guiInput, settings) {
     }
 
     // Touch controls
-    if (touchInput.leftQueue > 0) {
-        game.input.moveLeft = true;
-        touchInput.leftQueue--;
+    if (settings.gestureEnable) {
+        if (touchInput.leftQueue > 0) {
+            game.input.moveLeft = true;
+            touchInput.leftQueue--;
+        }
+        if (touchInput.rightQueue > 0) {
+            game.input.moveRight = true;
+            touchInput.rightQueue--;
+        }
+    
+        if (touchInput.moveDown) {
+            game.input.softDrop = true;
+        }
+    
+        if (touchInput.rotate.left) {
+            game.input.rotateAnticlockwise = true;
+        } else if (touchInput.rotate.right) {
+            game.input.rotateClockwise = true;
+        }
+        touchInput.rotate = {left: false, right: false};
+    
+        if (touchInput.hardDrop) {
+            game.input.hardDrop = true;
+            touchInput.hardDrop = false;
+        }
     }
-    if (touchInput.rightQueue > 0) {
-        game.input.moveRight = true;
-        touchInput.rightQueue--;
-    }
-
-    if (touchInput.moveDown) {
-        game.input.softDrop = true;
-    }
-
-    if (touchInput.rotate.left) {
-        game.input.rotateAnticlockwise = true;
-    } else if (touchInput.rotate.right) {
-        game.input.rotateClockwise = true;
-    }
-    touchInput.rotate = {left: false, right: false};
-
-    if (touchInput.hardDrop) {
-        game.input.hardDrop = true;
-        touchInput.hardDrop = false;
-    }
+    // The hold space will always be active as an input
     if (touchInput.hold) {
         game.input.hold = true;
         touchInput.hold = false;
     }
 
     // GUI controls
-    guiInput.countFrame();  // Count frame for horizontal movement
-    if (guiInput.frameCounter.moveLeft == 1 || guiInput.frameCounter.moveLeft > guiRepeatDelay) {
-        game.input.moveLeft = true;
+    if (settings.buttonEnable) {
+        guiInput.countFrame();  // Count frame for horizontal movement
+        if (guiInput.frameCounter.moveLeft == 1 || guiInput.frameCounter.moveLeft > guiRepeatDelay) {
+            game.input.moveLeft = true;
+        }
+        if (guiInput.frameCounter.moveRight == 1 || guiInput.frameCounter.moveRight > guiRepeatDelay) {
+            game.input.moveRight = true;
+        }
+        if (guiInput.frameCounter.softDrop >= 1) {
+            game.input.softDrop = true;
+        }
+        if (guiInput.getInput("hold")) {
+            game.input.hold = true;   
+        }
+        if (guiInput.getInput("rotateClockwise")) {
+            game.input.rotateClockwise = true;
+        }
+        if (guiInput.getInput("rotateAnticlockwise")) {
+            game.input.rotateAnticlockwise = true;   
+        }
+        if (guiInput.getInput("hardDrop")) {
+            game.input.hardDrop = true;
+        }
+    
+        guiInput.resetFlags();
     }
-    if (guiInput.frameCounter.moveRight == 1 || guiInput.frameCounter.moveRight > guiRepeatDelay) {
-        game.input.moveRight = true;
-    }
-    if (guiInput.frameCounter.softDrop >= 1) {
-        game.input.softDrop = true;
-    }
-    if (guiInput.getInput("hold")) {
-        game.input.hold = true;   
-    }
-    if (guiInput.getInput("rotateClockwise")) {
-        game.input.rotateClockwise = true;
-    }
-    if (guiInput.getInput("rotateAnticlockwise")) {
-        game.input.rotateAnticlockwise = true;   
-    }
-    if (guiInput.getInput("hardDrop")) {
-        game.input.hardDrop = true;
-    }
-
-    guiInput.resetFlags();
 }
 
 main();
