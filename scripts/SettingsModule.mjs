@@ -1,9 +1,16 @@
+/**
+ * @fileoverview Manages most of the input settings and their HTML components.
+ * 
+ * @author Alex Wills
+ */
 import { TouchInput } from "./TouchInput.mjs";
 export class SettingsModule {
 
+    // Divs to show/hide the different settings categories
     #keyboardMenu;
     #gestureMenu;
     #buttonMenu;
+
     #defaultSettingsValues = {
         gestureEnable: false,
         buttonEnable: true,
@@ -14,15 +21,22 @@ export class SettingsModule {
         gestureHardDropTimer: 200,      // Milliseconds
         buttonRepeatDelay: 5,           // Frames
     }
+    /**
+     * The currently selected settings.
+     */
     settingsValues;
 
     /**
+     * The module managing gesture controls.
      * @type { TouchInput }
      */
     #gestureModule;
 
+    // The div to add/remove the .giveControllerSpace class for the button controls.
     #canvasSpace;
+    // The div to show/hide for button controls.
     #controller;
+    // The previous controller state to detect when the button controls are toggled.
     #previousControllerState;
 
     constructor(keyboardClass, gestureClass, buttonClass, gestureModule) {
@@ -37,6 +51,7 @@ export class SettingsModule {
         document.querySelector("button." + gestureClass).addEventListener("click", (e) => {toggleElement(this.#gestureMenu);});
         document.querySelector("button." + buttonClass).addEventListener("click", (e) => {toggleElement(this.#buttonMenu);});
 
+        // Link up HTML input and update events
         this.settingsValues = {...this.#defaultSettingsValues};
         Object.keys(this.#defaultSettingsValues).forEach((val, index, arr) => {
             this.linkInput(val);
@@ -96,6 +111,9 @@ export class SettingsModule {
         });
     }
 
+    /**
+     * Updates the HTML and gesture module with the current settings values.
+     */
     updateValues() {
         this.#gestureModule.dragSensitivity = this.settingsValues.gestureGridIncrement;
         this.#gestureModule.slamThreshold = this.settingsValues.gestureHardDropDistance;
