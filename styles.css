@@ -165,25 +165,17 @@ div.hide {
     
     /* Initially define position in terms of height, which the canvas should fully take up (canvas is 80% of height, top at 10%) */
     top: calc(22% + 1rem);
-    width: calc((100% - 64vmin) / 2 + 12vmin - 5px);
+    width: calc((100% - 64vh) / 2 + 12vh - 5px);
 
     /* border-style: solid;
     border-width: 3px;
     border-color:blue; */
 }
 
-/* Redefine position with vmax (still height) */
-@media (max-aspect-ratio: 1) {
-    #underHoldSpace {
-        top: calc(10% + 12vmax + 1rem);
-        width: calc((100% - 64vmax) / 2 + 12vmax - 5px);
-    }
-}
-
 /* Here, the canvas is at max width, so define in terms of width */
 @media (max-aspect-ratio: .64) {
     #underHoldSpace {
-        top: calc(10% + 18.75vmin + 1rem);
+        top: calc(10% + 18.75vw + 1rem);
         width: calc(18.75% - 5px);
     }
 }
@@ -191,8 +183,8 @@ div.hide {
 /* With buttons, this is the range when the canvas is at max height after the buttons move (canvas is 60% of height, top at 10%) */
 @media ( 4/5 >= aspect-ratio >= 0.48) {
     .giveControllerSpace ~ #underHoldSpace {
-        top: calc(10% + 9vmax + 1rem);
-        width: calc((100% - 48vmax) / 2 + 9vmax - 5px);
+        top: calc(10% + 9vh + 1rem);
+        width: calc((100% - 48vh) / 2 + 9vh - 5px);
     }
 }
 
