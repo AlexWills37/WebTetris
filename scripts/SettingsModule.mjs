@@ -5,8 +5,8 @@ export class SettingsModule {
     #gestureMenu;
     #buttonMenu;
     #defaultSettingsValues = {
-        gestureEnable: true,
-        buttonEnable: false,
+        gestureEnable: false,
+        buttonEnable: true,
         keyboardRepeatDelay: 5,         // Frames
         gestureGridIncrement: 40,       // Pixels
         gestureDirectionSwapAssist: 0,  // Percent
@@ -83,6 +83,8 @@ export class SettingsModule {
         inputElement.value = this.settingsValues[inputClass];
 
         let text = document.querySelector("span." + inputClass);
+        text.innerHTML = inputElement.value; 
+
         inputElement.addEventListener("input", (e) => {
             text.innerHTML = inputElement.value; 
             this.settingsValues[inputClass] = inputElement.value;
