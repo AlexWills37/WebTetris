@@ -418,6 +418,11 @@ export class QuadtrisGame {
         this.#grabNextPiece();
         this.#updateGhostProjections();
         this.#updateSpeedLevel();
+
+        // Reset inputs
+        Object.keys(this.input).forEach((val, index, arr) => {
+            this.input[val] = false;
+        });
     }
 
     /**
