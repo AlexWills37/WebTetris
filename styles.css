@@ -22,7 +22,6 @@ canvas {
     aspect-ratio: 4 / 5;
     margin: 0 auto;
     
-    user-select: none;
     touch-action: none;
 }
 
@@ -30,6 +29,7 @@ canvas {
     position:relative;
     height: 100vh;
     touch-action: none;
+    user-select: none;
 }
 
 .fill {
