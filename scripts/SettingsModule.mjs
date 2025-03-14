@@ -58,8 +58,12 @@ export class SettingsModule {
         document.querySelector("button." + gestureClass).addEventListener("click", (e) => {toggleElement(this.#gestureMenu);});
         document.querySelector("button." + buttonClass).addEventListener("click", (e) => {toggleElement(this.#buttonMenu);});
 
-        // Link up HTML input and update events
+        // Load default/found values
         this.settingsValues = {...this.#defaultSettingsValues};
+        this.loadValues();
+        
+        
+        // Link up HTML input and update events
         Object.keys(this.#defaultSettingsValues).forEach((val, index, arr) => {
             this.linkInput(val);
         });
@@ -67,7 +71,8 @@ export class SettingsModule {
         this.#gestureModule = gestureModule;
         this.#canvasSpace = document.querySelector(".canvasSpace");
         this.#controller = document.querySelector(".controller");
-        this.#previousControllerState = !this.#controller.classList.contains("hide");
+        // this.#previousControllerState = !this.#controller.classList.contains("hide");
+        this.#previousControllerState = this.settingsValues.buttonEnable;
 
         // Apply initial values
         this.updateValues();
@@ -141,6 +146,61 @@ export class SettingsModule {
                 this.#canvasSpace.classList.remove("giveControllerSpace");
             }
         }
+
+        this.saveValues();
+    }
+
+    /**
+     * Stores the current settings in local storage.
+     */
+    saveValues() {
+        localStorage.setItem("settings", JSON.stringify(this.settingsValues));
+    }
+
+    /**
+     * Retrieves and parses the settings stored in local storage.
+     */
+    loadValues() {
+        let foundSettings = JSON.parse(localStorage.getItem("settings"));
+        if (foundSettings === null) {
+            return;
+        }
+        Object.keys(foundSettings).forEach((val, index, arr) => {
+            this.settingsValues[val] = foundSettings[val];
+        });
+    }
+
+    /**
+     * Resets all settings to their default values.
+     */
+    resetToDefault() {
+        this.settingsValues = {...this.#defaultSettingsValues};
+        this.updateValues();
+
+        // Update the HTML elements to reflect the new settings.
+        Object.keys(this.#defaultSettingsValues).forEach((val, index, arr) => {
+            let inputElement = document.querySelector("input." + val);
+            if (inputElement === null) {
+                return;
+            }
+            if (inputElement.getAttribute("type") === "checkbox") {
+                inputElement.checked = this.#defaultSettingsValues[val]; 
+                let menu = inputElement.closest(".menu");
+                if (inputElement.checked) {
+                    menu.classList.remove("disabled");
+                } else {
+                    menu.classList.add("disabled");
+                }
+            } else {
+                inputElement.value = this.#defaultSettingsValues[val];
+            }
+            
+            let inputText = document.querySelector("span." + val);
+            if (inputText === null) {
+                return;
+            }
+            inputText.innerHTML = inputElement.value;
+        });
     }
 }
 

@@ -78,6 +78,9 @@ function main() {
 
     // Create settings
     let settingsMod = new SettingsModule("keyboardSettings", "gestureSettings", "buttonSettings", touchInput);
+    document.querySelector("#resetDefaultSettings").addEventListener("click", (e) => {
+        settingsMod.resetToDefault();
+    });
 
     
     // Create game and renderer
