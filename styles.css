@@ -125,8 +125,8 @@ div.hide {
 
 /* Game GUI elements */
 .guiInfoBox {
-    width: max-content;
-    height: min-content;
+    width: auto;
+    height: max-content;
     font-size: 1rem;
     padding-left:1%;
     border-style:solid;
@@ -151,17 +151,41 @@ div.hide {
     margin-bottom: 1%;
 }
 #underHoldSpace {
-    position: relative;
-    right: 82%;
-    min-width: 17%;
-    width: auto;
+    position: absolute;
+    top: calc(10% + 12vmin);
+    left: 0;
+    width: calc((100% - 64vmin) / 2 + 12vmin - 5px);
 
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-end;
     gap: 5px;
+
+    /* border-style: solid;
+    border-width: 3px;
+    border-color:blue; */
 }
+
+@media (max-aspect-ratio: 1) {
+    #underHoldSpace {
+        top: calc(10% + 12vmax);
+        width: calc((100% - 64vmax) / 2 + 12vmax - 5px);
+    }
+}
+@media (max-aspect-ratio: .64) {
+    #underHoldSpace {
+        top: calc(10% + 18.75vmin);
+        width: calc(18.75% - 5px);
+    }
+}
+@media ( 4/5 >= aspect-ratio >= 0.48) {
+    .giveControllerSpace ~ #underHoldSpace {
+        top: calc(10% + 9vmax);
+        width: calc((100% - 48vmax) / 2 + 9vmax - 5px);
+    }
+}
+
 
 .hide {
     display: none;

@@ -97,7 +97,6 @@ export class SettingsModule {
         this.#gestureModule.turnaroundFactor = this.settingsValues.gestureDirectionSwapAssist / 100;
 
         if (this.#previousControllerState !== this.settingsValues.buttonEnable) {
-            console.log("Changew!");
             this.#previousControllerState = this.settingsValues.buttonEnable;
             if (this.settingsValues.buttonEnable) {
                 this.#controller.classList.remove("hide");
