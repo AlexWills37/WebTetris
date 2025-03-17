@@ -6,9 +6,14 @@ This implementation uses JavaScript and WebGL to recreate Tetris on a browser.
 
 ## Supported devices
 
-As a static website, this project is supported on any device with a JavaScript-enabled browser. That being said, this game is currently incompatible with mobile, as a keyboard and mouse are needed to play the game.
+As a static website, this project is supported on any device with a JavaScript-enabled browser. 
 
-In the future, mobile support and mobile-friendly controls will be added.
+This game now supports mobile devices! There are 2 kinds of touchscreen-based input:
+- On-screen buttons (like a game controller)
+- Swipe gestures
+
+By default, the swipe gestures are not enabled, but users can change that in the game's settings.
+> I decided to disable swipe gestures by default because they are a bit difficult to use if it's your first time playing, and because the game doesn't have an interactive tutorial to help teach them.
 
 ## How to play
 
@@ -20,7 +25,9 @@ The game ends when the blocks reach the top of the grid.
 
 ### Controls
 
-> The listed key binds are the default controls. Any of the actions
+> On the title screen, or when the game is paused, you can click "How to Play" for detailed information on the controls. Certain settings, like the sensitivities for swipe controls, can be changed in the settings menu.
+
+> The listed key binds are the default keyboard controls. Any of the actions
 > can be bound to different controls in the game's settings.
 
 **Move the falling blocks left/right** - [A] and [D]
@@ -92,11 +99,37 @@ Instead of writing a shader with the shape of each piece or including textures f
 
 The texture is 4x10, where each 4x2 rectangle fits one piece. The first piece is the held piece, and the next pieces are the first, second, third, and fourth pieces that are next in the player's queue.
 
+## Centering the piece previews
+
+Initially, the pieces were not all aligned in the preview. 
+Most of the pieces are 3 blocks wide and 2 blocks tall, but the O piece is only 2 blocks wide, and the I piece is 4 blocks wide and 1 block tall.
+Due to this, the O and I pieces were always out of line with the other pieces, and the initial decision was made to have the O and I pieces centered (think of the 4x10 texture upscaling into the piece preview), with the others 1 block to the left.
+
+To align the pieces, I needed to send additional information to the shader, and luckily, there is a neat solution.
+
+In all of the pieces (as they are drawn into a 4x2 rectangle), there is 1 pixel that is never used--the top right pixel.
+
+```
+    T    |    Z     |     S    |     L    |    J     |    O     |    I    
+_________|__________|__________|__________|__________|__________|_________
+X X X [] | X X   [] |   X X [] |     X [] | X     [] |   X X [] |       [] 
+  X      |   X X    | X X      | X X X    | X X X    |   X X    | X X X X  
+```
+
+So I use this pixel to send alignment information.
+For the 3-wide pieces, I color the pixel red. For the I piece, I color it green. 
+
+Then in the fragment shader, if the piece's extra pixel is red, I move it half of a block to the right to center it horizontally,
+and if the pixel is green (I-piece), I move it half of a block up to center it vertically.
+
+Finally, I skip over drawing that pixel, keeping it the background color.
+
+
 ## Future Goals
 
 Below are some features planned for development:
 
 - [ ] Save user's top scores
 - [x] Allow custom controls
-- [ ] Mobile controls + full support
+- [x] Mobile controls + full support
 - [ ] Better visuals
