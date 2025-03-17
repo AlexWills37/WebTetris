@@ -94,6 +94,7 @@ function main() {
     const pauseScreen = document.querySelector("#pauseScreen");
     const gameOverScreen = document.querySelector("#gameOverScreen");
     const settingsScreen = document.querySelector("#settingsScreen");
+    const howToScreen = document.querySelector("#howToScreen");
     let onTitleScreen = true;
     let onSettings = false;
     
@@ -140,6 +141,7 @@ function main() {
                         // Unpause game
                         game.pauseGame(false);
                         pauseScreen.classList.add("hide");
+                        howToScreen.classList.add("hide");
                     }
                 } // End of pause/unpause logic
             }
@@ -217,6 +219,14 @@ function main() {
     document.querySelectorAll(".settingsButton").forEach(function(button, key, parent) {
         button.addEventListener("click", function() {settingsScreen.classList.remove("hide")});
     });
+
+    document.querySelectorAll(".closeHowTo").forEach((button, key, parent) => {
+        button.addEventListener("click", (e) => {howToScreen.classList.add("hide")});
+    });
+    document.querySelectorAll(".howToButton").forEach((button, key, parent) => {
+        button.addEventListener("click", (e) => {howToScreen.classList.remove("hide")});
+    });
+
     debugLog.textContent = "Initialization complete";
 }
 

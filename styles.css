@@ -218,7 +218,7 @@ div.hide {
 }
 
 /* Pause screen elements */
-#pauseScreen {
+#pauseScreen, #howToScreen {
     text-align: center;
     background-color: #88B2B5;
 }
@@ -504,7 +504,7 @@ input.checkbox {
 }
 
 #pauseScreen img {
-    background-image: url("./textures/block.png");
+    background-image: url("../textures/block.png");
 }
 img.flip {
     transform: scaleX(-1);
