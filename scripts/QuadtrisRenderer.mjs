@@ -163,7 +163,6 @@ export class QuadtrisRenderer {
 
         // Set initial uniform variables
         let uniforms = {
-            u_Resolution: [this.gl.canvas.width, this.gl.canvas.height],
             u_GridData: this.#gridDataTex,
             u_QueueData: this.#queueDataTex,
             u_BlockTexture: this.#blockTex,
@@ -208,7 +207,6 @@ export class QuadtrisRenderer {
 
         // Update dynamic uniforms
         let uniforms = {
-            u_Resolution: [this.gl.canvas.width, this.gl.canvas.height],
             u_GridData: this.#gridDataTex,
             u_QueueData: this.#queueDataTex,
             u_BlockTexture: this.#blockTex,
