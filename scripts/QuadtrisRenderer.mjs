@@ -48,6 +48,9 @@ export class QuadtrisRenderer {
 
     /** Base texture for the individual blocks. @type {WebGLTexture} */
     #blockTex;
+    
+    /** Base texture for the outline of projected pieces. @type {WebGLTexture} */
+    #outlineTex;
 
     /** Text to display number of line clears. @type {Text} */
     #lineClearNode = document.createTextNode('0');
@@ -138,6 +141,9 @@ export class QuadtrisRenderer {
         let blockImg = {src: "textures/block.png", mag: gl.LINEAR};
         this.#blockTex = twgl.createTexture(this.gl, blockImg);
 
+        let outlineImg = {src: "textures/outline.png", mag: gl.LINEAR};
+        this.#outlineTex = twgl.createTexture(this.gl, outlineImg);
+
         // Create data textures
         this.#gridDataTex = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, this.#gridDataTex);
@@ -166,6 +172,7 @@ export class QuadtrisRenderer {
             u_GridData: this.#gridDataTex,
             u_QueueData: this.#queueDataTex,
             u_BlockTexture: this.#blockTex,
+            u_OutlineTexture: this.#outlineTex,
         };
         twgl.setUniforms(this.#shaderInfo, uniforms);
         }
@@ -210,6 +217,7 @@ export class QuadtrisRenderer {
             u_GridData: this.#gridDataTex,
             u_QueueData: this.#queueDataTex,
             u_BlockTexture: this.#blockTex,
+            u_OutlineTexture: this.#outlineTex,
         };
 
         twgl.setUniforms(this.#shaderInfo, uniforms);
