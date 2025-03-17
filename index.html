@@ -8,7 +8,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-o3m-mdFo.js"></script>
+		<script type="module" crossorigin src="/WebTetris/assets/index-DBPFkte2.js"></script>
 		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-CwydD5EL.css">
 	</head>
 	<body>
@@ -324,8 +324,6 @@
             varying vec2 v_GridPos;
             varying float v_QueueID;
             
-            uniform vec2 u_Resolution;
-
             // all shaders have a main function
             void main() {
                 vec4 scaledPos = a_Position;
@@ -358,6 +356,7 @@
             uniform sampler2D u_GridData;
             uniform sampler2D u_BlockTexture;
             uniform sampler2D u_QueueData;
+            uniform sampler2D u_OutlineTexture;
 
             varying vec4 v_Position;
             varying vec2 v_GridPos;
@@ -371,10 +370,10 @@
                 if (v_ShaderID == 0.) {
                     float p = 0.025;
                     // Background color
+                    vec4 bgColor = vec4(0.4, 0.4, 0.4, 1);
     
     
-    
-                    gl_FragColor = vec4(0.4, 0.4, 0.4, 1);
+                    gl_FragColor = bgColor;
     
                     vec2 gridLoc = v_GridPos / vec2(10., 20.);
                     vec4 thisSquareData = texture2D(u_GridData, gridLoc);
@@ -382,7 +381,18 @@
                         vec4 color = thisSquareData;
                         vec2 texCoord = vec2(fract(v_GridPos.x), 1. - fract(v_GridPos.y));
                         gl_FragColor = texture2D(u_BlockTexture, texCoord) * color;
+
+                        // Block outline for projected pieces
+                        if (thisSquareData.r == thisSquareData.g && thisSquareData.g == thisSquareData.b) {
+                            vec4 texColor = texture2D(u_OutlineTexture, texCoord);
+                            if (texColor.a < 1.) {
+                                gl_FragColor = bgColor;
+                            } else {
+                                gl_FragColor = texture2D(u_OutlineTexture, texCoord) * color;
+                            }
+                        }
                     }
+                    
     
                     // Grid lines
                     if (fract(v_GridPos.x) <= p || fract(v_GridPos.y) <= p || fract(v_GridPos.x) >= 1. - p || fract(v_GridPos.y) >= 1. - p) {
