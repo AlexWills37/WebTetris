@@ -8,8 +8,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/WebTetris/assets/index-D-1Tj6HN.js"></script>
-		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-Bu5hk1b7.css">
+		<script type="module" crossorigin src="/WebTetris/assets/index-CAS5zHh6.js"></script>
+		<link rel="stylesheet" crossorigin href="/WebTetris/assets/index-BtF-DfsO.css">
 	</head>
 	<body>
 
@@ -89,9 +89,52 @@
             <button class="settingsButton">Settings
                 <div class="buttonBackground"></div>
                 <div class="buttonFadeIn"></div>
+            </button>      
+            <br>
+            <br>
+            <button class="howToButton">How to Play 
+                <div class="buttonBackground"></div>
+                <div class="buttonFadeIn"></div>
+            </button>
+        </div>
+
+        <!-- ==================== Title Screen ==================== -->
+        <div class="screen" id="titleScreen">
+            <h1>Quadtris</h1>
+            A JavaScript + WebGL implementation of the popular block-falling game 
+            <br>(<i>it rhymes with "Fortress"!</i>)
+            <br>
+            <br> <span id="debug">Status: </span>
+            <br>
+            <br><button id="startButton">Start Game
+                <div class="buttonBackground"></div>
+                <div class="buttonFadeIn"></div>
             </button>
             <br>
             <br>
+            <br><button class="settingsButton">Settings 
+                <!-- <br>    (under construction) -->
+                <div class="buttonBackground"></div>
+                <div class="buttonFadeIn"></div>
+            </button>
+            <br>
+            <br>
+            <br><button class="howToButton">How to Play 
+                <div class="buttonBackground"></div>
+                <div class="buttonFadeIn"></div>
+            </button>
+            <br>
+            <br><span>View the code on <a href="https://github.com/AlexWills37/WebTetris" target="_blank">GitHub</a>!</span>
+        </div>
+        
+        
+        <!-- ==================== How To Play Screen ==================== -->
+        <div class="screen hide" id="howToScreen">
+            <br>
+            <button class="closeHowTo">Go back 
+                <div class="buttonBackground"></div>
+                <div class="buttonFadeIn"></div>
+            </button>
             <h2>How to Play</h2>
             ★ Move and rotate the falling blocks to fill up lines!
             <br> ★ When you fill a line, it will disappear, and you will get points.
@@ -127,29 +170,11 @@
                 <br> <b>Hard drop</b> - <img src="textures/hard-drop.png">
                 <br> <b>Soft drop</b> - <img src="textures/down-arrow.png">
             </div>
-        </div>
 
-        <!-- ==================== Title Screen ==================== -->
-        <div class="screen" id="titleScreen">
-            <h1>Quadtris</h1>
-            A JavaScript + WebGL implementation of the popular block-falling game 
-            <br>(<i>it rhymes with "Fortress"!</i>)
-            <br>
-            <br> <span id="debug">Status: </span>
-            <br>
-            <br><button id="startButton">Start Game
+            <button class="closeHowTo">Go back 
                 <div class="buttonBackground"></div>
                 <div class="buttonFadeIn"></div>
             </button>
-            <br>
-            <br>
-            <br><button class="settingsButton">Settings 
-                <!-- <br>    (under construction) -->
-                <div class="buttonBackground"></div>
-                <div class="buttonFadeIn"></div>
-            </button>
-            <br>
-            <br><span>View the code on <a href="https://github.com/AlexWills37/WebTetris" target="_blank">GitHub</a>!</span>
         </div>
 
         <!-- ==================== Game Over Screen ==================== -->
