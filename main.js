@@ -17,42 +17,9 @@ import { SettingsModule } from './scripts/SettingsModule.mjs'
  *      Lines cleared
  */
 
-
-function createShader(gl, type, source) {
-    let shader = gl.createShader(type);
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    let success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-    if (success) {
-        return shader;
-    }
-
-    console.log(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-}
-
-function createProgram(gl, vertexShader, fragmentShader) {
-    let program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-    let success = gl.getProgramParameter(program, gl.LINK_STATUS);
-    if (success) {
-        return program;
-    }
-    
-    console.log(gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-}
-
 function main() {
-    let debugLog = document.createTextNode('');
-    document.querySelector("#debug").appendChild(debugLog);
-    debugLog.textContent = "Starting Program";
     const startButton = document.querySelector("#startButton");
     
-    
-    debugLog.textContent = "Creating keyboard input module";
     // Create input module
     let inputMod = new Input();
     RebindMod.loadInputSettings(inputMod);
@@ -64,9 +31,7 @@ function main() {
     });
     
     
-    debugLog.textContent = "Creating touch input module";
     let touchInput = new TouchInput(document.querySelector(".container"), document.querySelector("#heldPiece"));
-    debugLog.textContent = "Creating GUI input module";
     let guiInput = new GUIButtonInput(document.querySelector("#tib_hold"),
         document.querySelector("#tib_moveLeft"),
         document.querySelector("#tib_moveRight"),
@@ -84,12 +49,9 @@ function main() {
 
     
     // Create game and renderer
-    debugLog.textContent = "Creating game module";
     let game = new QuadtrisGame();
-    debugLog.textContent = "Creating rendering module";
     let renderer = new QuadtrisRenderer();
     
-    debugLog.textContent = "Selecting screens";
     const titleScreen = document.querySelector("#titleScreen");
     const pauseScreen = document.querySelector("#pauseScreen");
     const gameOverScreen = document.querySelector("#gameOverScreen");
@@ -98,14 +60,12 @@ function main() {
     let onTitleScreen = true;
     let onSettings = false;
     
-    debugLog.textContent = "Adding final score nodes";
     const finalScoreNode = document.createTextNode('0');
     const finalLinesNode = document.createTextNode('0');
     document.querySelector("#finalScore").appendChild(finalScoreNode);
     document.querySelector("#finalLines").append(finalLinesNode);
     
     // Create the engine loop
-    debugLog.textContent = "Creating game loop";
     let timeSinceGameTick = 0;
     let lastFrameTime = 0;
     function runGameFrame(time) {
@@ -178,7 +138,6 @@ function main() {
         onTitleScreen = false;
     }
     
-    debugLog.textContent = "Connecting buttons";
     startButton.addEventListener("click", startGame);
     document.querySelector("#unpauseButton").addEventListener("click", function() {
         game.gameState.isPaused = false;
@@ -197,7 +156,6 @@ function main() {
         onTitleScreen = true;
     });
     
-    debugLog.textContent = "Starting game";
     requestAnimationFrame(runGameFrame);
 
     // Pause button
@@ -207,7 +165,6 @@ function main() {
     });
     
     // Setup settings page
-    debugLog.textContent = "Setting up settings";
     let settingsDebugMessage = document.createTextNode('');
     document.querySelector("#settingsConsoleText").appendChild(settingsDebugMessage);
     RebindMod.connectHTMLElements(".controlRebind", inputMod, settingsDebugMessage, settingsScreen);
@@ -227,7 +184,6 @@ function main() {
         button.addEventListener("click", (e) => {howToScreen.classList.remove("hide")});
     });
 
-    debugLog.textContent = "Initialization complete";
 }
 
 /**

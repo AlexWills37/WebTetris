@@ -42,7 +42,6 @@ export class GUIButtonInput {
         this.inputStates.set("rotateAnticlockwise", false);
         
         // Adds the listeners to the buttons.
-        console.log("adding listeners");
         this.addStateListeners(moveLeft, "moveLeft");
         this.addStateListeners(moveRight, "moveRight");
         this.addStateListeners(softDrop, "softDrop");
@@ -50,7 +49,6 @@ export class GUIButtonInput {
         this.addFlagListners(rotateClockwise, "rotateClockwise");
         this.addFlagListners(rotateAnticlockwise, "rotateAnticlockwise");
         this.addFlagListners(hold, "hold");
-        console.log("listeners added");
     }
 
     /**
